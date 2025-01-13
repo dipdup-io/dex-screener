@@ -1,14 +1,6 @@
 spec_version: 3.0
 package: dex_screener
 
-database:
-  kind: postgres
-  host: ${POSTGRES_HOST:-db}
-  port: ${POSTGRES_PORT:-5432}
-  user: ${POSTGRES_USER:-dipdup}
-  password: ${POSTGRES_PASSWORD:-changeme}
-  database: ${POSTGRES_DB:-dipdup}
-
 runtimes:
   hydradx:
     kind: substrate
@@ -33,7 +25,7 @@ indexes:
     datasources:
       - subsquid
       - subscan
-    #    - node
+      - node
     handlers:
       - callback: hydradx.on_asset_create
         name: AssetRegistry.Registered
