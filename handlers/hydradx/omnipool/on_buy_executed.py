@@ -9,10 +9,11 @@ async def on_buy_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[OmnipoolBuyExecutedPayload],
 ) -> None:
-    await Event.create(
-        who=event.data.args['who'],
-        asset_in=event.data.args['assetIn'],
-        asset_out=event.data.args['assetOut'],
-        amount_in=event.data.args['amountIn'],
-        amount_out=event.data.args['amountOut'],
-    )
+    raise NotImplementedError
+#     await Event.create(
+#         who=event.data.args['who'],
+#         asset_in=event.data.args['assetIn'],
+#         asset_out=event.data.args['assetOut'],
+#         amount_in=event.data.args['amountIn'],
+#         amount_out=event.data.args['amountOut'],
+#     )

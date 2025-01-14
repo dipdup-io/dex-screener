@@ -9,10 +9,11 @@ async def on_sell_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[OmnipoolSellExecutedPayload],
 ) -> None:
-    await SwapEvent.create(
-        who=event.data.args['who'],
-        asset_in=event.data.args['assetIn'],
-        asset_out=event.data.args['assetOut'],
-        amount_in=event.data.args['amountIn'],
-        amount_out=event.data.args['amountOut'],
-    )
+    raise NotImplementedError
+#     await SwapEvent.create(
+#         who=event.data.args['who'],
+#         asset_in=event.data.args['assetIn'],
+#         asset_out=event.data.args['assetOut'],
+#         amount_in=event.data.args['amountIn'],
+#         amount_out=event.data.args['amountOut'],
+#     )

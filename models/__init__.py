@@ -124,6 +124,7 @@ class Pair(Model):
 #   metadata?: Record<string, string>;
 # }
 
+# TODO: Composite PKs in `sql/on_reindex`
 
 class SwapEventType(Enum):
     swap = 'swap'
@@ -184,3 +185,9 @@ class JoinExitEvent(Model):
     reserves_asset_0 = fields.IntField(null=True)
     reserves_asset_1 = fields.IntField(null=True)
     metadata = fields.JSONField(null=True)
+
+
+# FIXME: int or 0x?
+def get_pair_id(asset_0_id: int, asset_1_id: int) -> str:
+    # return hash(frozenset([asset_0_id, asset_1_id])) # <3 u copilot, but no
+    return f'{asset_0_id}_{asset_1_id}'
