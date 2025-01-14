@@ -14,9 +14,16 @@ async def on_asset_create(
     elif isinstance(event.data.args, dict):
         asset_id, asset_name = event.data.args['assetId'], event.data.args['assetName']
     else:
+        ctx.logger.error('Unknown event args format: %s', event.data.args)
         return
 
     await Asset.create(
         id=asset_id,
         name=asset_name,
+        symbol='',
+        # total_supply
+        # circulating_supply
+        # coin_gecko_id
+        # coin_market_cap_id
+        # metadata
     )
