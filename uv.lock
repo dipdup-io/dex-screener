@@ -395,7 +395,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "dipdup", git = "https://github.com/dipdup-io/dipdup.git?rev=aux%2F8.2.0rc1" }]
+requires-dist = [{ name = "dipdup", editable = "../dipdup" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -407,7 +407,7 @@ dev = [
 [[package]]
 name = "dipdup"
 version = "8.2.0rc1"
-source = { git = "https://github.com/dipdup-io/dipdup.git?rev=aux%2F8.2.0rc1#afcc14d0826d3159118c6e86db5471ac132ea135" }
+source = { editable = "../dipdup" }
 dependencies = [
     { name = "aiohttp" },
     { name = "aiolimiter" },
@@ -439,6 +439,65 @@ dependencies = [
     { name = "tortoise-orm" },
     { name = "uvloop" },
     { name = "web3" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aerich", marker = "extra == 'migrations'", specifier = "~=0.7.2" },
+    { name = "aiohttp", specifier = "~=3.10" },
+    { name = "aiolimiter", specifier = "~=1.1" },
+    { name = "aiosubstrate", specifier = ">=0.1.0" },
+    { name = "anyio", specifier = "~=4.4" },
+    { name = "appdirs", specifier = "~=1.4" },
+    { name = "apscheduler", specifier = "~=3.10" },
+    { name = "async-lru", specifier = "~=2.0" },
+    { name = "asyncpg", specifier = "~=0.29" },
+    { name = "click", specifier = "~=8.1" },
+    { name = "datamodel-code-generator", specifier = "~=0.26" },
+    { name = "eth-abi", specifier = "~=5.0" },
+    { name = "lru-dict", specifier = "~=1.3" },
+    { name = "orjson", specifier = "~=3.10" },
+    { name = "prometheus-client", specifier = "~=0.20" },
+    { name = "pycryptodome", specifier = "~=3.20" },
+    { name = "pydantic", specifier = "~=2.10.3" },
+    { name = "pyhumps", specifier = "~=3.8" },
+    { name = "pysignalr", specifier = "~=1.0" },
+    { name = "python-dotenv", specifier = "~=1.0" },
+    { name = "python-json-logger", specifier = "~=2.0" },
+    { name = "ruamel-yaml", specifier = "~=0.18.6" },
+    { name = "sentry-sdk", specifier = "~=2.16" },
+    { name = "sqlparse", specifier = "~=0.5" },
+    { name = "starknet-py", specifier = "~=0.24.3" },
+    { name = "strict-rfc3339", specifier = "~=0.7" },
+    { name = "survey", specifier = "~=5.4" },
+    { name = "tabulate", specifier = "~=0.9" },
+    { name = "tortoise-orm", specifier = "==0.21.7" },
+    { name = "uvloop", specifier = "~=0.20" },
+    { name = "web3", specifier = "~=7.2" },
+]
+
+[package.metadata.requires-dev]
+docs = [
+    { name = "sphinx" },
+    { name = "sphinx-click" },
+    { name = "sphinx-markdown-builder" },
+    { name = "watchdog" },
+]
+lint = [
+    { name = "black" },
+    { name = "mypy" },
+    { name = "ruff" },
+    { name = "types-pytz" },
+    { name = "types-tabulate" },
+]
+perf = [{ name = "scalene" }]
+test = [
+    { name = "docker" },
+    { name = "pytest" },
+    { name = "pytest-aiohttp" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-cov" },
+    { name = "pytest-xdist" },
 ]
 
 [[package]]

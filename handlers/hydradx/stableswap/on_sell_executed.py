@@ -17,22 +17,15 @@ async def on_sell_executed(
     #     amount_out=event.data.args['amountOut'],
     # )
 
-
     asset0_id = min(event.data.args['assetIn'], event.data.args['assetOut'])
     asset1_id = max(event.data.args['assetIn'], event.data.args['assetOut'])
-
 
     asset0_model = await m.Asset.filter(id=asset0_id).get()
     asset1_model = await m.Asset.filter(id=asset1_id).get()
 
     pair_id = m.get_pair_id(asset0_id, asset1_id)
     pair_model, created = m.Pair.get_or_create(
-        id=pair_id,
-        defaults={
-            'asset_0_id': asset0_id,
-            'asset_1_id': asset1_id,
-            'dex_key': 'hydradx'  # ?
-        }
+        id=pair_id, defaults={'asset_0_id': asset0_id, 'asset_1_id': asset1_id, 'dex_key': 'hydradx'}  # ?
     )
     if not created:
         await pair_model.save()
@@ -44,17 +37,14 @@ async def on_sell_executed(
         txn_id=event.data.header.extrinsicsRoot,  # ?
         txn_index=event.data.extrinsic_index,  # ?
         event_index=event.data.index,
-
         maker=event.payload['who'],
         pair_id=pair_id,
         # asset_0_in=fields.IntField(null=True)
         # asset_1_in=fields.IntField(null=True)
         # asset_0_out=fields.IntField(null=True)
         # asset_1_out=fields.IntField(null=True)
-
         # NOTE: where?
         # price_native=fields.IntField()
-
         # NOTE: optionals:
         # reserves_asset_0=fields.IntField(null=True)
         # reserves_asset_1=fields.IntField(null=True)

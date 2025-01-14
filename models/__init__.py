@@ -126,6 +126,7 @@ class Pair(Model):
 
 # TODO: Composite PKs in `sql/on_reindex`
 
+
 class SwapEventType(Enum):
     swap = 'swap'
 

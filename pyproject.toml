@@ -10,7 +10,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "dipdup @ git+https://github.com/dipdup-io/dipdup.git@aux/8.2.0rc1",
+    "dipdup",
 ]
 
 [dependency-groups]
@@ -44,6 +44,9 @@ exclude = "dex_screener"
 [[tool.mypy.overrides]]
 module = "ruamel"
 ignore_missing_imports = true
+
+[tool.uv.sources]
+dipdup = { path = "../dipdup", editable = true }
 
 [build-system]
 requires = ["pdm-backend"]
