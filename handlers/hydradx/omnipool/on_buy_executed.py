@@ -1,7 +1,8 @@
-from dex_screener.models import Event
-from dex_screener.types.hydradx.substrate_events.omnipool_buy_executed import OmnipoolBuyExecutedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
+
+from dex_screener.models import Event
+from dex_screener.types.hydradx.substrate_events.omnipool_buy_executed import OmnipoolBuyExecutedPayload
 
 
 async def on_buy_executed(
