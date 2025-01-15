@@ -8,5 +8,4 @@ from dex_screener.types.assethub.substrate_events.assets_issued import AssetsIss
 async def on_assets_issued(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetsIssuedPayload],
-) -> None:
-    print(event.payload)
+) -> None: ...

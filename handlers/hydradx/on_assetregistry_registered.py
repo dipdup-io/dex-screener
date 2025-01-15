@@ -9,14 +9,6 @@ async def on_asset_create(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetRegistryRegisteredPayload],
 ) -> None:
-    # if isinstance(event.data.args, list):
-    #     asset_id, asset_name = event.data.args[0], event.data.args[1]
-    # elif isinstance(event.data.args, dict):
-    #     asset_id, asset_name = event.data.args['assetId'], event.data.args['assetName']
-    # else:
-    #     ctx.logger.error('Unknown event args format: %s', event.data.args)
-    #     return
-
     id_ = event.payload['asset_id']
     name = event.payload.get('asset_name') or event.payload.get('name') or id_
 

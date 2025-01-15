@@ -8,5 +8,4 @@ from dex_screener.types.assethub.substrate_events.assets_transferred import Asse
 async def on_assets_transferred(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetsTransferredPayload],
-) -> None:
-    print(event.payload)
+) -> None: ...

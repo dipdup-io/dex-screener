@@ -1,3 +1,3 @@
 from .v138 import V138
 
-type OtcPlacedPayload = V138
+type OTCPlacedPayload = V138

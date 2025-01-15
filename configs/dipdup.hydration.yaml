@@ -24,28 +24,28 @@ indexes:
       - subscan
       - node
     handlers:
-      - callback: hydradx.on_asset_create
+      - callback: hydradx.on_assetregistry_registered
         name: AssetRegistry.Registered
 
       # isolated pool example
-      - callback: hydradx.xyk.on_buy_executed
+      - callback: hydradx.on_xyk_buy_executed
         name: XYK.BuyExecuted
-      - callback: hydradx.xyk.on_sell_executed
+      - callback: hydradx.on_xyk_sell_executed
         name: XYK.SellExecuted
 
-      - callback: hydradx.omnipool.on_buy_executed
+      - callback: hydradx.on_omnipool_buy_executed
         name: Omnipool.BuyExecuted
-      - callback: hydradx.omnipool.on_sell_executed
+      - callback: hydradx.on_omnipool_sell_executed
         name: Omnipool.SellExecuted
 
-      - callback: hydradx.stableswap.on_buy_executed
+      - callback: hydradx.on_stableswap_buy_executed
         name: Stableswap.BuyExecuted
-      - callback: hydradx.stableswap.on_sell_executed
+      - callback: hydradx.on_stableswap_sell_executed
         name: Stableswap.SellExecuted
 
-      - callback: hydradx.otc.on_placing
+      - callback: hydradx.on_otc_placed
         name: OTC.Placed
-      - callback: hydradx.otc.on_execute
+      - callback: hydradx.on_otc_filled
         name: OTC.Filled
-      - callback: hydradx.otc.on_execute
+      - callback: hydradx.on_otc_partially_filled
         name: OTC.PartiallyFilled

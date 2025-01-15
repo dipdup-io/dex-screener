@@ -1,3 +1,3 @@
 from .v138 import V138
 
-type OtcPartiallyFilledPayload = V138
+type OTCPartiallyFilledPayload = V138

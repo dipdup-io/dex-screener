@@ -8,7 +8,7 @@ async def on_buy_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[StableswapBuyExecutedPayload],
 ) -> None:
-    raise NotImplementedError
+    ctx.logger.debug(str(event.payload))
 
 
 #     await Event.create(
