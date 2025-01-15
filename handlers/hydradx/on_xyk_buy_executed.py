@@ -8,4 +8,7 @@ from dex_screener.types.hydradx.substrate_events.xyk_buy_executed import XYKBuyE
 async def on_xyk_buy_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[XYKBuyExecutedPayload],
-) -> None: ...
+) -> None:
+    pool = await models.Pool.filter(id=event.payload['pool']).get()
+    asset_in = await models.Asset.filter(id=hex(event.payload['asset_in'])).get()
+    asset_out = await models.Asset.filter(id=hex(event.payload['asset_out'])).get()

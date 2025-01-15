@@ -5,7 +5,7 @@ from dex_screener.models import Asset
 from dex_screener.types.hydradx.substrate_events.asset_registry_registered import AssetRegistryRegisteredPayload
 
 
-async def on_asset_create(
+async def on_assetregistry_registered(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetRegistryRegisteredPayload],
 ) -> None:
@@ -24,5 +24,5 @@ async def on_asset_create(
         # metadata
     )
 
-    ctx.logger.info('Creating asset %s', asset.__dict__)
+    ctx.logger.info('Creating asset "%s" (%s)', name, id_)
     await asset.save()

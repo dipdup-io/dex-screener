@@ -23,11 +23,21 @@ indexes:
       - subsquid
       - subscan
       - node
+    # first pool:
+    # first_level: 3934551
+
     handlers:
       - callback: hydradx.on_assetregistry_registered
         name: AssetRegistry.Registered
 
-      # isolated pool example
+      - callback: hydradx.on_xyk_pool_created
+        name: XYK.PoolCreated
+      - callback: hydradx.on_xyk_pool_destroyed
+        name: XYK.PoolDestroyed
+      - callback: hydradx.on_xyk_liquidity_added
+        name: XYK.LiquidityAdded
+      - callback: hydradx.on_xyk_liquidity_removed
+        name: XYK.LiquidityRemoved
       - callback: hydradx.on_xyk_buy_executed
         name: XYK.BuyExecuted
       - callback: hydradx.on_xyk_sell_executed

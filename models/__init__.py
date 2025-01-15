@@ -192,3 +192,11 @@ class JoinExitEvent(Model):
 def get_pair_id(asset_0_id: int, asset_1_id: int) -> str:
     # return hash(frozenset([asset_0_id, asset_1_id])) # <3 u copilot, but no
     return f'{asset_0_id}_{asset_1_id}'
+
+class Pool(Model):
+    id = fields.TextField(primary_key=True)
+    who = fields.TextField()
+    asset_a = fields.IntField()
+    asset_b = fields.IntField()
+    initial_shares_amount = fields.IntField()
+    share_token = fields.IntField()

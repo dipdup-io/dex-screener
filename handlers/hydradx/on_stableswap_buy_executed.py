@@ -4,7 +4,7 @@ from dipdup.models.substrate import SubstrateEvent
 from dex_screener.types.hydradx.substrate_events.stableswap_buy_executed import StableswapBuyExecutedPayload
 
 
-async def on_buy_executed(
+async def on_stableswap_buy_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[StableswapBuyExecutedPayload],
 ) -> None:

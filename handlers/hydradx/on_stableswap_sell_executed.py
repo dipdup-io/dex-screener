@@ -5,15 +5,15 @@ from dex_screener import models as m
 from dex_screener.types.hydradx.substrate_events.stableswap_sell_executed import StableswapSellExecutedPayload
 
 
-async def on_sell_executed(
+async def on_stableswap_sell_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[StableswapSellExecutedPayload],
 ) -> None:
     asset0_id = min(event.payload['asset_in'], event.payload['asset_out'])
     asset1_id = max(event.payload['asset_in'], event.payload['asset_out'])
 
-    # asset0_model = await m.Asset.filter(id=asset0_id).get()
-    # asset1_model = await m.Asset.filter(id=asset1_id).get()
+    asset0_model = await m.Asset.filter(id=asset0_id).get()
+    asset1_model = await m.Asset.filter(id=asset1_id).get()
 
     pair_id = m.get_pair_id(asset0_id, asset1_id)
     pair_model, created = await m.Pair.get_or_create(
