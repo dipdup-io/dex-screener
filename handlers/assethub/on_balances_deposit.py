@@ -8,4 +8,5 @@ from dex_screener.types.assethub.substrate_events.balances_deposit import Balanc
 async def on_balances_deposit(
     ctx: HandlerContext,
     event: SubstrateEvent[BalancesDepositPayload],
-) -> None: ...
+) -> None:
+    print(event.payload)

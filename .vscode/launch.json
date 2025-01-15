@@ -1,0 +1,87 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "assethub: run",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "dipdup",
+      "args": [
+        "-e",
+        ".env",
+        "-C",
+        "assethub",
+        "run"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "env": {
+        "DIPDUP_DEBUG": "1",
+        "DIPDUP_NO_SYMLINK": "1"
+      }
+    },
+    {
+      "name": "assethub: init",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "dipdup",
+      "args": [
+        "-e",
+        ".env",
+        "-C",
+        "assethub",
+        "init",
+        "-f",
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "env": {
+        "DIPDUP_DEBUG": "1",
+        "DIPDUP_NO_SYMLINK": "1"
+      }
+    },
+    {
+      "name": "hydration: run",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "dipdup",
+      "args": [
+        "-e",
+        ".env",
+        "-C",
+        "hydration",
+        "run"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "env": {
+        "DIPDUP_DEBUG": "1",
+        "DIPDUP_NO_SYMLINK": "1"
+      }
+    },
+    {
+      "name": "hydration: init",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "dipdup",
+      "args": [
+        "-e",
+        ".env",
+        "-C",
+        "hydration",
+        "init",
+        "-f",
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "env": {
+        "DIPDUP_DEBUG": "1",
+        "DIPDUP_NO_SYMLINK": "1"
+      }
+    },
+  ]
+}

@@ -8,4 +8,5 @@ from dex_screener.types.assethub.substrate_events.assets_created import AssetsCr
 async def on_assets_created(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetsCreatedPayload],
-) -> None: ...
+) -> None:
+    print(event.payload)

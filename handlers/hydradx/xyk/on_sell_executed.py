@@ -8,4 +8,5 @@ from dex_screener.types.hydradx.substrate_events.xyk_sell_executed import XykSel
 async def on_sell_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[XykSellExecutedPayload],
-) -> None: ...
+) -> None:
+    print(event.payload)

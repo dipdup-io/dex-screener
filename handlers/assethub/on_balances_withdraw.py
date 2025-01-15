@@ -8,4 +8,5 @@ from dex_screener.types.assethub.substrate_events.balances_withdraw import Balan
 async def on_balances_withdraw(
     ctx: HandlerContext,
     event: SubstrateEvent[BalancesWithdrawPayload],
-) -> None: ...
+) -> None:
+    print(event.payload)

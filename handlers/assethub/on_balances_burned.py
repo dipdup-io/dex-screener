@@ -8,4 +8,5 @@ from dex_screener.types.assethub.substrate_events.balances_burned import Balance
 async def on_balances_burned(
     ctx: HandlerContext,
     event: SubstrateEvent[BalancesBurnedPayload],
-) -> None: ...
+) -> None:
+    print(event.payload)

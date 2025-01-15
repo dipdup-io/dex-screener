@@ -8,4 +8,5 @@ from dex_screener.types.hydradx.substrate_events.otc_placed import OtcPlacedPayl
 async def on_placing(
     ctx: HandlerContext,
     event: SubstrateEvent[OtcPlacedPayload],
-) -> None: ...
+) -> None:
+    print(event.payload)

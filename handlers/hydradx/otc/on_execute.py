@@ -8,4 +8,5 @@ from dex_screener.types.hydradx.substrate_events.otc_filled import OtcFilledPayl
 async def on_execute(
     ctx: HandlerContext,
     event: SubstrateEvent[OtcFilledPayload],
-) -> None: ...
+) -> None:
+    print(event.payload)
