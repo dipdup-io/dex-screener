@@ -17,12 +17,14 @@ async def on_asset_create(
     #     ctx.logger.error('Unknown event args format: %s', event.data.args)
     #     return
 
-    name = event.payload['assetName']
+    id_ = event.payload['asset_id']
+    name = event.payload.get('asset_name') or id_
+
     asset = Asset(
-        id=event.payload['assetId'],
+        id=id_,
         name=name,
         # NOTE: Available after some block
-        symbol=event.payload.get('symbol', name),
+        symbol=event.payload.get('symbol') or name,
         # total_supply
         # circulating_supply
         # coin_gecko_id

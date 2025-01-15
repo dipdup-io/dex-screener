@@ -9,22 +9,14 @@ async def on_sell_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[StableswapSellExecutedPayload],
 ) -> None:
-    # await Event.create(
-    #     who=event.data.args['who'],
-    #     asset_in=event.data.args['assetIn'],
-    #     asset_out=event.data.args['assetOut'],
-    #     amount_in=event.data.args['amountIn'],
-    #     amount_out=event.data.args['amountOut'],
-    # )
+    asset0_id = min(event.payload['asset_in'], event.payload['asset_out'])
+    asset1_id = max(event.payload['asset_in'], event.payload['asset_out'])
 
-    asset0_id = min(event.data.args['assetIn'], event.data.args['assetOut'])
-    asset1_id = max(event.data.args['assetIn'], event.data.args['assetOut'])
-
-    asset0_model = await m.Asset.filter(id=asset0_id).get()
-    asset1_model = await m.Asset.filter(id=asset1_id).get()
+    # asset0_model = await m.Asset.filter(id=asset0_id).get()
+    # asset1_model = await m.Asset.filter(id=asset1_id).get()
 
     pair_id = m.get_pair_id(asset0_id, asset1_id)
-    pair_model, created = m.Pair.get_or_create(
+    pair_model, created = await m.Pair.get_or_create(
         id=pair_id, defaults={'asset_0_id': asset0_id, 'asset_1_id': asset1_id, 'dex_key': 'hydradx'}  # ?
     )
     if not created:
@@ -34,7 +26,7 @@ async def on_sell_executed(
 
     event_model = m.SwapEvent(
         event_type='swap',
-        txn_id=event.data.header.extrinsicsRoot,  # ?
+        txn_id=event.data.header['extrinsicsRoot'],  # ?
         txn_index=event.data.extrinsic_index,  # ?
         event_index=event.data.index,
         maker=event.payload['who'],
