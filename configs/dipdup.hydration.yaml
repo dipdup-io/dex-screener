@@ -29,9 +29,9 @@ indexes:
 
       # isolated pool example
       - callback: hydradx.xyk.on_buy_executed
-        name: Xyk.BuyExecuted
+        name: XYK.BuyExecuted
       - callback: hydradx.xyk.on_sell_executed
-        name: Xyk.SellExecuted
+        name: XYK.SellExecuted
 
       - callback: hydradx.omnipool.on_buy_executed
         name: Omnipool.BuyExecuted
@@ -44,8 +44,8 @@ indexes:
         name: Stableswap.SellExecuted
 
       - callback: hydradx.otc.on_placing
-        name: Otc.Placed
+        name: OTC.Placed
       - callback: hydradx.otc.on_execute
-        name: Otc.Filled
+        name: OTC.Filled
       - callback: hydradx.otc.on_execute
-        name: Otc.PartiallyFilled
+        name: OTC.PartiallyFilled

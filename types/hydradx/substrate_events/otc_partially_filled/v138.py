@@ -5,10 +5,12 @@ from __future__ import annotations
 from typing import TypedDict
 
 
-class V700(TypedDict):
+class V138(TypedDict):
     """
-    Some amount was withdrawn from the account (e.g. for transaction fees).
+    An Order has been partially filled
     """
 
+    order_id: int
     who: str
-    amount: int
+    amount_in: int
+    amount_out: int

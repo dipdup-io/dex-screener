@@ -5,15 +5,16 @@ from __future__ import annotations
 from typing import TypedDict
 
 
-class V185(TypedDict):
+class V183(TypedDict):
     """
-    Sell trade executed.
+    Asset sale executed.
     """
 
     who: str
     asset_in: int
     asset_out: int
-    amount_in: int
-    amount_out: int
-    asset_fee_amount: int
-    protocol_fee_amount: int
+    amount: int
+    sale_price: int
+    fee_asset: int
+    fee_amount: int
+    pool: str

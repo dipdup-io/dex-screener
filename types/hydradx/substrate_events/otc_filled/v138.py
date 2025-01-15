@@ -5,15 +5,12 @@ from __future__ import annotations
 from typing import TypedDict
 
 
-class V170(TypedDict):
+class V138(TypedDict):
     """
-    Sell trade executed.
+    An Order has been completely filled
     """
 
+    order_id: int
     who: str
-    asset_in: int
-    asset_out: int
     amount_in: int
     amount_out: int
-    asset_fee_amount: int
-    protocol_fee_amount: int
