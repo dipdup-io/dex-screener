@@ -5,4 +5,4 @@ from .v234 import V234
 from .v244 import V244
 from .v276 import V276
 
-type AssetRegistryRegisteredPayload = V222 | V108 | V234 | V115 | V244 | V276
+type AssetRegistryRegisteredPayload = V108 | V115 | V222 | V234 | V244 | V276

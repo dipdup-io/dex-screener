@@ -10,7 +10,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "dipdup",
+    "dipdup>=8,<9",
 ]
 
 [dependency-groups]

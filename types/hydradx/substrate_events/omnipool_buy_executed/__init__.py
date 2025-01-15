@@ -3,4 +3,4 @@ from .v170 import V170
 from .v185 import V185
 from .v201 import V201
 
-type OmnipoolBuyExecutedPayload = V170 | V201 | V115 | V185
+type OmnipoolBuyExecutedPayload = V115 | V170 | V185 | V201

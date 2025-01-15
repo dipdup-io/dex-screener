@@ -3,7 +3,7 @@
 !*/
 
 # Add metadata and build files
-dex_screener
+!dex_screener
 !.gitignore
 !.dockerignore
 !py.typed
