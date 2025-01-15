@@ -24,5 +24,22 @@ indexes:
     - subscan
     - node
     handlers:
-      - callback: assethub.on_transfer
+      # Native token (DOT)
+      - callback: assethub.on_balances_transfer
         name: Balances.Transfer
+      - callback: assethub.on_balances_deposit
+        name: Balances.Deposit
+      - callback: assethub.on_balances_withdraw
+        name: Balances.Withdraw
+
+      # Assets
+      - callback: assethub.on_assets_created
+        name: Assets.Created
+      - callback: assethub.on_assets_issued
+        name: Assets.Issued
+      - callback: assethub.on_assets_transfer
+        name: Assets.Transfer
+      - callback: assethub.on_assets_deposit
+        name: Assets.Deposit
+      - callback: assethub.on_assets_withdraw
+        name: Assets.Withdraw
