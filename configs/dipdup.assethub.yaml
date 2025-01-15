@@ -31,15 +31,17 @@ indexes:
         name: Balances.Deposit
       - callback: assethub.on_balances_withdraw
         name: Balances.Withdraw
+      - callback: assethub.on_balances_burned
+        name: Balances.Burned
 
       # Assets
       - callback: assethub.on_assets_created
         name: Assets.Created
       - callback: assethub.on_assets_issued
         name: Assets.Issued
-      - callback: assethub.on_assets_transfer
-        name: Assets.Transfer
-      - callback: assethub.on_assets_deposit
-        name: Assets.Deposit
-      - callback: assethub.on_assets_withdraw
-        name: Assets.Withdraw
+      - callback: assethub.on_assets_transferred
+        name: Assets.Transferred
+      - callback: assethub.on_assets_deposited
+        name: Assets.Deposited
+      - callback: assethub.on_assets_withdrawn
+        name: Assets.Withdrawn
