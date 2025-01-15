@@ -1,0 +1,51 @@
+runtimes:
+  hydradx:
+    kind: substrate
+    type_registry: hydration
+
+datasources:
+  subsquid:
+    kind: substrate.subsquid
+    url: https://v2.archive.subsquid.io/network/hydradx
+  subscan:
+    kind: substrate.subscan
+    url: https://hydration.api.subscan.io/api
+  node:
+    kind: substrate.node
+    url: https://rpc.hydradx.cloud
+    ws_url: wss://rpc.hydradx.cloud
+
+indexes:
+  hydradx_events:
+    kind: substrate.events
+    runtime: hydradx
+    datasources:
+      - subsquid
+      - subscan
+      - node
+    handlers:
+      - callback: hydradx.on_asset_create
+        name: AssetRegistry.Registered
+
+      # isolated pool example
+      - callback: hydradx.xyk.on_buy_executed
+        name: xyk.BuyExecuted
+      - callback: hydradx.xyk.on_sell_executed
+        name: xyk.SellExecuted
+
+      - callback: hydradx.omnipool.on_buy_executed
+        name: Omnipool.BuyExecuted
+      - callback: hydradx.omnipool.on_sell_executed
+        name: Omnipool.SellExecuted
+
+      - callback: hydradx.stableswap.on_buy_executed
+        name: Stableswap.BuyExecuted
+      - callback: hydradx.stableswap.on_sell_executed
+        name: Stableswap.SellExecuted
+
+      - callback: hydradx.otc.on_placing
+        name: otc.Placed
+      - callback: hydradx.otc.on_execute
+        name: otc.Filled
+      - callback: hydradx.otc.on_execute
+        name: otc.PartiallyFilled
