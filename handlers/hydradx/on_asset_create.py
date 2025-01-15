@@ -18,7 +18,7 @@ async def on_asset_create(
     #     return
 
     id_ = event.payload['asset_id']
-    name = event.payload.get('asset_name') or id_
+    name = event.payload.get('asset_name') or event.payload.get('name') or id_
 
     asset = Asset(
         id=id_,
@@ -32,5 +32,5 @@ async def on_asset_create(
         # metadata
     )
 
-    ctx.logger.info('Creating asset %s', asset)
+    ctx.logger.info('Creating asset %s', asset.__dict__)
     await asset.save()
