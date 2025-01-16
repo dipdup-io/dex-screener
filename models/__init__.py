@@ -141,13 +141,13 @@ class SwapEvent(Model):
 
     maker = fields.TextField()
     pair_id = fields.IntField()
-    asset_0_in = fields.IntField(null=True)
-    asset_1_in = fields.IntField(null=True)
-    asset_0_out = fields.IntField(null=True)
-    asset_1_out = fields.IntField(null=True)
+    asset_0_in = fields.BigIntField(null=True)
+    asset_1_in = fields.BigIntField(null=True)
+    asset_0_out = fields.BigIntField(null=True)
+    asset_1_out = fields.BigIntField(null=True)
     price_native = fields.IntField()
-    reserves_asset_0 = fields.IntField(null=True)
-    reserves_asset_1 = fields.IntField(null=True)
+    reserves_asset_0 = fields.BigIntField(null=True)
+    reserves_asset_1 = fields.BigIntField(null=True)
     metadata = fields.JSONField(null=True)
 
 
