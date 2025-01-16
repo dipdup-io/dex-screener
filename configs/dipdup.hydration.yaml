@@ -12,8 +12,8 @@ datasources:
     url: https://hydration.api.subscan.io/api
   node:
     kind: substrate.node
-    url: https://rpc.hydradx.cloud
-    ws_url: wss://rpc.hydradx.cloud
+    url: https://hydradx.paras.ibp.network
+    ws_url: wss://hydradx.paras.ibp.network
 
 indexes:
   hydradx_events:

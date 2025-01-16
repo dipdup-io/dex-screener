@@ -140,15 +140,14 @@ class SwapEvent(Model):
     event_index = fields.IntField()
 
     maker = fields.TextField()
-    pair_id = fields.IntField()
-    asset_0_in = fields.BigIntField(null=True)
-    asset_1_in = fields.BigIntField(null=True)
-    asset_0_out = fields.BigIntField(null=True)
-    asset_1_out = fields.BigIntField(null=True)
+    pair_id = fields.TextField()
+    asset_0_in = fields.DecimalField(32, 0, null=True)
+    asset_1_in = fields.DecimalField(32, 0, null=True)
+    asset_0_out = fields.DecimalField(32, 0, null=True)
+    asset_1_out = fields.DecimalField(32, 0, null=True)
     price_native = fields.IntField()
-    reserves_asset_0 = fields.BigIntField(null=True)
-    reserves_asset_1 = fields.BigIntField(null=True)
-    metadata = fields.JSONField(null=True)
+    reserves_asset_0 = fields.DecimalField(32, 0, null=True)
+    reserves_asset_1 = fields.DecimalField(32, 0, null=True)
 
 
 # interface JoinExitEvent {
