@@ -133,7 +133,8 @@ class SwapEventType(Enum):
 
 class SwapEvent(Model):
     # NOTE: Composite PK; see `sql/on_reindex`
-    event_type = fields.EnumField(SwapEventType, primary_key=True)
+    event_type = fields.EnumField(SwapEventType)
+    composite_pk = fields.TextField(primary_key=True)
     txn_id = fields.TextField()
     txn_index = fields.IntField()
     event_index = fields.IntField()
