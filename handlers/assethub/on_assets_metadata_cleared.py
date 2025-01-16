@@ -8,4 +8,9 @@ async def on_assets_metadata_cleared(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetsMetadataClearedPayload],
 ) -> None:
-    raise NotImplementedError
+    asset = await models.Asset.filter(id=event.payload['asset_id']).get()
+    asset.name = '...'
+    asset.symbol = '...'
+    asset.metadata = {}
+    await asset.save()
+    ctx.logger.info('Clearing asset metadata `%s` (%s)', asset.name, asset.id)
