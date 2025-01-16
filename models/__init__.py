@@ -127,13 +127,15 @@ class Pair(Model):
 # TODO: Composite PKs in `sql/on_reindex`
 
 
-class SwapEventType(Enum):
+class EventType(Enum):
     swap = 'swap'
+    join = 'join'
+    exit = 'exit'
 
 
 class SwapEvent(Model):
     # NOTE: Composite PK; see `sql/on_reindex`
-    event_type = fields.EnumField(SwapEventType)
+    event_type = fields.EnumField(EventType)
     composite_pk = fields.TextField(primary_key=True)
     txn_id = fields.TextField()
     txn_index = fields.IntField()
@@ -141,10 +143,16 @@ class SwapEvent(Model):
 
     maker = fields.TextField()
     pair_id = fields.TextField()
+
+    # swap
     asset_0_in = fields.DecimalField(32, 0, null=True)
     asset_1_in = fields.DecimalField(32, 0, null=True)
     asset_0_out = fields.DecimalField(32, 0, null=True)
     asset_1_out = fields.DecimalField(32, 0, null=True)
+    # join/exit
+    amount_0 = fields.DecimalField(32, 0, null=True)
+    amount_1 = fields.DecimalField(32, 0, null=True)
+
     price_native = fields.IntField()
     reserves_asset_0 = fields.DecimalField(32, 0, null=True)
     reserves_asset_1 = fields.DecimalField(32, 0, null=True)
@@ -165,27 +173,6 @@ class SwapEvent(Model):
 #   };
 #   metadata?: Record<string, string>;
 # }
-
-
-class JoinExitEventType(Enum):
-    join = 'join'
-    exit = 'exit'
-
-
-class JoinExitEvent(Model):
-    # NOTE: Composite PK; see `sql/on_reindex`
-    event_type = fields.EnumField(JoinExitEventType, primary_key=True)
-    txn_id = fields.TextField()
-    txn_index = fields.IntField()
-    event_index = fields.IntField()
-
-    maker = fields.TextField()
-    pair_id = fields.IntField()
-    amount_0 = fields.IntField()
-    amount_1 = fields.IntField()
-    reserves_asset_0 = fields.IntField(null=True)
-    reserves_asset_1 = fields.IntField(null=True)
-    metadata = fields.JSONField(null=True)
 
 
 # FIXME: int or 0x?

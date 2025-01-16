@@ -10,10 +10,19 @@ datasources:
   subscan:
     kind: substrate.subscan
     url: https://hydration.api.subscan.io/api
+  # NOTE: all running 1.17.0-967989c5d94
   node:
     kind: substrate.node
     url: https://hydradx.paras.ibp.network
     ws_url: wss://hydradx.paras.ibp.network
+  # node_2:
+  #   kind: substrate.node
+  #   url: https://rpc.hydradx.cloud
+  #   ws_url: wss://rpc.hydradx.cloud
+  # node_3:
+  #   kind: substrate.node
+  #   url: https://hydradx-rpc.dwellir.com
+  #   ws_url: wss://hydradx-rpc.dwellir.com
 
 indexes:
   hydradx_events:
@@ -23,8 +32,9 @@ indexes:
       - subsquid
       - subscan
       - node
-    # first pool:
-    # first_level: 3934551
+    # first XYK pool: 1439857
+    # first_level: 1439857
+    # last_level: 1439857
 
     handlers:
       - callback: hydradx.on_assetregistry_registered

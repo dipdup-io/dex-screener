@@ -24,7 +24,7 @@ async def on_stableswap_sell_executed(
 
     # TODO: find or create pool
 
-    event_model = m.SwapEvent(
+    event_model = m.Event(
         event_type='swap',
         txn_id=event.data.header['extrinsicsRoot'],  # ?
         txn_index=event.data.extrinsic_index,  # ?
