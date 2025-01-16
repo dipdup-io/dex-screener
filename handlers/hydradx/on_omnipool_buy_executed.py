@@ -48,6 +48,7 @@ async def on_omnipool_buy_executed(
 
     await event_model.save()
 
+
 async def update_pair_model(pair_id, asset0_id, asset1_id) -> str:
     # FIXME: ensure pair data is correct and full
     pair_model, created = await m.Pair.get_or_create(

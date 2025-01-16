@@ -51,3 +51,23 @@ indexes:
         name: Assets.Deposited
       - callback: assethub.on_assets_withdrawn
         name: Assets.Withdrawn
+
+      # AssetConversion
+      # - LiquidityAdded
+      # - LiquidityRemoved
+      # - PoolCreated
+      # - SwapCreditExecuted
+      # - SwapExecuted
+      # - Touched
+      - callback: assethub.on_assetconversion_liquidity_added
+        name: AssetConversion.LiquidityAdded
+      - callback: assethub.on_assetconversion_liquidity_removed
+        name: AssetConversion.LiquidityRemoved
+      - callback: assethub.on_assetconversion_pool_created
+        name: AssetConversion.PoolCreated
+      - callback: assethub.on_assetconversion_swap_credit_executed
+        name: AssetConversion.SwapCreditExecuted
+      - callback: assethub.on_assetconversion_swap_executed
+        name: AssetConversion.SwapExecuted
+      - callback: assethub.on_assetconversion_touched
+        name: AssetConversion.Touched
