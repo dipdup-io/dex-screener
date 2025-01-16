@@ -37,6 +37,10 @@ indexes:
       # Assets
       - callback: assethub.on_assets_created
         name: Assets.Created
+      - callback: assethub.on_assets_metadata_set
+        name: Assets.MetadataSet
+      - callback: assethub.on_assets_metadata_cleared
+        name: Assets.MetadataCleared
       - callback: assethub.on_assets_issued
         name: Assets.Issued
       - callback: assethub.on_assets_transferred

@@ -8,4 +8,11 @@ from dex_screener.types.assethub.substrate_events.assets_created import AssetsCr
 async def on_assets_created(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetsCreatedPayload],
-) -> None: ...
+) -> None:
+    asset = models.Asset(
+        id=event.payload['asset_id'],
+        name='...',
+        symbol='...',
+    )
+    await asset.save()
+    ctx.logger.info('Creating asset `%s` (%s)', asset.name, asset.id)
