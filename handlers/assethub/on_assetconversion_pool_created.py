@@ -8,4 +8,5 @@ from dex_screener.types.assethub.substrate_events.asset_conversion_pool_created 
 async def on_assetconversion_pool_created(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionPoolCreatedPayload],
-) -> None: ...
+) -> None:
+    raise NotImplementedError

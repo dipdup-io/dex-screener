@@ -23,6 +23,7 @@ indexes:
     - subsquid
     - subscan
     - node
+    first_level: 6119459
     handlers:
       # Native token (DOT)
       - callback: assethub.on_balances_transfer
