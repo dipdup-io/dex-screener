@@ -10,4 +10,5 @@ from dex_screener.types.assethub.substrate_events.asset_conversion_liquidity_rem
 async def on_assetconversion_liquidity_removed(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionLiquidityRemovedPayload],
-) -> None: ...
+) -> None:
+    raise NotImplementedError

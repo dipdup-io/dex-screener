@@ -133,7 +133,7 @@ class EventType(Enum):
     exit = 'exit'
 
 
-class SwapEvent(Model):
+class Event(Model):
     # NOTE: Composite PK; see `sql/on_reindex`
     event_type = fields.EnumField(EventType)
     composite_pk = fields.TextField(primary_key=True)

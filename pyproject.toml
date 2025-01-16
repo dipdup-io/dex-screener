@@ -31,6 +31,10 @@ line-length = 120
 target-version = 'py312'
 
 [tool.ruff.lint]
+ignore = [
+    "F841",  # Local variable is assigned to but never used
+]
+
 extend-select = ["B", "C4", "FA", "G", "I", "PTH", "Q", "RET", "RUF", "TCH", "UP"]
 flake8-quotes = { inline-quotes = "single", multiline-quotes = "double" }
 isort = { force-single-line = true}

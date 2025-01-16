@@ -10,4 +10,5 @@ from dex_screener.types.assethub.substrate_events.asset_conversion_swap_executed
 async def on_assetconversion_swap_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionSwapExecutedPayload],
-) -> None: ...
+) -> None:
+    raise NotImplementedError

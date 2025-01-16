@@ -38,8 +38,6 @@ indexes:
         name: Assets.MetadataCleared
       - callback: assethub.on_assets_issued
         name: Assets.Issued
-      - callback: assethub.on_assets_transferred
-        name: Assets.Transferred
       - callback: assethub.on_assets_deposited
         name: Assets.Deposited
       - callback: assethub.on_assets_withdrawn
