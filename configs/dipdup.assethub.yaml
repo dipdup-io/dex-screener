@@ -20,22 +20,14 @@ indexes:
     kind: substrate.events
     runtime: assethub
     datasources:
-    - subsquid
+    # - subsquid
     - subscan
     - node
-    first_level: 6119459
+    first_level: 6119458
+    last_level: 6119558
     handlers:
-      # Native token (DOT)
-      - callback: assethub.on_balances_transfer
-        name: Balances.Transfer
-      - callback: assethub.on_balances_deposit
-        name: Balances.Deposit
-      - callback: assethub.on_balances_withdraw
-        name: Balances.Withdraw
-      - callback: assethub.on_balances_burned
-        name: Balances.Burned
-
       # Assets
+      #
       - callback: assethub.on_assets_created
         name: Assets.Created
       - callback: assethub.on_assets_destroyed
@@ -52,14 +44,8 @@ indexes:
         name: Assets.Deposited
       - callback: assethub.on_assets_withdrawn
         name: Assets.Withdrawn
-
       # AssetConversion
-      # - LiquidityAdded
-      # - LiquidityRemoved
-      # - PoolCreated
-      # - SwapCreditExecuted
-      # - SwapExecuted
-      # - Touched
+      #
       - callback: assethub.on_assetconversion_liquidity_added
         name: AssetConversion.LiquidityAdded
       - callback: assethub.on_assetconversion_liquidity_removed
