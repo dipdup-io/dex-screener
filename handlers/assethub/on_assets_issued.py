@@ -9,4 +9,4 @@ async def on_assets_issued(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetsIssuedPayload],
 ) -> None:
-    raise NotImplementedError
+    ctx.logger.info('Assets issued: %s', event.payload)

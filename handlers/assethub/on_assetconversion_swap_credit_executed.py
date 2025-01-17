@@ -11,4 +11,4 @@ async def on_assetconversion_swap_credit_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionSwapCreditExecutedPayload],
 ) -> None:
-    raise NotImplementedError
+    ctx.logger.warning('SwapCreditExecuted: %s', event.payload)
