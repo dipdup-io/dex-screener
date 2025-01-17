@@ -143,19 +143,21 @@ class Event(Model):
 
     maker = fields.TextField()
     pair_id = fields.TextField()
-
+    # NOTE: asset amounts stored in u128 which is up to 39 digits
     # swap
-    asset_0_in = fields.DecimalField(32, 0, null=True)
-    asset_1_in = fields.DecimalField(32, 0, null=True)
-    asset_0_out = fields.DecimalField(32, 0, null=True)
-    asset_1_out = fields.DecimalField(32, 0, null=True)
+    asset_0_in = fields.DecimalField(40, 0, null=True)
+    asset_1_in = fields.DecimalField(40, 0, null=True)
+    asset_0_out = fields.DecimalField(40, 0, null=True)
+    asset_1_out = fields.DecimalField(40, 0, null=True)
     # join/exit
-    amount_0 = fields.DecimalField(32, 0, null=True)
-    amount_1 = fields.DecimalField(32, 0, null=True)
+    amount_0 = fields.DecimalField(40, 0, null=True)
+    amount_1 = fields.DecimalField(40, 0, null=True)
 
+    # TODO: not implemented, should be changed for DecimalField with higher precision
+    # NOTE: not defined for Join/Exit event
     price_native = fields.IntField()
-    reserves_asset_0 = fields.DecimalField(32, 0, null=True)
-    reserves_asset_1 = fields.DecimalField(32, 0, null=True)
+    reserves_asset_0 = fields.DecimalField(40, 0, null=True)
+    reserves_asset_1 = fields.DecimalField(40, 0, null=True)
 
 
 # interface JoinExitEvent {
