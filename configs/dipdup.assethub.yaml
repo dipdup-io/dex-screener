@@ -23,7 +23,7 @@ indexes:
     - subsquid
     - subscan
     - node
-    first_level: 6119458
+    # first_level: 6119458
     # last_level: 6119558
     handlers:
       # Assets
@@ -36,20 +36,14 @@ indexes:
         name: Assets.MetadataSet
       - callback: assethub.on_assets_metadata_cleared
         name: Assets.MetadataCleared
-      - callback: assethub.on_assets_issued
-        name: Assets.Issued
-      - callback: assethub.on_assets_deposited
-        name: Assets.Deposited
-      - callback: assethub.on_assets_withdrawn
-        name: Assets.Withdrawn
       # AssetConversion
       #
+      - callback: assethub.on_assetconversion_pool_created
+        name: AssetConversion.PoolCreated
       - callback: assethub.on_assetconversion_liquidity_added
         name: AssetConversion.LiquidityAdded
       - callback: assethub.on_assetconversion_liquidity_removed
         name: AssetConversion.LiquidityRemoved
-      - callback: assethub.on_assetconversion_pool_created
-        name: AssetConversion.PoolCreated
       - callback: assethub.on_assetconversion_swap_credit_executed
         name: AssetConversion.SwapCreditExecuted
       - callback: assethub.on_assetconversion_swap_executed
