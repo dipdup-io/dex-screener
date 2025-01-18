@@ -1,6 +1,7 @@
+import time
+
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
-import time
 
 from dex_screener import models as m
 from dex_screener.types.hydradx.substrate_events.omnipool_buy_executed import OmnipoolBuyExecutedPayload

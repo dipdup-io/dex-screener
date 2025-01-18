@@ -12,7 +12,7 @@ class V1002000(TypedDict):
 
     who: str
     withdraw_to: str
-    pool_id: str
+    pool_id: list[str]
     amount1: int
     amount2: int
     lp_token: int

@@ -12,7 +12,7 @@ class V1002000(TypedDict):
 
     who: str
     mint_to: str
-    pool_id: str
+    pool_id: list[str]
     amount1_provided: int
     amount2_provided: int
     lp_token: int

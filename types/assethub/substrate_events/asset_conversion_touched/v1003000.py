@@ -10,5 +10,5 @@ class V1003000(TypedDict):
     Pool has been touched in order to fulfill operational requirements.
     """
 
-    pool_id: str
+    pool_id: list[str]
     who: str

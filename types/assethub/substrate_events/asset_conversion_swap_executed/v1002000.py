@@ -15,4 +15,4 @@ class V1002000(TypedDict):
     send_to: str
     amount_in: int
     amount_out: int
-    path: list[str]
+    path: list[list[str | int]]

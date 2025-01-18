@@ -11,6 +11,6 @@ class V1002000(TypedDict):
     """
 
     creator: str
-    pool_id: str
+    pool_id: list[str]
     pool_account: str
     lp_token: int
