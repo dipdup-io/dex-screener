@@ -196,3 +196,40 @@ class Pool(Model):
     asset_b = fields.IntField()
     initial_shares_amount = fields.IntField()
     share_token = fields.IntField()
+
+
+
+def fix_multilocation(data):
+    if isinstance(data, list):
+        return tuple(fix_multilocation(item) for item in data)
+
+    if isinstance(data, dict):
+        if 'interior' in data:
+            # Handle interior dictionary
+            result = {'parents': data['parents']}
+            interior = data['interior']
+
+            if '__kind' in interior:
+                kind = interior['__kind']
+                if 'value' in interior:
+                    value = interior['value']
+                    if isinstance(value, list):
+                        # Handle list of values (like in X2 case)
+                        value = tuple(
+                            {item['__kind']: int(item['value']) if isinstance(item['value'], str) else item['value']}
+                            for item in value
+                        )
+                    elif isinstance(value, str):
+                        value = int(value)
+                    result['interior'] = {kind: value}
+                else:
+                    result['interior'] = kind
+            else:
+                result['interior'] = fix_multilocation(interior)
+            return result
+
+        # Process other dictionaries
+        return {key: fix_multilocation(value) for key, value in data.items()}
+
+    # Return primitive values as-is
+    return data

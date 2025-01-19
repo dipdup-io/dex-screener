@@ -18,6 +18,7 @@ dev = [
     "black",
     "ruff",
     "mypy",
+    "pytest>=8.3.4",
 ]
 
 [tool.black]

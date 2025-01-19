@@ -20,10 +20,11 @@ indexes:
     kind: substrate.events
     runtime: assethub
     datasources:
-    - subsquid
+    # - subsquid
     - subscan
     - node
-    # first_level: 6119458
+    first_level: 6159146
+    last_level: 6159547
     # last_level: 6119558
     handlers:
       # Assets
