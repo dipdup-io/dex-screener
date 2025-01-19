@@ -1,7 +1,15 @@
 from enum import Enum
+from functools import partial
 
 from dipdup import fields
 from dipdup.models import Model
+
+# NOTE: Asset amounts are stored in u128 which is up to 39 digits
+U128DecimalField = partial(
+    fields.DecimalField,
+    max_digits=40,
+    decimal_places=40,
+)
 
 # interface Block {
 #   blockNumber: number;
@@ -105,6 +113,11 @@ class Pair(Model):
     metadata = fields.JSONField(null=True)
 
 
+# FIXME: int or 0x?
+def get_pair_id(asset_0_id: int, asset_1_id: int) -> str:
+    return f'{asset_0_id}_{asset_1_id}'
+
+
 # interface SwapEvent {
 #   eventType: "swap";
 #   txnId: string;
@@ -123,6 +136,23 @@ class Pair(Model):
 #   };
 #   metadata?: Record<string, string>;
 # }
+#
+# interface JoinExitEvent {
+#   eventType: "join" | "exit";
+#   txnId: string;
+#   txnIndex: number;
+#   eventIndex: number;
+#   maker: string;
+#   pairId: string;
+#   amount0: number | string;
+#   amount1: number | string;
+#   reserves?: {
+#     asset0: number | string;
+#     asset1: number | string;
+#   };
+#   metadata?: Record<string, string>;
+# }
+
 
 # TODO: Composite PKs in `sql/on_reindex`
 
@@ -143,44 +173,20 @@ class Event(Model):
 
     maker = fields.TextField()
     pair_id = fields.TextField()
-    # NOTE: asset amounts stored in u128 which is up to 39 digits
     # swap
-    asset_0_in = fields.DecimalField(40, 0, null=True)
-    asset_1_in = fields.DecimalField(40, 0, null=True)
-    asset_0_out = fields.DecimalField(40, 0, null=True)
-    asset_1_out = fields.DecimalField(40, 0, null=True)
+    asset_0_in = U128DecimalField(null=True)
+    asset_1_in = U128DecimalField(null=True)
+    asset_0_out = U128DecimalField(null=True)
+    asset_1_out = U128DecimalField(null=True)
     # join/exit
-    amount_0 = fields.DecimalField(40, 0, null=True)
-    amount_1 = fields.DecimalField(40, 0, null=True)
+    amount_0 = U128DecimalField(null=True)
+    amount_1 = U128DecimalField(null=True)
 
-    # TODO: not implemented, should be changed for DecimalField with higher precision
-    # NOTE: not defined for Join/Exit event
+    # TODO: Not implemented; change to DecimalField with higher precision
+    # NOTE: Not defined for Join/Exit events, probably should be filtered out in API response
     price_native = fields.IntField()
-    reserves_asset_0 = fields.DecimalField(40, 0, null=True)
-    reserves_asset_1 = fields.DecimalField(40, 0, null=True)
-
-
-# interface JoinExitEvent {
-#   eventType: "join" | "exit";
-#   txnId: string;
-#   txnIndex: number;
-#   eventIndex: number;
-#   maker: string;
-#   pairId: string;
-#   amount0: number | string;
-#   amount1: number | string;
-#   reserves?: {
-#     asset0: number | string;
-#     asset1: number | string;
-#   };
-#   metadata?: Record<string, string>;
-# }
-
-
-# FIXME: int or 0x?
-def get_pair_id(asset_0_id: int, asset_1_id: int) -> str:
-    # return hash(frozenset([asset_0_id, asset_1_id])) # <3 u copilot, but no
-    return f'{asset_0_id}_{asset_1_id}'
+    reserves_asset_0 = U128DecimalField(null=True)
+    reserves_asset_1 = U128DecimalField(null=True)
 
 
 class Pool(Model):
