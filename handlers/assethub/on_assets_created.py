@@ -15,4 +15,4 @@ async def on_assets_created(
         symbol='...',
     )
     await asset.save()
-    ctx.logger.info('Creating asset `%s` (%s)', asset.name, asset.id)
+    ctx.logger.info('Creating asset %s', asset.get_repr())

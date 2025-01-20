@@ -14,4 +14,4 @@ async def on_assets_metadata_cleared(
     asset.symbol = '...'
     asset.metadata = {}
     await asset.save()
-    ctx.logger.info('Clearing asset metadata `%s` (%s)', asset.name, asset.id)
+    ctx.logger.info('Clearing asset metadata %s', asset.get_repr())

@@ -12,4 +12,4 @@ async def on_assets_destroyed(
     # FIXME: TypedDict "V601" has no key "asset_id"
     asset = await models.Asset.get(id=event.payload['asset_id'])  # type: ignore
     await asset.delete()
-    ctx.logger.info('Deleting asset `%s` (%s)', asset.name, asset.id)
+    ctx.logger.info('Deleting asset %s', asset.get_repr())

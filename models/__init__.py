@@ -65,6 +65,9 @@ class Asset(Model):
     coin_market_cap_id = fields.TextField(null=True)
     metadata = fields.JSONField(null=True)
 
+    def get_repr(self) -> str:
+        return f'`{self.name}` ({self.id} | {self.symbol})'
+
 
 # interface Pair {
 #   id: string;
@@ -198,7 +201,6 @@ class Pool(Model):
     share_token = fields.IntField()
 
 
-
 def fix_multilocation(data):
     if isinstance(data, list):
         return tuple(fix_multilocation(item) for item in data)
@@ -216,7 +218,13 @@ def fix_multilocation(data):
                     if isinstance(value, list):
                         # Handle list of values (like in X2 case)
                         value = tuple(
-                            {item['__kind']: int(item['value']) if isinstance(item['value'], str) else item['value']}
+                            {
+                                item['__kind']: (
+                                    int(item['value'])
+                                    if isinstance(item['value'], str)
+                                    else (tuple(item['value']) if isinstance(item['value'], list) else item['value'])
+                                )
+                            }
                             for item in value
                         )
                     elif isinstance(value, str):
