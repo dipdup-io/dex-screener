@@ -8,7 +8,7 @@ from dipdup.models import Model
 U128DecimalField = partial(
     fields.DecimalField,
     max_digits=40,
-    decimal_places=40,
+    decimal_places=0,
 )
 
 # interface Block {
