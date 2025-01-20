@@ -4,4 +4,3 @@ package: dex_screener
 advanced:
   reindex:
     config_modified: ignore
-    schema_modified: ignore

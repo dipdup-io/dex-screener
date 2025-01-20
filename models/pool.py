@@ -3,5 +3,5 @@ def get_pool_id(pool_id_list) -> str | None:
     assert pool_id_list[0]['interior'] == 'Here'
     try:
         return '-1_' + str(pool_id_list[1]['interior']['X2'][-1]['GeneralIndex'])
-    except KeyError:
+    except (KeyError, TypeError):
         return None

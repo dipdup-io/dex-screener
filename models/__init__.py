@@ -1,7 +1,10 @@
+import logging
+import time
 from enum import Enum
 from functools import partial
 
 from dipdup import fields
+from dipdup.models import Meta
 from dipdup.models import Model
 
 # NOTE: Asset amounts are stored in u128 which is up to 39 digits
@@ -217,21 +220,28 @@ def fix_multilocation(data):
                 if 'value' in interior:
                     value = interior['value']
                     if isinstance(value, list):
-                        # Handle list of values (like in X2 case)
+                        # Handle list of values
                         value = tuple(
-                            {
-                                item['__kind']: (
-                                    int(item['value'])
-                                    if isinstance(item['value'], str)
-                                    else (tuple(item['value']) if isinstance(item['value'], list) else item['value'])
-                                )
-                            }
+                            (
+                                {
+                                    item['__kind']: (
+                                        int(item['value'])
+                                        if isinstance(item['value'], str)
+                                        else (
+                                            tuple(item['value']) if isinstance(item['value'], list) else item['value']
+                                        )
+                                    )
+                                }
+                                if item.get('value')
+                                else item['__kind']
+                            )
                             for item in value
                         )
                     elif isinstance(value, str):
                         value = int(value)
                     result['interior'] = {kind: value}
                 else:
+                    # If 'value' is not present, just use the kind
                     result['interior'] = kind
             else:
                 result['interior'] = fix_multilocation(interior)
@@ -242,3 +252,19 @@ def fix_multilocation(data):
 
     # Return primitive values as-is
     return data
+
+
+_logger = logging.getLogger(__name__)
+
+
+async def save_unprocesssed_payload(payload, note) -> None:
+    try:
+        await Meta.create(
+            key=f'unprocessed_payload_{time.time()}',
+            value={
+                'payload': payload,
+                'note': note,
+            },
+        )
+    except TypeError as e:
+        _logger.warning('payload is too big')

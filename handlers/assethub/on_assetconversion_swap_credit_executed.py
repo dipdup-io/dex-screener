@@ -5,6 +5,7 @@ from dex_screener import models as models
 from dex_screener.types.assethub.substrate_events.asset_conversion_swap_credit_executed import (
     AssetConversionSwapCreditExecutedPayload,
 )
+from models import save_unprocesssed_payload
 
 
 async def on_assetconversion_swap_credit_executed(
@@ -17,30 +18,38 @@ async def on_assetconversion_swap_credit_executed(
         if 'GlobalConsensus' not in str(event.payload['path']):
             raise
         ctx.logger.error('FIXME: GlobalConsensus path %s', event.payload['path'])
+        await save_unprocesssed_payload(event.payload, 'GlobalConsensus path')
         return
 
     path = event.payload['path']
     if len(path) != 2:
         ctx.logger.error('FIXME: too many path elements %s', path)
+        await save_unprocesssed_payload(event.payload, 'too many path elements')
         return
 
     path_from, path_to = path[0][0], path[1][0]
 
     if path_from['interior'] == 'Here':
         asset_0_id = -1
-    elif 'X1' in path_from['interior']:
-        ctx.logger.warning('FIXME: X1 path %s', path_from)
-        return
     else:
-        asset_0_id = path_from['interior']['X2'][-1]['GeneralIndex']
+        try:
+            asset_0_id = path_from['interior']['X2'][-1]['GeneralIndex']
+        except (KeyError, TypeError):
+            msg = 'not a X2 path'
+            ctx.logger.warning('%s %s', msg, path_from)
+            await save_unprocesssed_payload(event.payload, msg)
+            return
 
     if path_to['interior'] == 'Here':
         asset_1_id = -1
-    elif 'X1' in path_to['interior']:
-        ctx.logger.warning('FIXME: X1 path %s', path_to)
-        return
     else:
-        asset_1_id = path_to['interior']['X2'][-1]['GeneralIndex']
+        try:
+            asset_1_id = path_to['interior']['X2'][-1]['GeneralIndex']
+        except (KeyError, TypeError):
+            msg = 'not a X2 path'
+            ctx.logger.warning('%s %s', msg, path_to)
+            await save_unprocesssed_payload(event.payload, msg)
+            return
 
     assert asset_0_id != asset_1_id
 
@@ -58,7 +67,7 @@ async def on_assetconversion_swap_credit_executed(
             'asset_0_id': asset_0_id,
             'asset_1_id': asset_1_id,
             'dex_key': 'assethub',
-        }
+        },
     )
     ctx.logger.info('Pair %s: %s', 'updated' if _ else 'created', pair.id)
 
