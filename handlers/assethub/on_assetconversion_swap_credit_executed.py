@@ -44,9 +44,40 @@ async def on_assetconversion_swap_credit_executed(
 
     assert asset_0_id != asset_1_id
 
-    asset_0 = await models.Asset.get_or_none(id=asset_0_id) or models.Asset()
-    asset_1 = await models.Asset.get_or_none(id=asset_1_id) or models.Asset()
+    asset_0 = await models.Asset.get_or_none(id=asset_0_id)
+    asset_1 = await models.Asset.get_or_none(id=asset_1_id)
 
     ctx.logger.info('Processing swap:')
     ctx.logger.info('<<< %s', asset_0.get_repr())
     ctx.logger.info('>>> %s', asset_1.get_repr())
+
+    pair_id = models.get_pair_id(asset_0_id, asset_1_id)
+    pair, _ = await models.Pair.get_or_create(
+        id=pair_id,
+        defaults={
+            'asset_0_id': asset_0_id,
+            'asset_1_id': asset_1_id,
+            'dex_key': 'assethub',
+        }
+    )
+    ctx.logger.info('Pair %s: %s', 'updated' if _ else 'created', pair.id)
+
+    event_model = models.Event(
+        event_type='swap',
+        composite_pk=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
+        # NOTE: take caution, event index is used due to extrinsic index being null
+        txn_id=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
+        txn_index=event.data.extrinsic_index or event.data.index,
+        event_index=event.data.index,
+        # FIXME: Who?
+        # maker=event.data.call_address[0],  # ???
+        maker='FIXME',
+        pair_id=pair_id,
+        asset_0_in=event.payload['amount_in'],
+        asset_1_out=event.payload['amount_out'],
+        # TODO: get and update pool fields
+        # FIXME: calculate priceNative
+        price_native=0,
+    )
+    await event_model.save()
+    ctx.logger.info('Event created: %s', event_model.composite_pk)

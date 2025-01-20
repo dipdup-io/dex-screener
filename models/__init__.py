@@ -104,7 +104,8 @@ class Asset(Model):
 
 
 class Pair(Model):
-    id = fields.IntField(primary_key=True)
+    # FIXME: int or 0x?
+    id = fields.TextField(primary_key=True)
     dex_key = fields.TextField()
     asset_0_id = fields.IntField()
     asset_1_id = fields.IntField()
