@@ -7,9 +7,9 @@ from typing import TypedDict
 
 class V108(TypedDict):
     """
-    Asset was registered. [asset_id, name, type]
+    Metadata set for an asset. [asset_id, symbol, decimals]
     """
 
     asset_id: int
-    name: list[int]
-    type: str
+    symbol: list[int]
+    decimals: int

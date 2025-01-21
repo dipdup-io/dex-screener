@@ -8,5 +8,30 @@ dependencies = [
     "dipdup",
 ]
 
+[dependency-groups]
+dev = [
+    "ruff>=0.8.3",
+    "black>=24.10.0",
+    "ssort>=0.14.0",
+]
+
 [tool.uv.sources]
-dipdup = { git = "https://github.com/dipdup-io/dipdup", branch = "next" }
+dipdup = { git = "https://github.com/dipdup-io/dipdup", branch = "aux/8.2.0rc1" }
+
+[tool.ruff]
+line-length = 140
+target-version = 'py312'
+
+[tool.ruff.lint]
+extend-select = ["B", "C4", "FA", "G", "I", "PTH", "Q", "RET", "RUF", "TCH", "UP", "NPY"]
+flake8-quotes = { inline-quotes = "single", multiline-quotes = "single" }
+isort = { force-single-line = true }
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+
+[tool.black]
+line-length = 140
+target-version = ['py312']
+skip-string-normalization = true

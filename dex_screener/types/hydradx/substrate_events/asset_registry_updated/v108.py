@@ -7,7 +7,7 @@ from typing import TypedDict
 
 class V108(TypedDict):
     """
-    Asset was registered. [asset_id, name, type]
+    Asset was updated. [asset_id, name, type]
     """
 
     asset_id: int
