@@ -57,6 +57,12 @@ indexes:
         name: Omnipool.BuyExecuted
       - callback: hydradx.on_omnipool_sell_executed
         name: Omnipool.SellExecuted
+      - callback: hydradx.on_omnipool_position_created
+        name: Omnipool.PositionCreated
+      - callback: hydradx.on_omnipool_position_destroyed
+        name: Omnipool.PositionDestroyed
+      - callback: hydradx.on_omnipool_position_updated
+        name: Omnipool.PositionUpdated
 
       - callback: hydradx.on_stableswap_buy_executed
         name: Stableswap.BuyExecuted
@@ -69,3 +75,4 @@ indexes:
         name: OTC.Filled
       - callback: hydradx.on_otc_partially_filled
         name: OTC.PartiallyFilled
+    # NOTE: first asset block is 1439857

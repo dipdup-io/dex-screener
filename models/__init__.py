@@ -30,7 +30,8 @@ U128DecimalField = partial(
 
 class Block(Model):
     block_number = fields.IntField(primary_key=True)
-    block_timestamp = fields.IntField()
+    block_timestamp = fields.IntField(null=True)
+    written_timestamp = fields.IntField(null=True)
     metadata = fields.JSONField(null=True)
 
 
@@ -191,9 +192,18 @@ class Event(Model):
 
     # TODO: Not implemented; change to DecimalField with higher precision
     # NOTE: Not defined for Join/Exit events, probably should be filtered out in API response
-    price_native = fields.IntField()
+    price_native = U128DecimalField()
     reserves_asset_0 = U128DecimalField(null=True)
     reserves_asset_1 = U128DecimalField(null=True)
+
+
+class OmnipoolPositions(Model):
+    position_id = U128DecimalField(primary_key=True)
+    owner = fields.TextField()
+    asset = fields.IntField()
+    amount = U128DecimalField()
+    shares = U128DecimalField()
+    price = U128DecimalField()
 
 
 class Pool(Model):
