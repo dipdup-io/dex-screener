@@ -20,13 +20,23 @@ async def on_omnipool_position_updated(
     price = event.payload['price']
 
     # get position
-    pos_dict = {'position_id': position_id, 'owner': owner, 'asset': asset_id, 'amount': amount, 'shares': shares, 'price': price}
+    pos_dict = {
+        'position_id': position_id,
+        'owner': owner,
+        'asset': asset_id,
+        'amount': amount,
+        'shares': shares,
+        'price': price,
+    }
     position, created = await m.OmnipoolPositions.get_or_create(position_id=position_id, defaults=pos_dict)
     if created:
         ctx.logger.warning('Position not found, creating new')
 
     # save block
-    await upsert_block_model(event.data.header['number'], event.data.header_extra['timestamp'] if event.data.header_extra else None)
+    await upsert_block_model(
+        event.data.header['number'],
+        event.data.header_extra['timestamp'] if event.data.header_extra else None,
+    )
 
     pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, asset_id)
 

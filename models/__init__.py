@@ -278,3 +278,22 @@ async def save_unprocesssed_payload(payload, note) -> None:
         )
     except TypeError as e:
         _logger.warning('payload is too big')
+
+
+# NOTE: DOT for AssetHub, HDX for Hydration
+NATIVE_ID = -1
+
+
+# async def extract_assets(path: list) -> tuple[int, ...] | None:
+#     asset_ids = []
+#     for item in path:
+#         if item['interior'] == 'Here':
+#             asset_id = -1
+#         else:
+#             try:
+#                 asset_id = item['interior']['X2'][-1]['GeneralIndex']
+#             except (KeyError, TypeError):
+#                 msg = 'not a X2 path'
+#                 ctx.logger.warning('%s %s', msg, path_from)
+#                 await save_unprocesssed_payload(path, msg)
+#                 return

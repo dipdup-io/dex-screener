@@ -22,7 +22,10 @@ async def on_omnipool_buy_executed(
         asset_in, asset_out = asset_out, asset_in
         amount_in, amount_out = amount_out, amount_in
 
-    await upsert_block_model(event.data.header['number'], event.data.header_extra['timestamp'] if event.data.header_extra else None)
+    await upsert_block_model(
+        event.data.header['number'],
+        event.data.header_extra['timestamp'] if event.data.header_extra else None,
+    )
 
     pair_id = await upsert_pair_model(asset_in, asset_out)
 
@@ -47,4 +50,3 @@ async def on_omnipool_buy_executed(
     )
 
     await event_model.save()
-

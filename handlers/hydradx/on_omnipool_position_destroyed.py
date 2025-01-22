@@ -23,7 +23,10 @@ async def on_omnipool_position_destroyed(
         return
 
     # save block
-    await upsert_block_model(event.data.header['number'], event.data.header_extra['timestamp'] if event.data.header_extra else None)
+    await upsert_block_model(
+        event.data.header['number'],
+        event.data.header_extra['timestamp'] if event.data.header_extra else None,
+    )
 
     pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, position.asset)
 
