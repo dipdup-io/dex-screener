@@ -17,7 +17,7 @@ class Block(Model):
         model = 'models.Block'
 
     level = fields.IntField(primary_key=True)
-    timestamp = fields.DatetimeField()
+    timestamp = fields.IntField()
 
 
 class Asset(Model):
@@ -45,8 +45,18 @@ class Pair(Model):
 
     id = fields.CharField(primary_key=True, max_length=66)
     dex_key = fields.EnumField(DexKey, db_index=True)
-    asset_0_id = fields.IntField()
-    asset_1_id = fields.IntField()
+    asset_0: ForeignKeyFieldInstance[Asset] = fields.ForeignKeyField(
+        model_name=Asset.Meta.model,
+        source_field='asset_0_id',
+        to_field='id',
+        related_name='pair_asset_0',
+    )
+    asset_1: ForeignKeyFieldInstance[Asset] = fields.ForeignKeyField(
+        model_name=Asset.Meta.model,
+        source_field='asset_1_id',
+        to_field='id',
+        related_name='pair_asset_1',
+    )
 
     created_at_block: ForeignKeyFieldInstance[Block] = fields.ForeignKeyField(
         model_name=Block.Meta.model,

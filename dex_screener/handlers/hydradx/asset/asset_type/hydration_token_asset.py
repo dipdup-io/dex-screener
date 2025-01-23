@@ -2,6 +2,7 @@ from dipdup.models.substrate import SubstrateEvent
 from scalecodec.exceptions import RemainingScaleBytesNotEmptyException
 
 from dex_screener.handlers.hydradx.asset.asset_type import BaseHydrationAsset
+from dex_screener.handlers.hydradx.asset.asset_type import InvalidEventDataError
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 from dex_screener.models import Asset
 
@@ -13,7 +14,7 @@ class HydrationTokenAsset(BaseHydrationAsset):
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
         try:
             return await super(cls, cls).handle_register_asset(event)
-        except RemainingScaleBytesNotEmptyException:
+        except (RemainingScaleBytesNotEmptyException, NotImplementedError):
             pass
 
         match event.data.args:
@@ -26,7 +27,7 @@ class HydrationTokenAsset(BaseHydrationAsset):
                 asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
                 asset_symbol = bytes.fromhex(asset_symbol_hex.removeprefix('0x')).decode()
             case _:
-                raise ValueError('Unhandled Event Data.')
+                raise InvalidEventDataError('Unhandled Event Data.')
 
         return await cls.create_asset(
             asset_id=asset_id,
@@ -42,7 +43,7 @@ class HydrationTokenAsset(BaseHydrationAsset):
     async def handle_update_asset(cls, event: SubstrateEvent) -> Asset:
         try:
             return await super().handle_update_asset(event)
-        except (ValueError, RemainingScaleBytesNotEmptyException):
+        except (ValueError, RemainingScaleBytesNotEmptyException, NotImplementedError):
             pass
 
         match event.data.args:
@@ -68,7 +69,7 @@ class HydrationTokenAsset(BaseHydrationAsset):
                     'name': asset_name,
                 }
             case _:
-                raise ValueError('Unhandled Event Data.')
+                raise InvalidEventDataError('Unhandled Event Data.')
 
         return await cls.update_asset(
             asset_id=asset_id,
@@ -89,7 +90,7 @@ class HydrationTokenAsset(BaseHydrationAsset):
                     'decimals': asset_decimals,
                 }
             case _:
-                raise ValueError('Unhandled Event Data.')
+                raise InvalidEventDataError('Unhandled Event Data.')
 
         return await cls.update_asset(
             asset_id=asset_id,

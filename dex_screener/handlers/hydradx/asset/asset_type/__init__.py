@@ -31,6 +31,10 @@ class AbstractHydrationAsset(ABC):
         ...
 
 
+class InvalidEventDataError(ValueError):
+    pass
+
+
 class BaseHydrationAsset(AbstractHydrationAsset):
     @classmethod
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
@@ -46,7 +50,7 @@ class BaseHydrationAsset(AbstractHydrationAsset):
             }:
                 pass
             case _:
-                raise ValueError('Unhandled Event Payload.')
+                raise InvalidEventDataError('Unhandled Event Payload.')
 
         return await cls.create_asset(asset_id, event, {'name': asset_name})
 
@@ -61,7 +65,7 @@ class BaseHydrationAsset(AbstractHydrationAsset):
                     'name': asset_name,
                 }
             case _:
-                raise ValueError('Unhandled Event Data.')
+                raise InvalidEventDataError('Unhandled Event Data.')
 
         return await cls.update_asset(
             asset_id=asset_id,
@@ -90,3 +94,18 @@ class BaseHydrationAsset(AbstractHydrationAsset):
             defaults=updated_fields,
         )
         return asset
+
+
+class HexNamedHydrationAsset(BaseHydrationAsset):
+    @classmethod
+    async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
+        match event.data.args:
+            case {
+                'assetId': int(asset_id),
+                'assetName': str(asset_name),
+            }:
+                pass
+            case _:
+                raise InvalidEventDataError('Unhandled Event Data.')
+
+        return await cls.create_asset(asset_id, event, {'name': asset_name})

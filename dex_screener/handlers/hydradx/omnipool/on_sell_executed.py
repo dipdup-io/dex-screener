@@ -6,12 +6,12 @@ from dex_screener.models import Asset
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import SwapEvent
-from dex_screener.types.hydradx.substrate_events.omnipool_sell_executed import OmniPoolSellExecutedPayload
+from dex_screener.types.hydradx.substrate_events.omnipool_sell_executed import OmnipoolSellExecutedPayload
 
 
 async def on_sell_executed(
     ctx: HandlerContext,
-    event: SubstrateEvent[OmniPoolSellExecutedPayload],
+    event: SubstrateEvent[OmnipoolSellExecutedPayload],
 ) -> None:
     try:
         asset_in = await Asset.get(id=event.payload['asset_in'])
