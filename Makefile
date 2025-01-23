@@ -6,7 +6,6 @@ MAKEFLAGS += --no-print-directory
 PACKAGE=dex_screener
 TAG=latest
 COMPOSE=deploy/compose.yaml
-CONFIG=sqlite
 
 help:           ## Show this help (default)
 	@grep -Fh "##" $(MAKEFILE_LIST) | grep -Fv grep -F | sed -e 's/\\$$//' | sed -e 's/##//'
@@ -45,32 +44,39 @@ mypy:           ## Lint with mypy
 image:          ## Build Docker image
 	docker buildx build . -t ${PACKAGE}:${TAG} --load
 
-up:             ## Start Compose stack
-	docker-compose -f ${COMPOSE} up -d --build
-	docker-compose -f ${COMPOSE} logs -f
+up:             ## Start Compose stacks
+	PROJECT=hydration docker-compose -p hydration -f ${COMPOSE} --env-file hydration.compose.env up -d --build
+	PROJECT=assethub docker-compose -p assethub -f ${COMPOSE} --env-file assethub.compose.env up -d --build
 
-down:           ## Stop Compose stack
-	docker-compose -f ${COMPOSE} down
+down:           ## Stop Compose stacks
+	docker-compose -p hydration -f ${COMPOSE} down
+	docker-compose -p assethub -f ${COMPOSE} down
 
 ##
 
+# NOTE: Export env vars for datasources before running this command
 init_env:
-	SQLITE_PATH=/tmp/dex_screener_hydration.sqlite dipdup -C hydration -C ${CONFIG} config env -o hydration.env --unsafe
-	SQLITE_PATH=/tmp/dex_screener_assethub.sqlite dipdup -C assethub -C ${CONFIG} config env -o assethub.env --unsafe
+	SQLITE_PATH=/tmp/dex_screener_hydration.sqlite dipdup -C hydration -C sqlite config env -o hydration.env --unsafe
+	SQLITE_PATH=/tmp/dex_screener_assethub.sqlite dipdup -C assethub -C sqlite config env -o assethub.env --unsafe
+	POSTGRES_PASSWORD=test HASURA_SECRET=test dipdup -C hydration -C compose config env -o hydration.compose.env --unsafe
+	POSTGRES_PASSWORD=test HASURA_SECRET=test dipdup -C assethub -C compose config env -o assethub.compose.env --unsafe
 
 init:
-	dipdup -e hydration.env -C hydration -C ${CONFIG} init -f
-	dipdup -e assethub.env -C assethub -C ${CONFIG} init -f
+	dipdup -e hydration.env -C hydration -C sqlite init -f
+	dipdup -e assethub.env -C assethub -C sqlite init -f
 	make all
 
-run_hydration:
-	dipdup -e hydration.env -C hydration -C ${CONFIG} run
-
 run_assethub:
-	dipdup -e assethub.env -C assethub -C ${CONFIG} run
+	dipdup -e assethub.env -C assethub -C sqlite run
 
-wipe_hydration:
-	dipdup -e hydration.env -C hydration -C ${CONFIG} schema wipe
+run_hydration:
+	dipdup -e hydration.env -C hydration -C sqlite run
 
 wipe_assethub:
-	dipdup -e assethub.env -C assethub -C ${CONFIG} schema wipe
+	dipdup -e assethub.env -C assethub -C sqlite schema wipe
+
+wipe_hydration:
+	dipdup -e hydration.env -C hydration -C sqlite schema wipe
+
+up_assethub:
+	

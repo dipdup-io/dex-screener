@@ -16,4 +16,4 @@ async def batch(
     event_data = handlers[0].args[0].data  # type: ignore
     block_number = event_data.header['number']
     timestamp = event_data.header_extra['timestamp'] if event_data.header_extra else None
-    await upsert_block_model(block_number, timestamp)
+    await upsert_block_model(block_number, int(timestamp / 1000))

@@ -6,11 +6,11 @@ services:
       context: ..
       dockerfile: deploy/Dockerfile
     restart: always
-    env_file: .env
+    env_file: ../${PROJECT:-}.compose.env
     ports:
       - 46339
       - 9000
-    command: ["-c", "dipdup.yaml", "-c", "configs/dipdup.compose.yaml", "run"]
+    command: ["-C", "compose", "-C", "${PROJECT:-}", "run"]
     depends_on:
       - db
       - hasura
@@ -18,11 +18,11 @@ services:
   db:
     image: postgres:15
     ports:
-      - "${POSTGRES_HOST_PORT:-5432}:5432"
+      - "${POSTGRES_HOST_PORT:-5432}"
     volumes:
       - db:/var/lib/postgresql/data
     restart: always
-    env_file: .env
+    env_file: ../${ENV_FILE:-.env}
     environment:
       - POSTGRES_USER=dipdup
       - POSTGRES_DB=dipdup
@@ -36,7 +36,7 @@ services:
   hasura:
     image: hasura/graphql-engine:latest
     ports:
-      - "${HASURA_HOST_PORT:-8080}:8080"
+      - "${HASURA_HOST_PORT:-8080}"
     depends_on:
       - db
     restart: always
