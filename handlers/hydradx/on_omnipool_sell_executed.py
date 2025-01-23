@@ -3,7 +3,6 @@ from dipdup.models.substrate import SubstrateEvent
 
 from dex_screener import models as m
 from dex_screener.types.hydradx.substrate_events.omnipool_sell_executed import OmnipoolSellExecutedPayload
-from models.block import upsert_block_model
 from models.pair import upsert_pair_model
 
 
@@ -21,11 +20,6 @@ async def on_omnipool_sell_executed(
     if asset_in > asset_out:
         asset_in, asset_out = asset_out, asset_in
         amount_in, amount_out = amount_out, amount_in
-
-    await upsert_block_model(
-        event.data.header['number'],
-        event.data.header_extra['timestamp'] if event.data.header_extra else None,
-    )
 
     pair_id = await upsert_pair_model(asset_in, asset_out)
 

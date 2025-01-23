@@ -24,6 +24,12 @@ datasources:
   #   url: https://hydradx-rpc.dwellir.com
   #   ws_url: wss://hydradx-rpc.dwellir.com
 
+custom:
+  native_token:
+    name: HDX
+    symbol: HDX
+    decimals: 12
+
 indexes:
   hydradx_events:
     kind: substrate.events

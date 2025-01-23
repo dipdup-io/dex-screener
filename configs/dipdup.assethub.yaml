@@ -15,6 +15,12 @@ datasources:
     url: https://statemint.api.onfinality.io/rpc?apikey=${NODE_API_KEY:-''}
     ws_url: wss://statemint.api.onfinality.io/ws?apikey=${NODE_API_KEY:-''}
 
+custom:
+  native_token:
+    name: DOT
+    symbol: DOT
+    decimals: 10
+
 indexes:
   assethub_transfers:
     kind: substrate.events

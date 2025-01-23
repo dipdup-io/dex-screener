@@ -14,4 +14,4 @@ async def on_assetconversion_swap_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionSwapExecutedPayload],
 ) -> None:
-    await on_assetconversion_swap_credit_executed(ctx, event)
+    await on_assetconversion_swap_credit_executed(ctx, event)  # type: ignore[arg-type]

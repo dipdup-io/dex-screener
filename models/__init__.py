@@ -2,6 +2,7 @@ import logging
 import time
 from enum import Enum
 from functools import partial
+from typing import Any
 
 from dipdup import fields
 from dipdup.models import Meta
@@ -281,19 +282,35 @@ async def save_unprocesssed_payload(payload, note) -> None:
 
 
 # NOTE: DOT for AssetHub, HDX for Hydration
-NATIVE_ID = -1
+NATIVE_ASSET_ID = -1
 
 
-# async def extract_assets(path: list) -> tuple[int, ...] | None:
-#     asset_ids = []
-#     for item in path:
-#         if item['interior'] == 'Here':
-#             asset_id = -1
-#         else:
-#             try:
-#                 asset_id = item['interior']['X2'][-1]['GeneralIndex']
-#             except (KeyError, TypeError):
-#                 msg = 'not a X2 path'
-#                 ctx.logger.warning('%s %s', msg, path_from)
-#                 await save_unprocesssed_payload(path, msg)
-#                 return
+def extract_assets(path: list) -> tuple[int, ...] | None:
+    asset_ids = []
+    for item in path:
+        if item['interior'] == 'Here':
+            asset_id = NATIVE_ASSET_ID
+        else:
+            try:
+                asset_id = item['interior']['X2'][-1]['GeneralIndex']
+            except (KeyError, TypeError):
+                _logger.warning('not a X2 path: %s', item)
+                return None
+        asset_ids.append(asset_id)
+
+    if len(asset_ids) != 2:
+        _logger.error('too many path elements: %s', asset_ids)
+        return None
+
+    return tuple(asset_ids)
+
+
+def get_pool_id(payload: Any) -> str | None:
+    payload['pool_id'] = fix_multilocation(payload['pool_id'])
+
+    assets = extract_assets(payload['pool_id'])
+    if assets is None:
+        _logger.warning('Failed to extract assets from pool_id %s', payload['pool_id'])
+        return None
+
+    return f'{assets[0]}_{assets[1]}'
