@@ -176,6 +176,7 @@ class Event(Model):
     # NOTE: Composite PK; see `sql/on_reindex`
     event_type = fields.EnumField(EventType)
     composite_pk = fields.TextField(primary_key=True)
+    # TODO: often duplicate of `composite_pk`
     txn_id = fields.TextField()
     txn_index = fields.IntField()
     event_index = fields.IntField()
@@ -199,12 +200,22 @@ class Event(Model):
 
 
 class OmnipoolPositions(Model):
-    position_id = U128DecimalField(primary_key=True)
+    position_id = fields.IntField(primary_key=True)
     owner = fields.TextField()
     asset = fields.IntField()
     amount = U128DecimalField()
     shares = U128DecimalField()
     price = U128DecimalField()
+
+
+class OTCOrders(Model):
+    order_id = fields.IntField(primary_key=True)
+    asset_in = fields.IntField()
+    asset_out = fields.IntField()
+    amount_in = U128DecimalField()
+    amount_out = U128DecimalField()
+    partially_fillable = fields.BooleanField()
+    reversed = fields.BooleanField()
 
 
 class Pool(Model):

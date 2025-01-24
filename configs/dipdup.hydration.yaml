@@ -75,10 +75,12 @@ indexes:
       - callback: hydradx.on_stableswap_sell_executed
         name: Stableswap.SellExecuted
 
-      - callback: hydradx.on_otc_placed
-        name: OTC.Placed
+      - callback: hydradx.on_otc_cancelled
+        name: OTC.Cancelled
       - callback: hydradx.on_otc_filled
         name: OTC.Filled
       - callback: hydradx.on_otc_partially_filled
         name: OTC.PartiallyFilled
+      - callback: hydradx.on_otc_placed
+        name: OTC.Placed
     # NOTE: first asset block is 1439857

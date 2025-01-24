@@ -32,11 +32,12 @@ async def on_omnipool_position_created(
     pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, asset_id)
 
     # emit join event
+    extrinsic_index = event.data.extrinsic_index or 0
     join_event = m.Event(
         event_type='join',
-        composite_pk=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
-        txn_id=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
-        txn_index=event.data.extrinsic_index or event.data.index,
+        composite_pk=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
+        txn_id=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
+        txn_index=extrinsic_index,
         event_index=event.data.index,
         maker=owner,
         pair_id=pair_id,
