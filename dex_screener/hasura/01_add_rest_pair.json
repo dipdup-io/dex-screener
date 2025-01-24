@@ -1,0 +1,32 @@
+{
+    "type": "bulk",
+    "source": "default",
+    "resource_version": 6,
+    "args": [
+        {
+            "type": "add_query_to_collection",
+            "args": {
+                "collection_name": "allowed-queries",
+                "query_name": "Pair",
+                "query": "query Pair($id: String!) { pair: dex_pair_by_pk(id: $id) { id dexKey: dex_key asset0Id: asset_0_id asset1Id: asset_1_id createdAtBlockNumber: created_at_block_id createdAtBlockTimestamp: dex_block { timestamp } createdAtTxnId: created_at_txn_id }}"
+            }
+        },
+        {
+            "type": "create_rest_endpoint",
+            "args": {
+                "name": "Pair",
+                "url": "pair?id=:id",
+                "definition": {
+                    "query": {
+                        "query_name": "Pair",
+                        "collection_name": "allowed-queries"
+                    }
+                },
+                "methods": [
+                    "GET"
+                ],
+                "comment": ""
+            }
+        }
+    ]
+}
