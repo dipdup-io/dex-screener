@@ -55,28 +55,25 @@ down:           ## Stop Compose stacks
 ##
 
 # NOTE: Export env vars for datasources before running this command
-init_env:
+init_env:       ## Create .env files to run indexers
 	SQLITE_PATH=/tmp/dex_screener_hydration.sqlite dipdup -C hydration -C sqlite config env -o hydration.env --unsafe
 	SQLITE_PATH=/tmp/dex_screener_assethub.sqlite dipdup -C assethub -C sqlite config env -o assethub.env --unsafe
 	POSTGRES_PASSWORD=test HASURA_SECRET=test dipdup -C hydration -C compose config env -o hydration.compose.env --unsafe
 	POSTGRES_PASSWORD=test HASURA_SECRET=test dipdup -C assethub -C compose config env -o assethub.compose.env --unsafe
 
-init:
-	dipdup -e hydration.env -C hydration -C sqlite init -f
-	dipdup -e assethub.env -C assethub -C sqlite init -f
+init:           ## Initialize indexer
+	dipdup -e hydration.env -C hydration -C sqlite init -b -f
+	dipdup -e assethub.env -C assethub -C sqlite init -b -f
 	make all
 
-run_assethub:
+run_assethub:   ## Run AssetHub indexer in sqlite
 	dipdup -e assethub.env -C assethub -C sqlite run
 
-run_hydration:
+run_hydration:  ## Run Hydration indexer in sqlite
 	dipdup -e hydration.env -C hydration -C sqlite run
 
-wipe_assethub:
+wipe_assethub:  ## Wipe AssetHub indexer schema
 	dipdup -e assethub.env -C assethub -C sqlite schema wipe
 
-wipe_hydration:
+wipe_hydration: ## Wipe Hydration indexer schema
 	dipdup -e hydration.env -C hydration -C sqlite schema wipe
-
-up_assethub:
-	
