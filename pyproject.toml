@@ -51,7 +51,7 @@ module = "ruamel"
 ignore_missing_imports = true
 
 [tool.uv.sources]
-dipdup = { path = "../dipdup", editable = true }
+dipdup = { git = "https://github.com/dipdup-io/dipdup.git", rev = "fix/subsquid-substrate-dicts" }
 
 [build-system]
 requires = ["pdm-backend"]

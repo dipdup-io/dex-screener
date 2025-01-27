@@ -396,7 +396,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "dipdup", editable = "../dipdup" }]
+requires-dist = [{ name = "dipdup", git = "https://github.com/dipdup-io/dipdup.git?rev=fix%2Fsubsquid-substrate-dicts" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -409,7 +409,7 @@ dev = [
 [[package]]
 name = "dipdup"
 version = "8.2.0rc1"
-source = { editable = "../dipdup" }
+source = { git = "https://github.com/dipdup-io/dipdup.git?rev=fix%2Fsubsquid-substrate-dicts#3746f7a24429e8a110f38ae9b1b9a978048a0baa" }
 dependencies = [
     { name = "aiohttp" },
     { name = "aiolimiter" },
@@ -441,65 +441,6 @@ dependencies = [
     { name = "tortoise-orm" },
     { name = "uvloop" },
     { name = "web3" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aerich", marker = "extra == 'migrations'", specifier = "~=0.8.1" },
-    { name = "aiohttp", specifier = "~=3.10" },
-    { name = "aiolimiter", specifier = "~=1.1" },
-    { name = "aiosubstrate", specifier = ">=0.1.0" },
-    { name = "anyio", specifier = "~=4.4" },
-    { name = "appdirs", specifier = "~=1.4" },
-    { name = "apscheduler", specifier = "~=3.10" },
-    { name = "async-lru", specifier = "~=2.0" },
-    { name = "asyncpg", specifier = "~=0.29" },
-    { name = "click", specifier = "~=8.1" },
-    { name = "datamodel-code-generator", specifier = "~=0.26" },
-    { name = "eth-abi", specifier = "~=5.0" },
-    { name = "lru-dict", specifier = "~=1.3" },
-    { name = "orjson", specifier = "~=3.10" },
-    { name = "prometheus-client", specifier = "~=0.20" },
-    { name = "pycryptodome", specifier = "~=3.20" },
-    { name = "pydantic", specifier = "~=2.10.3" },
-    { name = "pyhumps", specifier = "~=3.8" },
-    { name = "pysignalr", specifier = "~=1.0" },
-    { name = "python-dotenv", specifier = "~=1.0" },
-    { name = "python-json-logger", specifier = "~=2.0" },
-    { name = "ruamel-yaml", specifier = "~=0.18.6" },
-    { name = "sentry-sdk", specifier = "~=2.16" },
-    { name = "sqlparse", specifier = "~=0.5" },
-    { name = "starknet-py", specifier = "~=0.25.0" },
-    { name = "strict-rfc3339", specifier = "~=0.7" },
-    { name = "survey", specifier = "~=5.4" },
-    { name = "tabulate", specifier = "~=0.9" },
-    { name = "tortoise-orm", specifier = "==0.21.7" },
-    { name = "uvloop", specifier = "~=0.20" },
-    { name = "web3", specifier = "~=7.2" },
-]
-
-[package.metadata.requires-dev]
-docs = [
-    { name = "sphinx" },
-    { name = "sphinx-click" },
-    { name = "sphinx-markdown-builder" },
-    { name = "watchdog" },
-]
-lint = [
-    { name = "black" },
-    { name = "mypy" },
-    { name = "ruff" },
-    { name = "types-pytz" },
-    { name = "types-tabulate" },
-]
-perf = [{ name = "scalene" }]
-test = [
-    { name = "docker" },
-    { name = "pytest" },
-    { name = "pytest-aiohttp" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
-    { name = "pytest-xdist" },
 ]
 
 [[package]]
@@ -1067,8 +1008,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/39/1b/d0b013bf7d1af7cf0a6a4fce13f5fe5813ab225313755367b36e714a63f8/pycryptodome-3.21.0-cp36-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:18caa8cfbc676eaaf28613637a89980ad2fd96e00c564135bf90bc3f0b34dd93", size = 2254397 },
     { url = "https://files.pythonhosted.org/packages/14/71/4cbd3870d3e926c34706f705d6793159ac49d9a213e3ababcdade5864663/pycryptodome-3.21.0-cp36-abi3-win32.whl", hash = "sha256:280b67d20e33bb63171d55b1067f61fbd932e0b1ad976b3a184303a3dad22764", size = 1775641 },
     { url = "https://files.pythonhosted.org/packages/43/1d/81d59d228381576b92ecede5cd7239762c14001a828bdba30d64896e9778/pycryptodome-3.21.0-cp36-abi3-win_amd64.whl", hash = "sha256:b7aa25fc0baa5b1d95b7633af4f5f1838467f1815442b22487426f94e0d66c53", size = 1812863 },
-    { url = "https://files.pythonhosted.org/packages/25/b3/09ff7072e6d96c9939c24cf51d3c389d7c345bf675420355c22402f71b68/pycryptodome-3.21.0-pp27-pypy_73-manylinux2010_x86_64.whl", hash = "sha256:2cb635b67011bc147c257e61ce864879ffe6d03342dc74b6045059dfbdedafca", size = 1691593 },
-    { url = "https://files.pythonhosted.org/packages/a8/91/38e43628148f68ba9b68dedbc323cf409e537fd11264031961fd7c744034/pycryptodome-3.21.0-pp27-pypy_73-win32.whl", hash = "sha256:4c26a2f0dc15f81ea3afa3b0c87b87e501f235d332b7f27e2225ecb80c0b1cdd", size = 1765997 },
 ]
 
 [[package]]
