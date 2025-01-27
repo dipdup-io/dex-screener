@@ -3,7 +3,7 @@ from dipdup.models.substrate import SubstrateEvent
 from tortoise.exceptions import DoesNotExist
 
 from dex_screener import models as m
-from dex_screener.types.hydradx.substrate_events.ot_c_cancelled import OTCCancelledPayload
+from dex_screener.types.hydradx.substrate_events.otc_cancelled import OTCCancelledPayload
 from models.pair import upsert_pair_model
 
 
