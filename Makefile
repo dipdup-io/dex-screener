@@ -62,8 +62,8 @@ init_env:       ## Create .env files to run indexers
 	POSTGRES_PASSWORD=test HASURA_SECRET=test dipdup -C assethub -C compose config env -o assethub.compose.env --unsafe
 
 init:           ## Initialize indexer
-	dipdup -e hydration.env -C hydration -C sqlite init -b -f
-	dipdup -e assethub.env -C assethub -C sqlite init -b -f
+	dipdup -e hydration.env -C hydration -C sqlite init -f
+	dipdup -e assethub.env -C assethub -C sqlite init -f
 	make all
 
 run_assethub:   ## Run AssetHub indexer in sqlite

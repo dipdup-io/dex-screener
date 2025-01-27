@@ -216,7 +216,6 @@ class Pool(Model):
     share_token = fields.IntField()
 
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -229,7 +228,7 @@ async def save_unprocesssed_payload(payload, note) -> None:
                 'note': note,
             },
         )
-    except TypeError as e:
+    except TypeError:
         _logger.warning('payload is too big')
 
 
