@@ -25,12 +25,13 @@ async def on_omnipool_sell_executed(
 
     # NOTE: from spec - A combination of either asset0In + asset1Out or asset1In + asset0Out is expected.
     amounts = {'asset_1_in': amount_in, 'asset_0_out': amount_out}
+    extrinsic_index = event.data.extrinsic_index or 0
     event_model = m.Event(
         event_type='swap',
-        composite_pk=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
+        composite_pk=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
         # NOTE: take caution, event index is used due to extrinsic index being null
-        txn_id=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
-        txn_index=event.data.extrinsic_index or event.data.index,
+        txn_id=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
+        txn_index=extrinsic_index,
         event_index=event.data.index,
         maker=who,
         pair_id=pair_id,

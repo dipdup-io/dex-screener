@@ -24,11 +24,12 @@ async def on_omnipool_position_destroyed(
     pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, position.asset)
 
     # emit exit event
+    extrinsic_index = event.data.extrinsic_index or 0
     exit_event = m.Event(
         event_type='exit',
-        composite_pk=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
-        txn_id=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
-        txn_index=event.data.extrinsic_index or event.data.index,
+        composite_pk=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
+        txn_id=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
+        txn_index=extrinsic_index,
         event_index=event.data.index,
         maker=position.owner,
         pair_id=pair_id,

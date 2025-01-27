@@ -176,6 +176,7 @@ class Event(Model):
     # NOTE: Composite PK; see `sql/on_reindex`
     event_type = fields.EnumField(EventType)
     composite_pk = fields.TextField(primary_key=True)
+    # TODO: often duplicate of `composite_pk`
     txn_id = fields.TextField()
     txn_index = fields.IntField()
     event_index = fields.IntField()
@@ -199,12 +200,22 @@ class Event(Model):
 
 
 class OmnipoolPositions(Model):
-    position_id = U128DecimalField(primary_key=True)
+    position_id = fields.IntField(primary_key=True)
     owner = fields.TextField()
     asset = fields.IntField()
     amount = U128DecimalField()
     shares = U128DecimalField()
     price = U128DecimalField()
+
+
+class OTCOrders(Model):
+    order_id = fields.IntField(primary_key=True)
+    asset_in = fields.IntField()
+    asset_out = fields.IntField()
+    amount_in = U128DecimalField()
+    amount_out = U128DecimalField()
+    partially_fillable = fields.BooleanField()
+    reversed = fields.BooleanField()
 
 
 class Pool(Model):
@@ -214,6 +225,55 @@ class Pool(Model):
     asset_b = fields.IntField()
     initial_shares_amount = fields.IntField()
     share_token = fields.IntField()
+
+
+def fix_multilocation(data):
+    if isinstance(data, list):
+        return tuple(fix_multilocation(item) for item in data)
+
+    if isinstance(data, dict):
+        if 'interior' in data:
+            # Handle interior dictionary
+            result = {'parents': data['parents']}
+            interior = data['interior']
+
+            if '__kind' in interior:
+                kind = interior['__kind']
+                if 'value' in interior:
+                    value = interior['value']
+                    if isinstance(value, list):
+                        # Handle list of values
+                        value = tuple(
+                            (
+                                {
+                                    item['__kind']: (
+                                        int(item['value'])
+                                        if isinstance(item['value'], str)
+                                        else (
+                                            tuple(item['value']) if isinstance(item['value'], list) else item['value']
+                                        )
+                                    )
+                                }
+                                if item.get('value')
+                                else item['__kind']
+                            )
+                            for item in value
+                        )
+                    elif isinstance(value, str):
+                        value = int(value)
+                    result['interior'] = {kind: value}
+                else:
+                    # If 'value' is not present, just use the kind
+                    result['interior'] = kind
+            else:
+                result['interior'] = fix_multilocation(interior)
+            return result
+
+        # Process other dictionaries
+        return {key: fix_multilocation(value) for key, value in data.items()}
+
+    # Return primitive values as-is
+    return data
 
 
 _logger = logging.getLogger(__name__)
@@ -228,7 +288,7 @@ async def save_unprocesssed_payload(payload, note) -> None:
                 'note': note,
             },
         )
-    except TypeError:
+    except TypeError as e:
         _logger.warning('payload is too big')
 
 
@@ -257,6 +317,8 @@ def extract_assets(path: list) -> tuple[int, ...] | None:
 
 
 def get_pool_id(payload: Any) -> str | None:
+    payload['pool_id'] = fix_multilocation(payload['pool_id'])
+
     assets = extract_assets(payload['pool_id'])
     if assets is None:
         _logger.warning('Failed to extract assets from pool_id %s', payload['pool_id'])
