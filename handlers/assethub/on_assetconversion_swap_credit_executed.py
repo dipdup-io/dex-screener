@@ -12,15 +12,6 @@ async def on_assetconversion_swap_credit_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionSwapCreditExecutedPayload],
 ) -> None:
-    try:
-        event.payload['path'] = models.fix_multilocation(event.payload['path'])
-    except KeyError:
-        if 'GlobalConsensus' not in str(event.payload['path']):
-            raise
-        ctx.logger.error('FIXME: GlobalConsensus path %s', event.payload['path'])
-        await save_unprocesssed_payload(event.payload, 'GlobalConsensus path')
-        return
-
     path = event.payload['path']
     if len(path) != 2:
         ctx.logger.error('FIXME: too many path elements %s', path)

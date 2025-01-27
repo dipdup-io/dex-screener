@@ -445,7 +445,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aerich", marker = "extra == 'migrations'", specifier = "~=0.7.2" },
+    { name = "aerich", marker = "extra == 'migrations'", specifier = "~=0.8.1" },
     { name = "aiohttp", specifier = "~=3.10" },
     { name = "aiolimiter", specifier = "~=1.1" },
     { name = "aiosubstrate", specifier = ">=0.1.0" },
@@ -469,7 +469,7 @@ requires-dist = [
     { name = "ruamel-yaml", specifier = "~=0.18.6" },
     { name = "sentry-sdk", specifier = "~=2.16" },
     { name = "sqlparse", specifier = "~=0.5" },
-    { name = "starknet-py", specifier = "~=0.24.3" },
+    { name = "starknet-py", specifier = "~=0.25.0" },
     { name = "strict-rfc3339", specifier = "~=0.7" },
     { name = "survey", specifier = "~=5.4" },
     { name = "tabulate", specifier = "~=0.9" },
@@ -1386,7 +1386,7 @@ wheels = [
 
 [[package]]
 name = "starknet-py"
-version = "0.24.3"
+version = "0.25.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -1401,7 +1401,7 @@ dependencies = [
     { name = "pycryptodome" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7d/bb/54300a5a710a19fb1bef7ba4d93ca04e05498612f363671e38b2b4c21ff7/starknet_py-0.24.3.tar.gz", hash = "sha256:c27b0d8953cf18071086e4438b688f61ad0a2fa0bf6778cff241a4001aac043a", size = 97727 }
+sdist = { url = "https://files.pythonhosted.org/packages/36/ea/2ec249b38dccd8391b714a0dce2172d6298d7e043b063e529d897622f88d/starknet_py-0.25.0.tar.gz", hash = "sha256:452f2c9ed5e235540209ec2042d22dcf79c6cec2a6850f5b518d61b3fada3706", size = 97660 }
 
 [[package]]
 name = "strict-rfc3339"
