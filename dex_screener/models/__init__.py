@@ -19,14 +19,13 @@ class Block(Model):
     level = fields.IntField(primary_key=True)
     timestamp = fields.IntField()
 
-
 class Asset(Model):
     class Meta:
         table = 'dex_asset'
         model = 'models.Asset'
 
     id = fields.IntField(primary_key=True)
-    name = fields.CharField(max_length=255, unique=True, null=True)
+    name = fields.CharField(max_length=255, null=True)
     symbol = fields.CharField(max_length=16, null=True)
     decimals = fields.IntField(null=True)
     asset_type = fields.EnumField(enum_type=HydrationAssetType, db_index=True)

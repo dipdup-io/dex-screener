@@ -36,6 +36,8 @@ indexes:
       - node
 
     handlers:
+      - callback: hydradx.asset.on_location_set
+        name: AssetRegistry.LocationSet
       - callback: hydradx.asset.on_asset_registered
         name: AssetRegistry.Registered
       - callback: hydradx.asset.on_asset_updated
