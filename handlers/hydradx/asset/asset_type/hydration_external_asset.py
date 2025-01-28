@@ -17,7 +17,8 @@ class HydrationExternalAsset(BaseHydrationAsset):
             case _:
                 raise InvalidEventDataError('Unhandled Event Data.')
 
-        return await cls.create_asset(
+        return await cls.update_asset(
             asset_id=asset_id,
+            updated_fields={},
             event=event,
         )

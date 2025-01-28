@@ -43,8 +43,14 @@ indexes:
     # last_level: 1439857
 
     handlers:
-      - callback: hydradx.on_assetregistry_registered
+      - callback: hydradx.asset.on_location_set
+        name: AssetRegistry.LocationSet
+      - callback: hydradx.asset.on_asset_registered
         name: AssetRegistry.Registered
+      - callback: hydradx.asset.on_asset_updated
+        name: AssetRegistry.Updated
+      - callback: hydradx.asset.on_metadata_set
+        name: AssetRegistry.MetadataSet
 
       - callback: hydradx.on_xyk_pool_created
         name: XYK.PoolCreated

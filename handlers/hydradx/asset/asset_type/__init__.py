@@ -86,7 +86,7 @@ class BaseHydrationAsset(AbstractHydrationAsset):
         updated_fields.setdefault('asset_type', cls.asset_type)
         updated_fields.setdefault('updated_at_block_id', event.level)
         asset, _ = await Asset.update_or_create(
-            pk=asset_id,
+            id=asset_id,
             defaults=updated_fields,
         )
         return asset
