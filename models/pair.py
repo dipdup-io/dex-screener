@@ -1,12 +1,10 @@
-from typing import Literal
-
 from dex_screener import models as m
 
 
 async def upsert_pair_model(
     asset_in: int,
     asset_out: int,
-    dex_key: Literal['hydradx'] | Literal['assethub'] = 'hydradx',
+    dex_key: m.DexKey,
 ) -> str:
     pair_id = m.get_pair_id(asset_in, asset_out)
     # FIXME: ensure pair data is correct and full

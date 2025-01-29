@@ -26,7 +26,7 @@ async def on_otc_partially_filled(
     if order.reversed:
         amount_in, amount_out = amount_out, amount_in
 
-    pair_id = await upsert_pair_model(order.asset_in, order.asset_out)
+    pair_id = await upsert_pair_model(order.asset_in, order.asset_out, m.DexKey.hydradx_otc)
 
     # NOTE: from spec - A combination of either asset0In + asset1Out or asset1In + asset0Out is expected.
     # NOTE: opposite for sell (amounts = {'asset_1_in': amount_in, 'asset_0_out': amount_out})

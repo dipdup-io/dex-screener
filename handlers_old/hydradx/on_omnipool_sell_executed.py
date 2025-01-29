@@ -21,7 +21,7 @@ async def on_omnipool_sell_executed(
         asset_in, asset_out = asset_out, asset_in
         amount_in, amount_out = amount_out, amount_in
 
-    pair_id = await upsert_pair_model(asset_in, asset_out)
+    pair_id = await upsert_pair_model(asset_in, asset_out, m.DexKey.hydradx_omnipool)
 
     # NOTE: from spec - A combination of either asset0In + asset1Out or asset1In + asset0Out is expected.
     amounts = {'asset_1_in': amount_in, 'asset_0_out': amount_out}

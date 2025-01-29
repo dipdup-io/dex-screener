@@ -23,7 +23,14 @@ class HydrationAssetType(StrEnum):
 
 
 class DexKey(StrEnum):
+    # FIXME: remove
     hydradx: str = 'hydradx'
+
+    assethub: str = 'assethub'
+    hydradx_omnipool = 'hydradx_omnipool'
+    hydradx_otc = 'hydradx_otc'
+    hydradx_stableswap = 'hydradx_stableswap'
+    hydradx_xyk = 'hydradx_xyk'
 
 
 class Block(Model):
@@ -51,7 +58,6 @@ class Asset(Model):
 
     decimals = fields.IntField(null=True)
     asset_type = fields.EnumField(enum_type=HydrationAssetType, db_index=True, null=True)
-
     # updated_at_block: ForeignKeyFieldInstance[Block] = fields.ForeignKeyField(
     #     model_name=Block.Meta.model,
     #     source_field='updated_at_block_id',

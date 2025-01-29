@@ -21,7 +21,7 @@ async def on_omnipool_position_destroyed(
         ctx.logger.error(error_str)
         return
 
-    pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, position.asset)
+    pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, position.asset, m.DexKey.hydradx_omnipool)
 
     # emit exit event
     extrinsic_index = event.data.extrinsic_index or 0

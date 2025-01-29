@@ -29,7 +29,7 @@ async def on_omnipool_position_created(
     )
     await position_model.save()
 
-    pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, asset_id)
+    pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, asset_id, m.DexKey.hydradx_omnipool)
 
     # emit join event
     extrinsic_index = event.data.extrinsic_index or 0

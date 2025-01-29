@@ -20,7 +20,7 @@ async def on_sell_executed(
         assert asset_out.decimals is not None
 
         pair = await Pair.get(
-            dex_key=DexKey[event.data.header_extra['specName']],
+            dex_key=DexKey.hydradx_omnipool,
             asset_0_id=min(asset_in.id, asset_out.id),
             asset_1_id=max(asset_in.id, asset_out.id),
         )

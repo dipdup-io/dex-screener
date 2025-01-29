@@ -20,7 +20,7 @@ async def on_otc_cancelled(
         ctx.logger.error(error_str)
         return
 
-    pair_id = await upsert_pair_model(order.asset_in, order.asset_out)
+    pair_id = await upsert_pair_model(order.asset_in, order.asset_out, m.DexKey.hydradx_otc)
 
     # emit exit event
     extrinsic_index = event.data.extrinsic_index or 0

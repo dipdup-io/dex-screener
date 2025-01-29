@@ -31,7 +31,7 @@ async def on_omnipool_position_updated(
     if created:
         ctx.logger.warning('Position not found, creating new')
 
-    pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, asset_id)
+    pair_id = await upsert_pair_model(OMNIPOOL_LP_ASSET_ID, asset_id, m.DexKey.hydradx_omnipool)
 
     # emit exit event
     extrinsic_index = event.data.extrinsic_index or 0

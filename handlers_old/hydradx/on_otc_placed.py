@@ -37,7 +37,7 @@ async def on_otc_placed(
     )
     await order_model.save()
 
-    pair_id = await upsert_pair_model(asset_in, asset_out)
+    pair_id = await upsert_pair_model(asset_in, asset_out, m.DexKey.hydradx_otc)
 
     # emit join event
     extrinsic_index = event.data.extrinsic_index or 0

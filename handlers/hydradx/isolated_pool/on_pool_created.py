@@ -14,7 +14,7 @@ async def on_pool_created(
     if not await Pair.exists(id=pair_id):
         pair = await Pair.create(
             id=event.payload['pool'],
-            dex_key=DexKey[event.data.header_extra['specName']],
+            dex_key=DexKey.hydradx_xyk,
             asset_0_id=min(event.payload['asset_a'], event.payload['asset_b']),
             asset_1_id=max(event.payload['asset_a'], event.payload['asset_b']),
             created_at_block_id=event.level,
