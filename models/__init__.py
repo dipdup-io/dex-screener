@@ -44,8 +44,8 @@ class Asset(Model):
         model = 'models.Asset'
 
     id = fields.IntField(primary_key=True)
-    name = fields.CharField(max_length=255, null=True)
-    symbol = fields.CharField(max_length=16, null=True)
+    name = fields.CharField(null=True)
+    symbol = fields.CharField(null=True)
     decimals = fields.IntField(null=True)
     # asset_type = fields.EnumField(enum_type=HydrationAssetType, db_index=True)
     # updated_at_block: ForeignKeyFieldInstance[Block] = fields.ForeignKeyField(
@@ -64,7 +64,7 @@ class Pair(Model):
         model = 'models.Pair'
         unique_together = ('dex_key', 'asset_0_id', 'asset_1_id')
 
-    id = fields.CharField(primary_key=True, max_length=66)
+    id = fields.CharField(primary_key=True, )
     dex_key = fields.EnumField(DexKey, db_index=True)
     asset_0: ForeignKeyFieldInstance[Asset] = fields.ForeignKeyField(
         model_name=Asset.Meta.model,
@@ -84,7 +84,7 @@ class Pair(Model):
         source_field='created_at_block_id',
         to_field='level',
     )
-    created_at_txn_id = fields.CharField(max_length=66)
+    created_at_txn_id = fields.CharField()
     fee_bps = fields.IntField(null=True)
 
 
@@ -94,10 +94,10 @@ class SwapEvent(Model):
         model = 'dex_screener.models.SwapEvent'
 
     id = fields.IntField(primary_key=True)
-    txn_id = fields.CharField(max_length=66)
+    txn_id = fields.CharField()
     txn_index = fields.IntField(null=True)
     event_index = fields.IntField()
-    maker = fields.CharField(max_length=66)
+    maker = fields.CharField()
     pair: ForeignKeyFieldInstance[Pair] = fields.ForeignKeyField(
         model_name=Pair.Meta.model,
         source_field='pair_id',
