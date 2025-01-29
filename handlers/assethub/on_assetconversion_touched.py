@@ -8,4 +8,5 @@ from dex_screener.types.assethub.substrate_events.asset_conversion_touched impor
 async def on_assetconversion_touched(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionTouchedPayload],
-) -> None: ...
+) -> None:
+    raise NotImplementedError

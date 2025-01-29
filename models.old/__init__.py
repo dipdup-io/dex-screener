@@ -227,55 +227,6 @@ class Pool(Model):
     share_token = fields.IntField()
 
 
-def fix_multilocation(data):
-    if isinstance(data, list):
-        return tuple(fix_multilocation(item) for item in data)
-
-    if isinstance(data, dict):
-        if 'interior' in data:
-            # Handle interior dictionary
-            result = {'parents': data['parents']}
-            interior = data['interior']
-
-            if '__kind' in interior:
-                kind = interior['__kind']
-                if 'value' in interior:
-                    value = interior['value']
-                    if isinstance(value, list):
-                        # Handle list of values
-                        value = tuple(
-                            (
-                                {
-                                    item['__kind']: (
-                                        int(item['value'])
-                                        if isinstance(item['value'], str)
-                                        else (
-                                            tuple(item['value']) if isinstance(item['value'], list) else item['value']
-                                        )
-                                    )
-                                }
-                                if item.get('value')
-                                else item['__kind']
-                            )
-                            for item in value
-                        )
-                    elif isinstance(value, str):
-                        value = int(value)
-                    result['interior'] = {kind: value}
-                else:
-                    # If 'value' is not present, just use the kind
-                    result['interior'] = kind
-            else:
-                result['interior'] = fix_multilocation(interior)
-            return result
-
-        # Process other dictionaries
-        return {key: fix_multilocation(value) for key, value in data.items()}
-
-    # Return primitive values as-is
-    return data
-
-
 _logger = logging.getLogger(__name__)
 
 
@@ -317,7 +268,6 @@ def extract_assets(path: list) -> tuple[int, ...] | None:
 
 
 def get_pool_id(payload: Any) -> str | None:
-    payload['pool_id'] = fix_multilocation(payload['pool_id'])
 
     assets = extract_assets(payload['pool_id'])
     if assets is None:

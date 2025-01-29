@@ -8,4 +8,8 @@ from dex_screener.types.assethub.substrate_events.assets_destroyed import Assets
 async def on_assets_destroyed(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetsDestroyedPayload],
-) -> None: ...
+) -> None:
+    # FIXME: TypedDict "V601" has no key "asset_id"
+    asset = await models.Asset.get(id=event.payload['asset_id'])  # type: ignore
+    await asset.delete()
+    ctx.logger.info('Deleting asset %s', asset.get_repr())
