@@ -42,6 +42,55 @@ indexes:
     # first_level: 1439857
     # last_level: 1439857
 
+    # OLD HANDLERS
+    # handlers:
+    #   - callback: hydradx.asset.on_location_set
+    #     name: AssetRegistry.LocationSet
+    #   - callback: hydradx.asset.on_asset_registered
+    #     name: AssetRegistry.Registered
+    #   - callback: hydradx.asset.on_asset_updated
+    #     name: AssetRegistry.Updated
+    #   - callback: hydradx.asset.on_metadata_set
+    #     name: AssetRegistry.MetadataSet
+
+    #   - callback: hydradx.on_xyk_pool_created
+    #     name: XYK.PoolCreated
+    #   - callback: hydradx.on_xyk_pool_destroyed
+    #     name: XYK.PoolDestroyed
+    #   - callback: hydradx.on_xyk_liquidity_added
+    #     name: XYK.LiquidityAdded
+    #   - callback: hydradx.on_xyk_liquidity_removed
+    #     name: XYK.LiquidityRemoved
+    #   - callback: hydradx.on_xyk_buy_executed
+    #     name: XYK.BuyExecuted
+    #   - callback: hydradx.on_xyk_sell_executed
+    #     name: XYK.SellExecuted
+
+    #   - callback: hydradx.on_omnipool_buy_executed
+    #     name: Omnipool.BuyExecuted
+    #   - callback: hydradx.on_omnipool_sell_executed
+    #     name: Omnipool.SellExecuted
+    #   - callback: hydradx.on_omnipool_position_created
+    #     name: Omnipool.PositionCreated
+    #   - callback: hydradx.on_omnipool_position_destroyed
+    #     name: Omnipool.PositionDestroyed
+    #   - callback: hydradx.on_omnipool_position_updated
+    #     name: Omnipool.PositionUpdated
+
+    #   - callback: hydradx.on_stableswap_buy_executed
+    #     name: Stableswap.BuyExecuted
+    #   - callback: hydradx.on_stableswap_sell_executed
+    #     name: Stableswap.SellExecuted
+
+    #   - callback: hydradx.on_otc_cancelled
+    #     name: OTC.Cancelled
+    #   - callback: hydradx.on_otc_filled
+    #     name: OTC.Filled
+    #   - callback: hydradx.on_otc_partially_filled
+    #     name: OTC.PartiallyFilled
+    #   - callback: hydradx.on_otc_placed
+    #     name: OTC.Placed
+
     handlers:
       - callback: hydradx.asset.on_location_set
         name: AssetRegistry.LocationSet
@@ -52,41 +101,20 @@ indexes:
       - callback: hydradx.asset.on_metadata_set
         name: AssetRegistry.MetadataSet
 
-      - callback: hydradx.on_xyk_pool_created
+      - callback: hydradx.isolated_pool.on_pool_created
         name: XYK.PoolCreated
-      - callback: hydradx.on_xyk_pool_destroyed
-        name: XYK.PoolDestroyed
-      - callback: hydradx.on_xyk_liquidity_added
-        name: XYK.LiquidityAdded
-      - callback: hydradx.on_xyk_liquidity_removed
-        name: XYK.LiquidityRemoved
-      - callback: hydradx.on_xyk_buy_executed
+
+      - callback: hydradx.isolated_pool.on_buy_executed
         name: XYK.BuyExecuted
-      - callback: hydradx.on_xyk_sell_executed
+      - callback: hydradx.isolated_pool.on_sell_executed
         name: XYK.SellExecuted
 
-      - callback: hydradx.on_omnipool_buy_executed
+      - callback: hydradx.omnipool.on_buy_executed
         name: Omnipool.BuyExecuted
-      - callback: hydradx.on_omnipool_sell_executed
+      - callback: hydradx.omnipool.on_sell_executed
         name: Omnipool.SellExecuted
-      - callback: hydradx.on_omnipool_position_created
-        name: Omnipool.PositionCreated
-      - callback: hydradx.on_omnipool_position_destroyed
-        name: Omnipool.PositionDestroyed
-      - callback: hydradx.on_omnipool_position_updated
-        name: Omnipool.PositionUpdated
 
-      - callback: hydradx.on_stableswap_buy_executed
+      - callback: hydradx.stableswap.on_buy_executed
         name: Stableswap.BuyExecuted
-      - callback: hydradx.on_stableswap_sell_executed
+      - callback: hydradx.stableswap.on_sell_executed
         name: Stableswap.SellExecuted
-
-      - callback: hydradx.on_otc_cancelled
-        name: OTC.Cancelled
-      - callback: hydradx.on_otc_filled
-        name: OTC.Filled
-      - callback: hydradx.on_otc_partially_filled
-        name: OTC.PartiallyFilled
-      - callback: hydradx.on_otc_placed
-        name: OTC.Placed
-    # NOTE: first asset block is 1439857

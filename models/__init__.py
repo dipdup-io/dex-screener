@@ -11,8 +11,6 @@ from tortoise import ForeignKeyFieldInstance
 
 # from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 
-from enum import StrEnum
-
 
 class HydrationAssetType(StrEnum):
     Token: str = 'Token'
@@ -22,7 +20,6 @@ class HydrationAssetType(StrEnum):
     PoolShare: str = 'PoolShare'
     XYK: str = 'XYK'
     ERC20: str = 'Erc20'
-
 
 
 class DexKey(StrEnum):
@@ -46,8 +43,15 @@ class Asset(Model):
     id = fields.IntField(primary_key=True)
     name = fields.TextField(null=True)
     symbol = fields.TextField(null=True)
+    total_supply = fields.IntField(null=True)
+    circulating_supply = fields.IntField(null=True)
+    coin_gecko_id = fields.TextField(null=True)
+    coin_market_cap_id = fields.TextField(null=True)
+    metadata = fields.JSONField(null=True)
+
     decimals = fields.IntField(null=True)
-    # asset_type = fields.EnumField(enum_type=HydrationAssetType, db_index=True)
+    asset_type = fields.EnumField(enum_type=HydrationAssetType, db_index=True, null=True)
+
     # updated_at_block: ForeignKeyFieldInstance[Block] = fields.ForeignKeyField(
     #     model_name=Block.Meta.model,
     #     source_field='updated_at_block_id',
@@ -64,7 +68,9 @@ class Pair(Model):
         model = 'models.Pair'
         unique_together = ('dex_key', 'asset_0_id', 'asset_1_id')
 
-    id = fields.TextField(primary_key=True, )
+    id = fields.TextField(
+        primary_key=True,
+    )
     dex_key = fields.EnumField(DexKey, db_index=True)
     asset_0: ForeignKeyFieldInstance[Asset] = fields.ForeignKeyField(
         model_name=Asset.Meta.model,

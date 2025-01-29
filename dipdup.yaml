@@ -1,6 +1,2 @@
 spec_version: 3.0
 package: dex_screener
-
-advanced:
-  reindex:
-    config_modified: ignore
