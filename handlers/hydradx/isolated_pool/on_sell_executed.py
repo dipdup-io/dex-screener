@@ -17,7 +17,7 @@ async def on_sell_executed(
         asset_out = await Asset.get(id=event.payload['asset_out'])
         assert asset_out.decimals is not None
     except (DoesNotExist, AssertionError):
-        return
+        raise
 
     await SwapEvent.create(
         txn_id=event.data.header['hash'],

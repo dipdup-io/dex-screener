@@ -11,6 +11,7 @@ async def batch(
     from dex_screener.models import Block
 
     for handler in handlers:
+        # print(handler)
         await ctx.fire_matched_handler(handler)
 
     await Block.create(

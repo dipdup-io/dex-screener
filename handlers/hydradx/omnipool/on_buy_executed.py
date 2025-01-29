@@ -25,7 +25,7 @@ async def on_buy_executed(
             asset_1_id=max(asset_in.id, asset_out.id),
         )
     except (DoesNotExist, AssertionError):
-        return
+        raise
 
     amount_in = event.payload['amount_in'] / 10**asset_in.decimals
     amount_out = event.payload['amount_out'] / 10**asset_out.decimals
