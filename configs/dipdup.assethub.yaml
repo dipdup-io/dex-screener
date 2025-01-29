@@ -29,9 +29,10 @@ indexes:
     - subsquid
     - subscan
     - node
-    # first_level: 6159146
-    # last_level: 6159547
-    # last_level: 6119558
+    # first block with asset conversion event: 6119459
+    # first block with assets event: 1212229
+    first_level: 2715762
+    last_level: 2716067
     handlers:
       # Assets
       #
@@ -57,3 +58,9 @@ indexes:
         name: AssetConversion.SwapExecuted
       - callback: assethub.on_assetconversion_touched
         name: AssetConversion.Touched
+
+database:
+  kind: sqlite
+  path: ./assethub.sqlite
+
+logging: DEBUG
