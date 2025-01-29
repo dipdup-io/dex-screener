@@ -44,4 +44,4 @@ async def on_asset_registered(
         return
 
     asset = await asset_type.handle_register_asset(event)
-    ctx.logger.info('Asset registered: %s.', asset)
+    ctx.logger.info('Asset registered: %s.', asset.get_repr())

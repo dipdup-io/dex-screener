@@ -29,6 +29,6 @@ async def on_location_set(
         asset_location = get_asset_location(parachain_id)
         asset = await asset_location.update_asset_with_external_metadata(asset_id, interior_value, event)
 
-        ctx.logger.info('Fetched External Asset Location for asset: %s', asset)
+        ctx.logger.info('Fetched External Asset Location for asset: %s', asset.get_repr())
     except ValueError:
         return

@@ -46,7 +46,7 @@ async def on_asset_updated(
 
     try:
         asset = await asset_type.handle_update_asset(event)
-        ctx.logger.info('Asset updated: %s.', asset)
+        ctx.logger.info('Asset updated: %s.', asset.get_repr())
     except IntegrityError as exception:
         ctx.logger.error('Asset Update Error: %s', exception.args[0].detail)
         return
