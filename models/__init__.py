@@ -9,7 +9,20 @@ from dipdup.models import Meta
 from dipdup.models import Model
 from tortoise import ForeignKeyFieldInstance
 
-from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
+# from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
+
+from enum import StrEnum
+
+
+class HydrationAssetType(StrEnum):
+    Token: str = 'Token'
+    External: str = 'External'
+    StableSwap: str = 'StableSwap'
+    Bond: str = 'Bond'
+    PoolShare: str = 'PoolShare'
+    XYK: str = 'XYK'
+    ERC20: str = 'Erc20'
+
 
 
 class DexKey(StrEnum):
