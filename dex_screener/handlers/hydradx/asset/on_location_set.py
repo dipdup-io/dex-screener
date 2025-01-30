@@ -8,6 +8,7 @@ from dex_screener.handlers.hydradx.asset.asset_location.types import Parachain
 from dex_screener.types.hydradx.substrate_events.asset_registry_location_set import AssetRegistryLocationSetPayload
 
 
+
 async def on_location_set(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetRegistryLocationSetPayload],

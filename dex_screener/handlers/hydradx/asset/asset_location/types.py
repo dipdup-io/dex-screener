@@ -38,7 +38,6 @@ class Here:
         return f'<{self.__class__.__name__}>'
 
 
-
 class Interior(tuple):
     def __new__(cls, interior_data: dict[str, list | dict], *args, **kwargs) -> type[Self]:
         value = interior_data

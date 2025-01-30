@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 from abc import ABC
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 from typing import Any
 
-from dipdup.models.substrate import SubstrateEvent
-
 from dex_screener.models import Asset
+
+if TYPE_CHECKING:
+    from dipdup.models.substrate import SubstrateEvent
 
 
 class AbstractHydrationAsset(ABC):

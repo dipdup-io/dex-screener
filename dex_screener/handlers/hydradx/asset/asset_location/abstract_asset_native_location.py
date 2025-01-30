@@ -1,14 +1,18 @@
+from __future__ import annotations
+
 from abc import ABC
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 from typing import Any
 
-from aiosubstrate import SubstrateInterface
-from dipdup.models.substrate import SubstrateEvent
+if TYPE_CHECKING:
+    from aiosubstrate import SubstrateInterface
+    from dipdup.models.substrate import SubstrateEvent
 
-from dex_screener.handlers.hydradx.asset.asset_location.dto import ExternalMetadataDTO
-from dex_screener.handlers.hydradx.asset.asset_location.types import Interior
+    from dex_screener.handlers.hydradx.asset.asset_location.dto import ExternalMetadataDTO
+    from dex_screener.handlers.hydradx.asset.asset_location.types import Interior
+    from dex_screener.models import Asset
 from dex_screener.handlers.hydradx.asset.asset_type.hydration_external_asset import HydrationExternalAsset
-from dex_screener.models import Asset
 
 
 class AbstractAssetNativeLocation(ABC):
