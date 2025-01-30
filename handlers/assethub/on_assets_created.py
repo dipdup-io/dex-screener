@@ -9,6 +9,10 @@ async def on_assets_created(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetsCreatedPayload],
 ) -> None:
+    # NOTE: Already created in `on_restart` hook
+    if event.payload['asset_id'] == 0:
+        return
+
     asset = m.Asset(
         id=event.payload['asset_id'],
         name='...',

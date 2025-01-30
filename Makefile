@@ -73,7 +73,7 @@ run_hydration:  ## Run Hydration indexer in sqlite
 	dipdup -e hydration.env -C hydration -C sqlite run
 
 wipe_assethub:  ## Wipe AssetHub indexer schema
-	dipdup -e assethub.env -C assethub -C sqlite schema wipe
+	dipdup -e assethub.env -C assethub -C sqlite schema wipe --force
 
 wipe_hydration: ## Wipe Hydration indexer schema
-	dipdup -e hydration.env -C hydration -C sqlite schema wipe
+	dipdup -e hydration.env -C hydration -C sqlite schema wipe --force
