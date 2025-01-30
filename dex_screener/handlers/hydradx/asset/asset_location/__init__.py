@@ -1,5 +1,6 @@
 from aiosubstrate import SubstrateInterface
 
+from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_location import AbstractAssetNativeLocation
 from dex_screener.handlers.hydradx.asset.asset_location.assethub_asset_native_location import AssetHubAssetNativeLocation
 from dex_screener.handlers.hydradx.asset.asset_location.pendulum_asset_native_location import PendulumAssetNativeLocation
 
@@ -8,11 +9,12 @@ ASSET_LOCATION_CLASS_LIST = [
     PendulumAssetNativeLocation,
 ]
 
-ASSET_LOCATION_CLASS_MAP: dict[int, type(AssetHubAssetNativeLocation)] = {
+ASSET_LOCATION_CLASS_MAP: dict[int, type(AbstractAssetNativeLocation)] = {
     asset_location_class.parachain_id: asset_location_class for asset_location_class in ASSET_LOCATION_CLASS_LIST
 }
 
-ASSET_LOCATION_MAP: dict[int, AssetHubAssetNativeLocation] = {}
+ASSET_LOCATION_MAP: dict[int, AbstractAssetNativeLocation] = {}
+
 
 def get_asset_location(parachain_id: int):
     if parachain_id not in ASSET_LOCATION_CLASS_MAP:

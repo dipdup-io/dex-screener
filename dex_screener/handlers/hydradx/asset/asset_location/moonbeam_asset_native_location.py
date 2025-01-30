@@ -2,23 +2,17 @@ from typing import Any
 
 from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_location import AbstractAssetNativeLocation
 from dex_screener.handlers.hydradx.asset.asset_location.dto import ExternalMetadataDTO
-from dex_screener.handlers.hydradx.asset.asset_location.types import GeneralIndex
+from dex_screener.handlers.hydradx.asset.asset_location.types import AccountKey20
 from dex_screener.handlers.hydradx.asset.asset_location.types import Interior
 
 
-class AssetHubAssetNativeLocation(AbstractAssetNativeLocation):
-    parachain_id: int = 1000
-    node_url: str = 'wss://polkadot-asset-hub-rpc.polkadot.io'
+class MoonbeamAssetNativeLocation(AbstractAssetNativeLocation):
+    parachain_id: int = 2004
+    node_url: str = 'wss://wss.api.moonbeam.network/'
 
     def _prepare_parachain_query_parameters(self, interior: Interior) -> list:
         match interior:
-            case [*_, GeneralIndex(external_id)]:
-                pass
-            case [
-                {'__kind': 'Parachain', 'value': self.parachain_id},
-                {'__kind': 'Parachain', 'value': int()},
-                {'__kind': 'Parachain', 'value': int(external_id)}
-            ]:
+            case [*_, AccountKey20(external_id)]:
                 pass
             case _:
                 raise ValueError('Unhandled interior value: %s.', interior)
