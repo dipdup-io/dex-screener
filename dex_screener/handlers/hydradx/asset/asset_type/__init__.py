@@ -16,23 +16,19 @@ class AbstractHydrationAsset(ABC):
 
     @classmethod
     @abstractmethod
-    async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
-        ...
+    async def handle_register_asset(cls, event: SubstrateEvent) -> Asset: ...
 
     @classmethod
     @abstractmethod
-    async def handle_update_asset(cls, event: SubstrateEvent) -> Asset:
-        ...
+    async def handle_update_asset(cls, event: SubstrateEvent) -> Asset: ...
 
     @classmethod
     @abstractmethod
-    async def create_asset(cls, asset_id: int, event: SubstrateEvent, fields: dict[str, Any] | None) -> Asset:
-        ...
+    async def create_asset(cls, asset_id: int, event: SubstrateEvent, fields: dict[str, Any] | None) -> Asset: ...
 
     @classmethod
     @abstractmethod
-    async def update_asset(cls, asset_id: int, updated_fields: dict[str, Any], event: SubstrateEvent) -> Asset:
-        ...
+    async def update_asset(cls, asset_id: int, updated_fields: dict[str, Any], event: SubstrateEvent) -> Asset: ...
 
 
 class InvalidEventDataError(ValueError):

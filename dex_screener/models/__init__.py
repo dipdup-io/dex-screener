@@ -14,9 +14,9 @@ if TYPE_CHECKING:
     from tortoise.fields.relational import ManyToManyFieldInstance
     from tortoise.fields.relational import OneToOneFieldInstance
 
-    from dex_screener.handlers.hydradx.asset.asset_amount.types import AnyTypeAmount
+    from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypeAmount
 
-from dex_screener.handlers.hydradx.asset.asset_amount import AssetAmount
+from dex_screener.handlers.hydradx.asset.asset_count.asset_amount import AssetAmount
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 from dex_screener.models.dex_fields import AccountField as AccountField
 from dex_screener.models.enum import DexKey as DexKey
@@ -55,6 +55,13 @@ class Asset(Model):
     def from_minor(self, minor_amount: AnyTypeAmount) -> AssetAmount:
         amount = Decimal(int(minor_amount)) / 10**self.decimals
         return self.amount(amount=amount)
+
+    def to_minor(self, amount: AssetAmount) -> int:
+        return int(amount.shift(self.decimals))
+
+    def __str__(self) -> str:
+        caption_list: list[str] = list(filter(None, [self.symbol, self.name, f'Asset(id={self.id})']))
+        return caption_list[0]
 
 
 class Pool(Model):
