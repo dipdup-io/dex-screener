@@ -21,7 +21,7 @@ async def on_assetconversion_swap_credit_executed(
     path_from, path_to = path[0][0], path[1][0]
 
     if path_from['interior'] == 'Here':
-        asset_0_id = -1
+        asset_0_id = 0
     else:
         try:
             asset_0_id = path_from['interior']['X2'][-1]['GeneralIndex']
@@ -32,7 +32,7 @@ async def on_assetconversion_swap_credit_executed(
             return
 
     if path_to['interior'] == 'Here':
-        asset_1_id = -1
+        asset_1_id = 0
     else:
         try:
             asset_1_id = path_to['interior']['X2'][-1]['GeneralIndex']
