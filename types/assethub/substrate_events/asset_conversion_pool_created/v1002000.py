@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, TypedDict
+from typing import TypedDict
 
 
 class V1002000(TypedDict):
@@ -11,6 +11,6 @@ class V1002000(TypedDict):
     """
 
     creator: str
-    pool_id: List[str]
+    pool_id: list[str]
     pool_account: str
     lp_token: int

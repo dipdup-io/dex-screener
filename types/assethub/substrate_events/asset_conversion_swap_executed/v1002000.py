@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, TypedDict
+from typing import TypedDict
 
 
 class V1002000(TypedDict):
@@ -15,4 +15,4 @@ class V1002000(TypedDict):
     send_to: str
     amount_in: int
     amount_out: int
-    path: List[List[str | int]]
+    path: list[list[str | int]]

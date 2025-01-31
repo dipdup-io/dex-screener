@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, TypedDict
+from typing import TypedDict
 
 
 class V1003000(TypedDict):
@@ -10,5 +10,5 @@ class V1003000(TypedDict):
     Pool has been touched in order to fulfill operational requirements.
     """
 
-    pool_id: List[str]
+    pool_id: list[str]
     who: str

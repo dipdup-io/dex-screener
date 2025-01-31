@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, TypedDict
+from typing import TypedDict
 
 
 class V601(TypedDict):
@@ -11,7 +11,7 @@ class V601(TypedDict):
     """
 
     asset_id: int
-    name: List[int]
-    symbol: List[int]
+    name: list[int]
+    symbol: list[int]
     decimals: int
     is_frozen: str
