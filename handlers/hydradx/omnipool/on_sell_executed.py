@@ -26,7 +26,7 @@ async def on_sell_executed(
                 'dex_key': DexKey.hydradx_omnipool,
                 'asset_0_id': min(asset_in.id, asset_out.id),
                 'asset_1_id': max(asset_in.id, asset_out.id),
-                'created_at_txn_id': event.data.transaction_id,
+                'created_at_txn_id': f'{event.data.block_number}-{event.data.extrinsic_index or 0}-{event.data.index}',
                 'created_at_block_number': event.level,
             },
         )

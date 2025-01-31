@@ -58,7 +58,7 @@ async def on_assetconversion_swap_credit_executed(
             'asset_0_id': asset_0_id,
             'asset_1_id': asset_1_id,
             'dex_key': 'assethub',
-            'created_at_txn_id': event.data.transaction_id,
+            'created_at_txn_id': f'{event.data.block_number}-{event.data.extrinsic_index or 0}-{event.data.index}',
             'created_at_block_number': event.data.block_number,
         },
     )
