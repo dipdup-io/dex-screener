@@ -187,7 +187,7 @@ class Event(Model):
     # NOTE: Composite PK; see `sql/on_reindex`
     event_type = fields.EnumField(EventType)
     composite_pk = fields.TextField(primary_key=True)
-    # TODO: often duplicate of `composite_pk`
+    # NOTE: in most cases duplicate of `composite_pk`
     txn_id = fields.TextField()
     txn_index = fields.IntField()
     event_index = fields.IntField()
@@ -205,7 +205,7 @@ class Event(Model):
 
     # TODO: Not implemented; change to DecimalField with higher precision
     # NOTE: Not defined for Join/Exit events, probably should be filtered out in API response
-    price_native = U128DecimalField()
+    price_native = fields.DecimalField(max_digits=100, decimal_places=50, description='Always amount_out/amount_in')
     reserves_asset_0 = U128DecimalField(null=True)
     reserves_asset_1 = U128DecimalField(null=True)
 
