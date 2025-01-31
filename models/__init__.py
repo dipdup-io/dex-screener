@@ -1,6 +1,6 @@
 import logging
 import time
-from enum import StrEnum
+from enum import StrEnum, Enum
 from functools import partial
 from typing import Any
 
@@ -177,37 +177,37 @@ def get_pair_id(asset_0_id: int, asset_1_id: int) -> str:
 # # TODO: Composite PKs in `sql/on_reindex`
 
 
-# class EventType(Enum):
-#     swap = 'swap'
-#     join = 'join'
-#     exit = 'exit'
+class EventType(Enum):
+    swap = 'swap'
+    join = 'join'
+    exit = 'exit'
 
 
-# class Event(Model):
-#     # NOTE: Composite PK; see `sql/on_reindex`
-#     event_type = fields.EnumField(EventType)
-#     composite_pk = fields.TextField(primary_key=True)
-#     # TODO: often duplicate of `composite_pk`
-#     txn_id = fields.TextField()
-#     txn_index = fields.IntField()
-#     event_index = fields.IntField()
+class Event(Model):
+    # NOTE: Composite PK; see `sql/on_reindex`
+    event_type = fields.EnumField(EventType)
+    composite_pk = fields.TextField(primary_key=True)
+    # TODO: often duplicate of `composite_pk`
+    txn_id = fields.TextField()
+    txn_index = fields.IntField()
+    event_index = fields.IntField()
 
-#     maker = fields.TextField()
-#     pair_id = fields.TextField()
-#     # swap
-#     asset_0_in = U128DecimalField(null=True)
-#     asset_1_in = U128DecimalField(null=True)
-#     asset_0_out = U128DecimalField(null=True)
-#     asset_1_out = U128DecimalField(null=True)
-#     # join/exit
-#     amount_0 = U128DecimalField(null=True)
-#     amount_1 = U128DecimalField(null=True)
+    maker = fields.TextField()
+    pair_id = fields.TextField()
+    # swap
+    asset_0_in = U128DecimalField(null=True)
+    asset_1_in = U128DecimalField(null=True)
+    asset_0_out = U128DecimalField(null=True)
+    asset_1_out = U128DecimalField(null=True)
+    # join/exit
+    amount_0 = U128DecimalField(null=True)
+    amount_1 = U128DecimalField(null=True)
 
-#     # TODO: Not implemented; change to DecimalField with higher precision
-#     # NOTE: Not defined for Join/Exit events, probably should be filtered out in API response
-#     price_native = U128DecimalField()
-#     reserves_asset_0 = U128DecimalField(null=True)
-#     reserves_asset_1 = U128DecimalField(null=True)
+    # TODO: Not implemented; change to DecimalField with higher precision
+    # NOTE: Not defined for Join/Exit events, probably should be filtered out in API response
+    price_native = U128DecimalField()
+    reserves_asset_0 = U128DecimalField(null=True)
+    reserves_asset_1 = U128DecimalField(null=True)
 
 
 class OmnipoolPositions(Model):
