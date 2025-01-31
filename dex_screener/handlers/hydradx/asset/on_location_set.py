@@ -18,7 +18,7 @@ async def on_location_set(
             asset_id=int(asset_id),
             location=NativeLocation(
                 parents=1,
-                interior=[Parachain(parachain_id), *_] as interior_value,
+                interior=(Parachain(parachain_id), *_,) as interior_value,
             ),
         ):
             pass

@@ -39,32 +39,30 @@ class Here:
 
 
 class Interior(tuple):
-    def __new__(cls, interior_data: dict[str, list | dict], *args, **kwargs) -> type[Self]:
+    def __new__(cls, interior_data: tuple|str, *args, **kwargs) -> type[Self]:
         value = interior_data
-        if interior_data['__kind'] == 'X1':
-            value = cls.convert(interior_data['value'])
-        elif interior_data['__kind'][0] == 'X':
-            value = tuple(cls.convert(element) for element in interior_data['value'])
-        elif interior_data['__kind'] == 'Here':
-            value = Here
+        if isinstance(interior_data , tuple):
+            value = tuple(cls.convert(element) for element in interior_data)
+        elif interior_data == 'Here':
+            value = Here()
         if not isinstance(value, Iterable):
             value = [value]
         return tuple.__new__(cls, value)
 
     @staticmethod
     def convert(element: dict[str, str | int]) -> Any:
-        match element['__kind'], element:
-            case 'Parachain', {'value': int(parachain_id)}:
+        match element:
+            case {'Parachain': int(parachain_id)}:
                 return Parachain(parachain_id)
-            case 'GeneralKey', {'data': str(key_hex_prefixed), 'length': int(key_length)}:
+            case {'GeneralKey': {'data': str(key_hex_prefixed), 'length': int(key_length)}}:
                 return GeneralKey(key_hex_prefixed, key_length)
-            case 'GeneralKey', {'value': str(key_hex_prefixed)}:
+            case {'GeneralKey': str(key_hex_prefixed)}:
                 return GeneralKey(key_hex_prefixed)
-            case 'GeneralIndex', {'value': str(index) | int(index)}:
+            case {'GeneralIndex': str(index) | int(index)}:
                 return GeneralIndex(int(index))
-            case 'AccountKey20', {'key': str(key_hex_prefixed)}:
+            case {'AccountKey20': str(key_hex_prefixed)}:
                 return AccountKey20(key_hex_prefixed)
-            case 'PalletInstance', {'value': int(pallet_id)}:
+            case {'PalletInstance': int(pallet_id)}:
                 return PalletInstance(pallet_id)
             case _:
                 pass
@@ -80,7 +78,7 @@ class NativeLocation:
     parents: int
 
     def __post_init__(self):
-        if isinstance(self.interior, dict):
+        if isinstance(self.interior, tuple):
             self.interior = Interior(self.interior)
 
 
@@ -95,4 +93,8 @@ class AssetRegistryLocation:
 
     @classmethod
     def from_event(cls, payload: dict) -> type[Self]:
+        decoded_interior = payload['location']['interior']
+        if isinstance(decoded_interior, dict):
+            assert len(decoded_interior) == 1
+            _, payload['location']['interior'] = decoded_interior.popitem()
         return cls(**payload)

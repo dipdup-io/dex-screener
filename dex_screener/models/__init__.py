@@ -49,7 +49,6 @@ class Asset(Model):
     )
 
     def amount(self, amount: AnyTypeAmount) -> AssetAmount:
-        amount = Decimal(amount).quantize(Decimal('1.' + '0' * self.decimals))
         return AssetAmount(asset=self, amount=amount)
 
     def from_minor(self, minor_amount: AnyTypeAmount) -> AssetAmount:
