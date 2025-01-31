@@ -286,3 +286,18 @@ def get_pool_id(payload: Any) -> str | None:
         return None
 
     return f'{assets[0]}_{assets[1]}'
+
+
+
+def extract_multilocation_payload(data: Any) -> None:
+    if isinstance(data, list | tuple):
+        return tuple(extract_multilocation_payload(item) for item in data)
+
+    if isinstance(data, dict):
+
+        if len(data) == 1 and (key := next(iter(data.keys()))).startswith('X'):
+            return data[key]
+
+        return {key: extract_multilocation_payload(value) for key, value in data.items()}
+
+    return data
