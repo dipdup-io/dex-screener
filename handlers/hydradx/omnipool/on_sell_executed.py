@@ -7,6 +7,7 @@ from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import SwapEvent
 from dex_screener.types.hydradx.substrate_events.omnipool_sell_executed import OmnipoolSellExecutedPayload
+from models import get_pair_id
 
 
 async def on_sell_executed(
@@ -20,6 +21,7 @@ async def on_sell_executed(
         assert asset_out.decimals is not None
 
         pair = await Pair.get_or_create(
+            id=get_pair_id(asset_in.id, asset_out.id),
             dex_key=DexKey.hydradx_omnipool,
             asset_0_id=min(asset_in.id, asset_out.id),
             asset_1_id=max(asset_in.id, asset_out.id),

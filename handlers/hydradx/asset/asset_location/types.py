@@ -1,4 +1,3 @@
-from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
 from typing import Self
@@ -40,20 +39,28 @@ class Here:
 
 class Interior(tuple):
     def __new__(cls, interior_data: dict[str, list | dict], *args, **kwargs) -> type[Self]:
-        value = interior_data
-        if interior_data['__kind'] == 'X1':
-            value = cls.convert(interior_data['value'])
-        elif interior_data['__kind'][0] == 'X':
-            value = tuple(cls.convert(element) for element in interior_data['value'])
-        elif interior_data['__kind'] == 'Here':
-            value = Here
-        if not isinstance(value, Iterable):
-            value = [value]
+        from dipdup.runtimes import extract_multilocation_payload
+
+        value = extract_multilocation_payload(interior_data)
+
+        value = tuple(cls.convert(element) for element in value)
+
+        # if len(value) == 1:
+        #     value = cls.convert(interior_data['value'])
+        # elif interior_data['__kind'][0] == 'X':
+        #     value =
+        # elif interior_data['__kind'] == 'Here':
+        #     value = Here
+        # if not isinstance(value, Iterable):
+        #     value = [value]
+
         return tuple.__new__(cls, value)
 
     @staticmethod
-    def convert(element: dict[str, str | int]) -> Any:
-        match element['__kind'], element:
+    def convert(value: dict[str, Any]) -> Any:
+        key, value = next(iter(value.items()))
+
+        match key, value:
             case 'Parachain', {'value': int(parachain_id)}:
                 return Parachain(parachain_id)
             case 'GeneralKey', {'data': str(key_hex_prefixed), 'length': int(key_length)}:
@@ -68,7 +75,7 @@ class Interior(tuple):
                 return PalletInstance(pallet_id)
             case _:
                 pass
-        return element
+        return value
 
     def __repr__(self) -> str:
         return f'<{self.__class__.__name__}[{super().__repr__()[1:-1]}]>'

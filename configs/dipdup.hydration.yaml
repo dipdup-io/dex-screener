@@ -42,6 +42,7 @@ indexes:
     # first stableswap pool: 3640110
     # first_level: 3640110
     # last_level: 3650110
+    # first_level: 1439859
 
     # OLD HANDLERS
     # handlers:

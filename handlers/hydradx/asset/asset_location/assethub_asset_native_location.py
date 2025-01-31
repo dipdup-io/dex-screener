@@ -17,9 +17,9 @@ class AssetHubAssetNativeLocation(AbstractAssetNativeLocation):
             case [*_, GeneralIndex(external_id)]:
                 pass
             case [
-                {'__kind': 'Parachain', 'value': self.parachain_id},
-                {'__kind': 'Parachain', 'value': int()},
-                {'__kind': 'Parachain', 'value': int(external_id)},
+                {'Parachain': self.parachain_id},
+                {'Parachain': int()},
+                {'Parachain': int(external_id)},
             ]:
                 pass
             case _:
