@@ -5,10 +5,12 @@ from __future__ import annotations
 from typing import TypedDict
 
 
-class V1003000(TypedDict):
+class V183(TypedDict):
     """
-    Pool has been touched in order to fulfill operational requirements.
+    Liquidity was removed from the pool.
     """
 
-    pool_id: list[str]
     who: str
+    asset_a: int
+    asset_b: int
+    shares: int

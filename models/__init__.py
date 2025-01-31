@@ -105,6 +105,7 @@ class SwapEvent(Model):
         table = 'dex_swap_event'
         model = 'dex_screener.models.SwapEvent'
 
+    # TODO: add dex id to final event model
     id = fields.IntField(primary_key=True)
     txn_id = fields.TextField()
     txn_index = fields.IntField(null=True)

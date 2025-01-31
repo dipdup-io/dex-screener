@@ -39,8 +39,9 @@ indexes:
       - subscan
       - node
     # first XYK pool: 1439857
-    # first_level: 1439857
-    # last_level: 1439857
+    # first stableswap pool: 3640110
+    # first_level: 3640110
+    # last_level: 3650110
 
     # OLD HANDLERS
     # handlers:
@@ -108,6 +109,10 @@ indexes:
         name: XYK.BuyExecuted
       - callback: hydradx.isolated_pool.on_sell_executed
         name: XYK.SellExecuted
+      - callback: hydradx.isolated_pool.on_liquidity_added
+        name: XYK.LiquidityAdded
+      - callback: hydradx.isolated_pool.on_liquidity_removed
+        name: XYK.LiquidityRemoved
 
       - callback: hydradx.omnipool.on_buy_executed
         name: Omnipool.BuyExecuted
@@ -118,3 +123,7 @@ indexes:
         name: Stableswap.BuyExecuted
       - callback: hydradx.stableswap.on_sell_executed
         name: Stableswap.SellExecuted
+      - callback: hydradx.stableswap.on_liquidity_added
+        name: Stableswap.LiquidityAdded
+      - callback: hydradx.stableswap.on_liquidity_removed
+        name: Stableswap.LiquidityRemoved
