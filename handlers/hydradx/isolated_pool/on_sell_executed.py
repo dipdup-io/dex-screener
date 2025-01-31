@@ -30,5 +30,5 @@ async def on_sell_executed(
         amount_out=event.payload['amount'] / 10**asset_out.decimals,
         direction=True,
         price=event.payload['sale_price'],
-        created_at_block_id=event.level,
+        created_at_block_number=event.level,
     )

@@ -17,7 +17,7 @@ async def on_pool_created(
             dex_key=DexKey.hydradx_xyk,
             asset_0_id=min(event.payload['asset_a'], event.payload['asset_b']),
             asset_1_id=max(event.payload['asset_a'], event.payload['asset_b']),
-            created_at_block_id=event.level,
+            created_at_block_number=event.level,
             created_at_txn_id=event.data.header['hash'],
             # fee_bps
         )

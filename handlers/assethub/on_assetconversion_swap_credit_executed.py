@@ -44,8 +44,8 @@ async def on_assetconversion_swap_credit_executed(
 
     assert asset_0_id != asset_1_id
 
-    asset_0 = await models.Asset.get_or_none(id=asset_0_id)
-    asset_1 = await models.Asset.get_or_none(id=asset_1_id)
+    asset_0 = await models.Asset.get(id=asset_0_id)
+    asset_1 = await models.Asset.get(id=asset_1_id)
 
     ctx.logger.info('Processing swap:')
     ctx.logger.info('<<< %s', asset_0.get_repr())
@@ -58,6 +58,8 @@ async def on_assetconversion_swap_credit_executed(
             'asset_0_id': asset_0_id,
             'asset_1_id': asset_1_id,
             'dex_key': 'assethub',
+            'created_at_txn_id': event.data.transaction_id,
+            'created_at_block_number': event.data.block_number,
         },
     )
     ctx.logger.info('Pair %s: %s', 'updated' if _ else 'created', pair.id)

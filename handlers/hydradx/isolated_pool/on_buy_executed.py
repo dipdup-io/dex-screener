@@ -30,5 +30,5 @@ async def on_buy_executed(
         amount_in=event.payload['amount'] / 10**asset_in.decimals,
         direction=False,
         price=event.payload['buy_price'],
-        created_at_block_id=event.level,
+        created_at_block_number=event.level,
     )

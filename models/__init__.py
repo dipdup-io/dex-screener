@@ -1,6 +1,7 @@
 import logging
 import time
-from enum import StrEnum, Enum
+from enum import Enum
+from enum import StrEnum
 from functools import partial
 from typing import Any
 
@@ -13,20 +14,20 @@ from tortoise import ForeignKeyFieldInstance
 
 
 class HydrationAssetType(StrEnum):
-    Token: str = 'Token'
-    External: str = 'External'
-    StableSwap: str = 'StableSwap'
-    Bond: str = 'Bond'
-    PoolShare: str = 'PoolShare'
-    XYK: str = 'XYK'
-    ERC20: str = 'Erc20'
+    Token = 'Token'
+    External = 'External'
+    StableSwap = 'StableSwap'
+    Bond = 'Bond'
+    PoolShare = 'PoolShare'
+    XYK = 'XYK'
+    ERC20 = 'Erc20'
 
 
 class DexKey(StrEnum):
     # FIXME: remove
-    hydradx: str = 'hydradx'
+    hydradx = 'hydradx'
 
-    assethub: str = 'assethub'
+    assethub = 'assethub'
     hydradx_omnipool = 'hydradx_omnipool'
     hydradx_otc = 'hydradx_otc'
     hydradx_stableswap = 'hydradx_stableswap'
@@ -69,35 +70,21 @@ class Asset(Model):
 
 
 class Pair(Model):
+    id = fields.TextField(primary_key=True)
+    dex_key = fields.EnumField(DexKey, db_index=True)
+    asset_0_id = fields.IntField()
+    asset_1_id = fields.IntField()
+    created_at_block_number = fields.IntField(null=True)
+    created_at_block_timestamp = fields.IntField(null=True)
+    created_at_txn_id = fields.TextField(null=True)
+    creator = fields.TextField(null=True)
+    fee_bps = fields.IntField(null=True)
+    metadata = fields.JSONField(null=True)
+
     class Meta:
         table = 'dex_pair'
         model = 'models.Pair'
         unique_together = ('dex_key', 'asset_0_id', 'asset_1_id')
-
-    id = fields.TextField(
-        primary_key=True,
-    )
-    dex_key = fields.EnumField(DexKey, db_index=True)
-    asset_0: ForeignKeyFieldInstance[Asset] = fields.ForeignKeyField(
-        model_name=Asset.Meta.model,
-        source_field='asset_0_id',
-        to_field='id',
-        related_name='pair_asset_0',
-    )
-    asset_1: ForeignKeyFieldInstance[Asset] = fields.ForeignKeyField(
-        model_name=Asset.Meta.model,
-        source_field='asset_1_id',
-        to_field='id',
-        related_name='pair_asset_1',
-    )
-
-    created_at_block: ForeignKeyFieldInstance[Block] = fields.ForeignKeyField(
-        model_name=Block.Meta.model,
-        source_field='created_at_block_id',
-        to_field='level',
-    )
-    created_at_txn_id = fields.TextField()
-    fee_bps = fields.IntField(null=True)
 
 
 class SwapEvent(Model):
@@ -124,7 +111,7 @@ class SwapEvent(Model):
     price = fields.DecimalField(max_digits=100, decimal_places=50, description='Always amount_out/amount_in')
     created_at_block: ForeignKeyFieldInstance[Block] = fields.ForeignKeyField(
         model_name=Block.Meta.model,
-        source_field='created_at_block_id',
+        source_field='created_at_block_number',
         to_field='level',
     )
 
@@ -155,22 +142,8 @@ U128DecimalField = partial(
 #     metadata = fields.JSONField(null=True)
 
 
-# class Pair(Model):
-#     # FIXME: int or 0x?
-#     id = fields.TextField(primary_key=True)
-#     dex_key = fields.TextField()
-#     asset_0_id = fields.IntField()
-#     asset_1_id = fields.IntField()
-#     created_at_block_number = fields.IntField(null=True)
-#     created_at_block_timestamp = fields.IntField(null=True)
-#     created_at_txn_id = fields.TextField(null=True)
-#     creator = fields.TextField(null=True)
-#     fee_bps = fields.IntField(null=True)
-#     metadata = fields.JSONField(null=True)
-
-
-# # FIXME: int or 0x?
 def get_pair_id(asset_0_id: int, asset_1_id: int) -> str:
+    assert asset_0_id < asset_1_id
     return f'{asset_0_id}_{asset_1_id}'
 
 
@@ -286,7 +259,6 @@ def get_pool_id(payload: Any) -> str | None:
         return None
 
     return f'{assets[0]}_{assets[1]}'
-
 
 
 def extract_multilocation_payload(data: Any) -> None:

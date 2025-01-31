@@ -20,11 +20,15 @@ async def on_sell_executed(
         asset_out = await Asset.get(id=event.payload['asset_out'])
         assert asset_out.decimals is not None
 
-        pair = await Pair.get_or_create(
+        pair, _ = await Pair.get_or_create(
             id=get_pair_id(asset_in.id, asset_out.id),
-            dex_key=DexKey.hydradx_omnipool,
-            asset_0_id=min(asset_in.id, asset_out.id),
-            asset_1_id=max(asset_in.id, asset_out.id),
+            defaults={
+                'dex_key': DexKey.hydradx_omnipool,
+                'asset_0_id': min(asset_in.id, asset_out.id),
+                'asset_1_id': max(asset_in.id, asset_out.id),
+                'created_at_txn_id': event.data.transaction_id,
+                'created_at_block_number': event.level,
+            },
         )
     except (DoesNotExist, AssertionError):
         raise
@@ -43,5 +47,5 @@ async def on_sell_executed(
         amount_out=amount_out,
         direction=True,
         price=amount_out / amount_in,
-        created_at_block_id=event.level,
+        created_at_block_number=event.level,
     )

@@ -52,5 +52,5 @@ async def on_sell_executed(
         amount_out=amount_out,
         direction=True,
         price=amount_out / amount_in,
-        created_at_block_id=event.level,
+        created_at_block_number=event.level,
     )
