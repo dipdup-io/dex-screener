@@ -1,3 +1,4 @@
+import time
 from collections.abc import Iterable
 
 from dipdup.context import HandlerContext
@@ -15,6 +16,7 @@ async def batch(
         await ctx.fire_matched_handler(handler)
 
     await Block.create(
-        level=handler.level,
-        timestamp=handler.args[0].data.header['timestamp'] // 1000,
+        block_number=handler.level,
+        block_timestamp=handler.args[0].data.header['timestamp'] // 1000,
+        written_timestamp=int(time.time()),
     )

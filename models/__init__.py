@@ -25,9 +25,6 @@ class HydrationAssetType(StrEnum):
 
 
 class DexKey(StrEnum):
-    # FIXME: remove
-    hydradx = 'hydradx'
-
     assethub = 'assethub'
     hydradx_omnipool = 'hydradx_omnipool'
     hydradx_otc = 'hydradx_otc'
@@ -40,8 +37,10 @@ class Block(Model):
         table = 'dex_block'
         model = 'models.Block'
 
-    level = fields.IntField(primary_key=True)
-    timestamp = fields.IntField()
+    block_number = fields.IntField(primary_key=True)
+    block_timestamp = fields.IntField(null=True)
+    written_timestamp = fields.IntField(null=True)
+    metadata = fields.JSONField(null=True)
 
 
 class Asset(Model):
@@ -123,13 +122,6 @@ U128DecimalField = partial(
     max_digits=40,
     decimal_places=0,
 )
-
-
-# class Block(Model):
-#     block_number = fields.IntField(primary_key=True)
-#     block_timestamp = fields.IntField(null=True)
-#     written_timestamp = fields.IntField(null=True)
-#     metadata = fields.JSONField(null=True)
 
 
 # class Asset(Model):
