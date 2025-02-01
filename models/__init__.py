@@ -112,7 +112,8 @@ class SwapEvent(Model):
     created_at_block: ForeignKeyFieldInstance[Block] = fields.ForeignKeyField(
         model_name=Block.Meta.model,
         source_field='created_at_block_number',
-        to_field='level',
+        to_field='block_number',
+        null=True,
     )
 
 
@@ -124,23 +125,10 @@ U128DecimalField = partial(
 )
 
 
-# class Asset(Model):
-#     id = fields.IntField(primary_key=True)
-#     name = fields.TextField()
-#     symbol = fields.TextField()
-#     total_supply = fields.IntField(null=True)
-#     circulating_supply = fields.IntField(null=True)
-#     coin_gecko_id = fields.TextField(null=True)
-#     coin_market_cap_id = fields.TextField(null=True)
-#     metadata = fields.JSONField(null=True)
-
-
 def get_pair_id(asset_0_id: int, asset_1_id: int) -> str:
     assert asset_0_id < asset_1_id
     return f'{asset_0_id}_{asset_1_id}'
 
-
-# # TODO: Composite PKs in `sql/on_reindex`
 
 
 class EventType(Enum):
@@ -150,7 +138,6 @@ class EventType(Enum):
 
 
 class Event(Model):
-    # NOTE: Composite PK; see `sql/on_reindex`
     event_type = fields.EnumField(EventType)
     composite_pk = fields.TextField(primary_key=True)
     # NOTE: in most cases duplicate of `composite_pk`
