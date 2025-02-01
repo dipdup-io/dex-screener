@@ -37,20 +37,22 @@ async def on_buy_executed(
 
     pair_id = await upsert_pair_model(asset_in, asset_out, m.DexKey.hydradx_omnipool)
 
-    amount_in = event.payload['amount_in'] / 10**asset_out_decimals
-    amount_out = event.payload['amount_out'] / 10**asset_out_decimals
-    await m.SwapEvent.create(
-        txn_id=event.data.header['hash'],
-        txn_index=event.data.extrinsic_index,
+    # NOTE: from spec - A combination of either asset0In + asset1Out or asset1In + asset0Out is expected.
+    # NOTE: opposite for sell (amounts = {'asset_1_in': amount_in, 'asset_0_out': amount_out})
+    amounts = {'asset_0_in': amount_in, 'asset_1_out': amount_out}
+    price = (amount_out / 10**asset_out_decimals) / (amount_in / 10**asset_in_decimals)
+    await m.Event.create(
+        event_type='swap',
+        composite_pk=m.get_composite_key(event.data),
+        txn_id=m.get_composite_key(event.data),
+        txn_index=event.data.extrinsic_index or 0,
         event_index=event.data.index,
         maker=event.payload['who'],
         pair_id=pair_id,
-        asset_in_id=asset_in,
-        asset_out_id=asset_out,
         # TODO: after model fix replace with amounts = {'asset_0_in': amount_in, 'asset_1_out': amount_out}
-        amount_in=amount_in,
-        amount_out=amount_out,
-        direction=False,
-        price=amount_out / amount_in,
-        created_at_block_number=event.level,
+        **amounts,
+        price_native=price,
+        # TODO: get and update pool fields
+        # reserves_asset_0
+        # reserves_asset_1
     )
