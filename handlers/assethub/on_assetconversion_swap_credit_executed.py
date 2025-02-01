@@ -58,7 +58,7 @@ async def on_assetconversion_swap_credit_executed(
             'asset_0_id': asset_0_id,
             'asset_1_id': asset_1_id,
             'dex_key': 'assethub',
-            'created_at_txn_id': f'{event.data.block_number}-{event.data.extrinsic_index or 0}-{event.data.index}',
+            'created_at_txn_id': models.get_composite_key(event.data),
             'created_at_block_number': event.data.block_number,
         },
     )
@@ -66,9 +66,9 @@ async def on_assetconversion_swap_credit_executed(
 
     event_model = models.Event(
         event_type='swap',
-        composite_pk=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
+        composite_pk=models.get_composite_pk(event.data),
         # NOTE: take caution, event index is used due to extrinsic index being null
-        txn_id=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
+        txn_id=models.get_composite_pk(event.data),
         txn_index=event.data.extrinsic_index or event.data.index,
         event_index=event.data.index,
         # FIXME: Who?

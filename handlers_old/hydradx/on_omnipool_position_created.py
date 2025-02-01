@@ -35,8 +35,8 @@ async def on_omnipool_position_created(
     extrinsic_index = event.data.extrinsic_index or 0
     join_event = m.Event(
         event_type='join',
-        composite_pk=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
-        txn_id=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
+        composite_pk=m.get_composite_key(event.data),
+        txn_id=m.get_composite_key(event.data),
         txn_index=extrinsic_index,
         event_index=event.data.index,
         maker=owner,

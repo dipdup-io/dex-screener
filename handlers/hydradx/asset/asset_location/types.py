@@ -39,7 +39,7 @@ class Here:
 
 class Interior(tuple):
     def __new__(cls, interior_data: dict[str, list | dict], *args, **kwargs) -> type[Self]:
-        from dex_screener.models import extract_multilocation_payload
+        from dipdup.runtimes import extract_multilocation_payload
 
         value = extract_multilocation_payload(interior_data)
 

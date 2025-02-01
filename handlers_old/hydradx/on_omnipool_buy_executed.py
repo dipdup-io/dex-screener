@@ -29,9 +29,9 @@ async def on_omnipool_buy_executed(
     extrinsic_index = event.data.extrinsic_index or 0
     event_model = m.Event(
         event_type='swap',
-        composite_pk=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
+        composite_pk=m.get_composite_key(event.data),
         # NOTE: take caution, event index is used due to extrinsic index being null
-        txn_id=f'{event.data.block_number}-{extrinsic_index}-{event.data.index}',
+        txn_id=m.get_composite_key(event.data),
         txn_index=extrinsic_index,
         event_index=event.data.index,
         maker=who,

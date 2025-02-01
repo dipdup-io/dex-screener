@@ -6,6 +6,7 @@ from dex_screener.models import Asset
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import SwapEvent
+from dex_screener.models import get_composite_key
 from dex_screener.types.hydradx.substrate_events.omnipool_sell_executed import OmnipoolSellExecutedPayload
 from models import get_pair_id
 
@@ -26,7 +27,7 @@ async def on_sell_executed(
                 'dex_key': DexKey.hydradx_omnipool,
                 'asset_0_id': min(asset_in.id, asset_out.id),
                 'asset_1_id': max(asset_in.id, asset_out.id),
-                'created_at_txn_id': f'{event.data.block_number}-{event.data.extrinsic_index or 0}-{event.data.index}',
+                'created_at_txn_id': get_composite_key(event.data),
                 'created_at_block_number': event.level,
             },
         )

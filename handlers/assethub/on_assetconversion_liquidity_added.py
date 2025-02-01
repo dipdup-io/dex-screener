@@ -49,8 +49,8 @@ async def on_assetconversion_liquidity_added(
     # emit join event
     join_event = models.Event(
         event_type='join',
-        composite_pk=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
-        txn_id=f'{event.data.block_number}-{event.data.extrinsic_index}-{event.data.index}',
+        composite_pk=models.get_composite_key(event.data),
+        txn_id=models.get_composite_key(event.data),
         txn_index=event.data.extrinsic_index or event.data.index,
         event_index=event.data.index,
         maker=maker,
