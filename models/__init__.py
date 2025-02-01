@@ -8,8 +8,10 @@ from typing import Any
 from dipdup import fields
 from dipdup.models import Meta
 from dipdup.models import Model
+from dipdup.runtimes import extract_multilocation_payload
 from dipdup.models.substrate import SubstrateEventData
 from tortoise import ForeignKeyFieldInstance
+
 
 # from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 
@@ -126,8 +128,9 @@ U128DecimalField = partial(
 
 
 def get_pair_id(asset_0_id: int, asset_1_id: int) -> str:
-    assert asset_0_id < asset_1_id
-    return f'{asset_0_id}_{asset_1_id}'
+    _min = min(asset_0_id, asset_1_id)
+    _max = max(asset_0_id, asset_1_id)
+    return f'{_min}_{_max}'
 
 
 
@@ -211,34 +214,19 @@ async def save_unprocesssed_payload(payload, note) -> None:
 NATIVE_ASSET_ID = 0
 
 
-def extract_assets(path: list) -> tuple[int, ...] | None:
-    asset_ids = []
-    for item in path:
-        if item['interior'] == 'Here':
-            asset_id = NATIVE_ASSET_ID
-        else:
-            try:
-                asset_id = item['interior']['X2'][-1]['GeneralIndex']
-            except (KeyError, TypeError):
-                _logger.warning('not a X2 path: %s', item)
-                return None
-        asset_ids.append(asset_id)
+def get_pool_assets(payload: Any) -> tuple[int, int]:
+    path = payload['pool_id'] if 'pool_id' in payload else payload['path']
+    loc = extract_multilocation_payload(path)
 
-    if len(asset_ids) != 2:
-        _logger.error('too many path elements: %s', asset_ids)
-        return None
+    if len(loc) != 2:
+        raise NotImplementedError
 
-    return tuple(asset_ids)
+    if loc[0][0]['interior'] == 'Here':
+        asset_0, asset_1 = 0, loc[1][0]['interior'][1]['GeneralIndex']
+    else:
+        asset_0, asset_1 = loc[0][0]['interior'][1]['GeneralIndex'], 0
 
-
-def get_pool_id(payload: Any) -> str | None:
-
-    assets = extract_assets(payload['pool_id'])
-    if assets is None:
-        _logger.warning('Failed to extract assets from pool_id %s', payload['pool_id'])
-        return None
-
-    return f'{assets[0]}_{assets[1]}'
+    return int(asset_0), int(asset_1)
 
 
 def get_composite_key(data: SubstrateEventData) -> str:

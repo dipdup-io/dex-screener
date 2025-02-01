@@ -2,7 +2,6 @@ from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
 from dex_screener import models as models
-from dex_screener.models import get_pool_id
 from dex_screener.types.assethub.substrate_events.asset_conversion_pool_created import AssetConversionPoolCreatedPayload
 
 
@@ -10,9 +9,12 @@ async def on_assetconversion_pool_created(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionPoolCreatedPayload],
 ) -> None:
-    pool_id = get_pool_id(event.payload)
-    if not pool_id:
-        return
+    asset_0, asset_1 = models.get_pool_assets(event.payload)
+    pool_id = f'{asset_0}_{asset_1}'
+
+    # pool_id = get_pool_id(event.payload)
+    # if not pool_id:
+    #     return
 
     pool = models.Pool(
         id=pool_id,

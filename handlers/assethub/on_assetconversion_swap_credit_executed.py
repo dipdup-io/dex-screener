@@ -5,6 +5,7 @@ from dex_screener import models as models
 from dex_screener.types.assethub.substrate_events.asset_conversion_swap_credit_executed import (
     AssetConversionSwapCreditExecutedPayload,
 )
+from dipdup.runtimes import extract_multilocation_payload
 from models import save_unprocesssed_payload
 
 
@@ -12,35 +13,36 @@ async def on_assetconversion_swap_credit_executed(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionSwapCreditExecutedPayload],
 ) -> None:
-    path = event.payload['path']
-    if len(path) != 2:
-        ctx.logger.error('FIXME: too many path elements %s', path)
-        await save_unprocesssed_payload(event.payload, 'too many path elements')
-        return
+    asset_0_id, asset_1_id = models.get_pool_assets(event.payload)
 
-    path_from, path_to = path[0][0], path[1][0]
+    # if len(path) != 2:
+    #     ctx.logger.error('FIXME: too many path elements %s', path)
+    #     await save_unprocesssed_payload(event.payload, 'too many path elements')
+    #     return
 
-    if path_from['interior'] == 'Here':
-        asset_0_id = 0
-    else:
-        try:
-            asset_0_id = path_from['interior']['X2'][-1]['GeneralIndex']
-        except (KeyError, TypeError):
-            msg = 'not a X2 path'
-            ctx.logger.warning('%s %s', msg, path_from)
-            await save_unprocesssed_payload(event.payload, msg)
-            return
+    # path_from, path_to = path[0], path[1]
 
-    if path_to['interior'] == 'Here':
-        asset_1_id = 0
-    else:
-        try:
-            asset_1_id = path_to['interior']['X2'][-1]['GeneralIndex']
-        except (KeyError, TypeError):
-            msg = 'not a X2 path'
-            ctx.logger.warning('%s %s', msg, path_to)
-            await save_unprocesssed_payload(event.payload, msg)
-            return
+    # if path_from['interior'] == 'Here':
+    #     asset_0_id = 0
+    # else:
+    #     try:
+    #         asset_0_id = path_from['interior']['X2'][-1]['GeneralIndex']
+    #     except (KeyError, TypeError):
+    #         msg = 'not a X2 path'
+    #         ctx.logger.warning('%s %s', msg, path_from)
+    #         await save_unprocesssed_payload(event.payload, msg)
+    #         return
+
+    # if path_to['interior'] == 'Here':
+    #     asset_1_id = 0
+    # else:
+    #     try:
+    #         asset_1_id = path_to['interior']['X2'][-1]['GeneralIndex']
+    #     except (KeyError, TypeError):
+    #         msg = 'not a X2 path'
+    #         ctx.logger.warning('%s %s', msg, path_to)
+    #         await save_unprocesssed_payload(event.payload, msg)
+    #         return
 
     assert asset_0_id != asset_1_id
 
@@ -66,10 +68,10 @@ async def on_assetconversion_swap_credit_executed(
 
     event_model = models.Event(
         event_type='swap',
-        composite_pk=models.get_composite_pk(event.data),
+        composite_pk=models.get_composite_key(event.data),
         # NOTE: take caution, event index is used due to extrinsic index being null
-        txn_id=models.get_composite_pk(event.data),
-        txn_index=event.data.extrinsic_index or event.data.index,
+        txn_id=models.get_composite_key(event.data),
+        txn_index=event.data.extrinsic_index or 0,
         event_index=event.data.index,
         # FIXME: Who?
         # maker=event.data.call_address[0],  # ???

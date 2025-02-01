@@ -13,9 +13,11 @@ async def on_assetconversion_liquidity_added(
     ctx: HandlerContext,
     event: SubstrateEvent[AssetConversionLiquidityAddedPayload],
 ) -> None:
-    pool_id = models.get_pool_id(event.payload)
-    if not pool_id:
-        return
+    asset_0, asset_1 = models.get_pool_assets(event.payload)
+    pool_id = f'{asset_0}_{asset_1}'
+
+    # if not pool_id:
+    #     return
 
     pool = await models.Pool.get(id=pool_id)
     ctx.logger.info('Liquidity added to pool `%s`', pool.id)
