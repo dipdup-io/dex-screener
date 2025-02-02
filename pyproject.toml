@@ -13,10 +13,11 @@ dev = [
     "ruff>=0.8.3",
     "black>=24.10.0",
     "ssort>=0.14.0",
+    "pytest>=8.3.4",
 ]
 
 [tool.uv.sources]
-dipdup = { git = "https://github.com/dipdup-io/dipdup", branch = "aux/8.2.0rc1" }
+dipdup = { git = "https://github.com/dipdup-io/dipdup", branch = "next" }
 
 [tool.ruff]
 line-length = 140

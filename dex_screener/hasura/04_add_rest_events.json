@@ -1,0 +1,31 @@
+{
+    "type": "bulk",
+    "source": "default",
+    "args": [
+        {
+            "type": "add_query_to_collection",
+            "args": {
+                "collection_name": "allowed-queries",
+                "query_name": "Events",
+                "query": "query Events($fromBlock: Int!, $toBlock: Int!) { events: dex_swap_event(where: {block_id: { _gte: $fromBlock, _lte: $toBlock}}, order_by: [{block: {level: asc}}, {tx_index: asc}, {event_index: asc}], limit: 1000) { txnId: tx_id txnIndex: tx_index eventIndex: event_index maker: maker pairId: pair_id asset0In: amount_0_in asset1In: amount_1_in asset0Out: amount_0_out asset1Out: amount_1_out priceNative: price }}"
+            }
+        },
+        {
+            "type": "create_rest_endpoint",
+            "args": {
+                "name": "Events",
+                "url": "events",
+                "definition": {
+                    "query": {
+                        "query_name": "Events",
+                        "collection_name": "allowed-queries"
+                    }
+                },
+                "methods": [
+                    "GET"
+                ],
+                "comment": ""
+            }
+        }
+    ]
+}

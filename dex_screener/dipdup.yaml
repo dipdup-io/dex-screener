@@ -48,9 +48,9 @@ indexes:
       - callback: hydradx.isolated_pool.on_pool_created
         name: XYK.PoolCreated
 
-      - callback: hydradx.isolated_pool.on_buy_executed
+      - callback: hydradx.isolated_pool.on_swap_executed
         name: XYK.BuyExecuted
-      - callback: hydradx.isolated_pool.on_sell_executed
+      - callback: hydradx.isolated_pool.on_swap_executed
         name: XYK.SellExecuted
 
       - callback: hydradx.omnipool.on_buy_executed

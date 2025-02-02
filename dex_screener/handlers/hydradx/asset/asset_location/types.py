@@ -92,7 +92,12 @@ class AssetRegistryLocation:
             self.location = NativeLocation(**self.location)
 
     @classmethod
-    def from_event(cls, payload: dict) -> type[Self]:
+    def from_event(cls, payload: dict|tuple) -> type[Self]:
+        if isinstance(payload, tuple):
+            payload = {
+                'asset_id': payload[0],
+                'location': payload[1],
+            }
         decoded_interior = payload['location']['interior']
         if isinstance(decoded_interior, dict):
             assert len(decoded_interior) == 1

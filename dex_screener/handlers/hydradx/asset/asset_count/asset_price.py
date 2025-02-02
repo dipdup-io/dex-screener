@@ -6,6 +6,8 @@ from typing import Generic
 from typing import TypeVar
 from typing import overload
 
+from dex_screener.handlers.hydradx.asset.asset_count import DEX_SCREENER_PRICE_MAX_DECIMALS
+from dex_screener.handlers.hydradx.asset.asset_count import DEX_SCREENER_PRICE_MAX_DIGITS
 from dex_screener.handlers.hydradx.asset.asset_count.asset_amount import AssetAmount
 from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypeDecimal
 
@@ -13,26 +15,33 @@ if TYPE_CHECKING:
     from typing import Self
 
     from dex_screener.handlers.hydradx.asset.asset_count.market_pair import MarketPair
+    from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypePrice
 
 from dex_screener.handlers.hydradx.asset.asset_count.market_pair import MarketPairBaseAsset
 from dex_screener.handlers.hydradx.asset.asset_count.market_pair import MarketPairQuoteAsset
-from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypePrice
 
 MarketPairBaseAssetAmount = TypeVar('MarketPairBaseAssetAmount', bound=AssetAmount)
 MarketPairQuoteAssetAmount = TypeVar('MarketPairQuoteAssetAmount', bound=AssetAmount)
 
-
 class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
     def __init__(self, price: AnyTypePrice, market_pair: MarketPair[MarketPairBaseAsset, MarketPairQuoteAsset]):
         self.pair: MarketPair = market_pair
-        self.price: Decimal = Decimal(price).quantize(Decimal(''.join(['0.'] + ['0'] * market_pair.decimals)))
+        price = Decimal(price)
+        _, digits, exponent = price.as_tuple()
+        self.price: Decimal = price.quantize(Decimal(''.join(['0.'] + ['0'] * min(
+            (DEX_SCREENER_PRICE_MAX_DIGITS - (len(digits) + exponent)),
+            DEX_SCREENER_PRICE_MAX_DECIMALS
+        ))))
+
 
     @overload
     def __rtruediv__(self: Self, other: AnyTypeDecimal) -> AssetPrice[MarketPairQuoteAsset, MarketPairBaseAsset]:
         pass
+
     @overload
     def __rtruediv__(self: Self, other: MarketPairQuoteAssetAmount) -> MarketPairBaseAssetAmount:
         pass
+
     def __rtruediv__(self, other):
         if isinstance(other, AssetAmount):
             if other.asset.id != self.pair.quote.id:
@@ -80,7 +89,8 @@ class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
                 raise TypeError(f'Can only multiply {self.pair!s} price with {self.pair.base.__name__} amount')
             return self.pair.quote.amount(self.price * Decimal(other))
         if isinstance(other, AnyTypeDecimal):
-            return AssetPrice(self.price * Decimal(other), self.pair)
+            result = self.price * Decimal(other)
+            return AssetPrice(result, self.pair)
         raise TypeError('Unsupported operand type')
 
     def __rmul__(self, other):
@@ -88,7 +98,8 @@ class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
 
     def __truediv__(self: Self, other: AnyTypeDecimal) -> Self:
         if isinstance(other, AnyTypeDecimal):
-            return AssetPrice(self.price / Decimal(other), self.pair)
+            result = self.price / Decimal(other)
+            return AssetPrice(result, self.pair)
         raise TypeError('Unsupported operand type')
 
     def __eq__(self, other: AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset]) -> bool:
@@ -96,5 +107,9 @@ class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
             raise TypeError('Can only compare AssetPrice with AssetPrice')
         return self.pair == other.pair and self.price.normalize() == other.price.normalize()
 
+    def __str__(self) -> str:
+        return f'{self.price:f}'
+
+
     def __repr__(self) -> str:
-        return f'{self.pair!s}({self.price.normalize()!s})'
+        return f'{self.pair!s}({self})'

@@ -1,24 +1,23 @@
 {
     "type": "bulk",
     "source": "default",
-    "resource_version": 15,
     "args": [
         {
             "type": "add_query_to_collection",
             "args": {
                 "collection_name": "allowed-queries",
-                "query_name": "Events",
-                "query": "query Events($fromBlock: Int!, $toBlock: Int!) { events: dex_swap_event( where: { created_at_block_id: { _gte: $fromBlock, _lte: $toBlock} }, order_by: [ {dex_block: {level: asc}}, {txn_index: asc}, {event_index: asc} ], limit: 1000 ) { block: dex_block { blockNumber: level blockTimestamp: timestamp } txn_id txn_index event_index }}"
+                "query_name": "Pair",
+                "query": "query Pair($id: String!) { pair: dex_pair_by_pk(id: $id) { id dexKey: dex_key asset0Id: asset_0_id asset1Id: asset_1_id createdAtBlockNumber: created_at_block_id createdAtTxnId: created_at_txn_id }}"
             }
         },
         {
             "type": "create_rest_endpoint",
             "args": {
-                "name": "Events",
-                "url": "events",
+                "name": "Pair",
+                "url": "pair",
                 "definition": {
                     "query": {
-                        "query_name": "Events",
+                        "query_name": "Pair",
                         "collection_name": "allowed-queries"
                     }
                 },

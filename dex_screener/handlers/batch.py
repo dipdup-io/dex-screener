@@ -13,9 +13,13 @@ async def batch(
     batch_levels = []
     for handler in handlers:
         if handler.level not in batch_levels:
+            try:
+                timestamp=handler.args[0].data.header['timestamp'] // 1000
+            except (KeyError, AttributeError, ValueError):
+                timestamp=0
             block = await Block.create(
                 level=handler.level,
-                timestamp=handler.args[0].data.header['timestamp'] // 1000,
+                timestamp=timestamp,
             )
             batch_levels.append(handler.level)
 

@@ -1,24 +1,23 @@
 {
     "type": "bulk",
     "source": "default",
-    "resource_version": 6,
     "args": [
         {
             "type": "add_query_to_collection",
             "args": {
                 "collection_name": "allowed-queries",
-                "query_name": "Pair",
-                "query": "query Pair($id: String!) { pair: dex_pair_by_pk(id: $id) { id dexKey: dex_key asset0Id: asset_0_id asset1Id: asset_1_id createdAtBlockNumber: created_at_block_id createdAtBlockTimestamp: dex_block { timestamp } createdAtTxnId: created_at_txn_id }}"
+                "query_name": "Asset",
+                "query": "query Asset($id: Int!) { asset: dex_asset_by_pk(id: $id) { id name symbol decimals asset_type updated_at_block_id }}"
             }
         },
         {
             "type": "create_rest_endpoint",
             "args": {
-                "name": "Pair",
-                "url": "pair?id=:id",
+                "name": "Asset",
+                "url": "asset",
                 "definition": {
                     "query": {
-                        "query_name": "Pair",
+                        "query_name": "Asset",
                         "collection_name": "allowed-queries"
                     }
                 },

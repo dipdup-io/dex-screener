@@ -1,24 +1,23 @@
 {
     "type": "bulk",
     "source": "default",
-    "resource_version": 11,
     "args": [
         {
             "type": "add_query_to_collection",
             "args": {
                 "collection_name": "allowed-queries",
-                "query_name": "Asset",
-                "query": "query Asset($id: Int!) { asset: dex_asset_by_pk(id: $id) { id name symbol decimals asset_type updated_at_block_id }}"
+                "query_name": "LatestBlock",
+                "query": "query LatestBlock { block: dex_block(order_by: {level: desc}, where: {dex_swap_events: {id: {_is_null: false}}}, limit: 1) { blockNumber: level blockTimestamp: timestamp }}"
             }
         },
         {
             "type": "create_rest_endpoint",
             "args": {
-                "name": "Asset",
-                "url": "asset",
+                "name": "LatestBlock",
+                "url": "latest-block",
                 "definition": {
                     "query": {
-                        "query_name": "Asset",
+                        "query_name": "LatestBlock",
                         "collection_name": "allowed-queries"
                     }
                 },

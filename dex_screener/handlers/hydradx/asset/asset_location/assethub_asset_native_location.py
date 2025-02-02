@@ -14,12 +14,7 @@ class AssetHubAssetNativeLocation(AbstractAssetNativeLocation):
         match interior:
             case [*_, GeneralIndex(external_id)]:
                 pass
-            case [
-                {'__kind': 'Parachain', 'value': self.parachain_id},
-                {'__kind': 'Parachain', 'value': int()},
-                {'__kind': 'Parachain', 'value': int(external_id)}
-            ]:
-                pass
+
             case _:
                 raise ValueError('Unhandled interior value: %s.', interior)
 

@@ -9,6 +9,9 @@ from dipdup.fields import ManyToManyField
 from dipdup.fields import OneToOneField
 from dipdup.models import Model
 
+from dex_screener.models.dex_fields import AssetAmountField
+from dex_screener.models.dex_fields import AssetPriceField
+
 if TYPE_CHECKING:
     from tortoise.fields.relational import ForeignKeyFieldInstance
     from tortoise.fields.relational import ManyToManyFieldInstance
@@ -39,7 +42,7 @@ class Asset(Model):
     id = fields.IntField(primary_key=True)
     name = fields.CharField(max_length=255, null=True)
     symbol = fields.CharField(max_length=16, null=True)
-    decimals = fields.IntField(null=True)
+    decimals = fields.SmallIntField(null=True)
     asset_type = fields.EnumField(enum_type=HydrationAssetType, db_index=True)
 
     updated_at_block: ForeignKeyFieldInstance[Block] = ForeignKeyField(
@@ -116,7 +119,7 @@ class Pair(Model):
         model = 'models.Pair'
         unique_together = ('pool', 'asset_0', 'asset_1')
 
-    id = fields.CharField(primary_key=True, max_length=66)
+    id = fields.CharField(primary_key=True, max_length=80)
     dex_key = fields.EnumField(DexKey, db_index=True)
     asset_0: ForeignKeyFieldInstance[Asset] = ForeignKeyField(
         model_name=Asset.Meta.model,
@@ -152,23 +155,23 @@ class SwapEvent(Model):
 
     id = fields.IntField(primary_key=True)
     timestamp = fields.DatetimeField()
-    txn_id = fields.CharField(max_length=66)
-    txn_index = fields.IntField(null=True)
-    event_index = fields.IntField()
+    tx_id = fields.CharField(max_length=20)
+    tx_index = fields.IntField(null=True)
+    event_index = fields.CharField(max_length=20)
     maker = AccountField()
     pair: ForeignKeyFieldInstance[Pair] = ForeignKeyField(
         model_name=Pair.Meta.model,
         source_field='pair_id',
         to_field='id',
     )
-    asset_in_id = fields.IntField()
-    asset_out_id = fields.IntField()
-    amount_in = fields.DecimalField(max_digits=100, decimal_places=50, null=True)
-    amount_out = fields.DecimalField(max_digits=100, decimal_places=50, null=True)
+    amount_0_in = AssetAmountField(null=True)
+    amount_1_in = AssetAmountField(null=True)
+    amount_0_out = AssetAmountField(null=True)
+    amount_1_out = AssetAmountField(null=True)
     direction = fields.BooleanField(description='0: Buy, 1: Sell')
-    price = fields.DecimalField(max_digits=100, decimal_places=50, description='Always amount_out/amount_in')
-    created_at_block: ForeignKeyFieldInstance[Block] = ForeignKeyField(
+    price = AssetPriceField(description='Always amount_1/amount_0')
+    block: ForeignKeyFieldInstance[Block] = ForeignKeyField(
         model_name=Block.Meta.model,
-        source_field='created_at_block_id',
+        source_field='block_id',
         to_field='level',
     )

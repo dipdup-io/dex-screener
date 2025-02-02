@@ -1,7 +1,13 @@
 from __future__ import annotations
 
+from decimal import Decimal
+from typing import TYPE_CHECKING
 from typing import Generic
 from typing import TypeVar
+
+if TYPE_CHECKING:
+    from dex_screener.handlers.hydradx.asset.asset_count.asset_price import AssetPrice
+    from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypePrice
 
 MarketPairBaseAsset = TypeVar('MarketPairBaseAsset', bound='Asset')
 MarketPairQuoteAsset = TypeVar('MarketPairQuoteAsset', bound='Asset')
@@ -17,10 +23,14 @@ class MarketPair(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
 
     @property
     def decimals(self) -> int:
-        return self.base.decimals + self.quote.decimals
+        return self.quote.decimals - self.base.decimals
 
     def reverse(self) -> MarketPair[MarketPairQuoteAsset, MarketPairBaseAsset]:
         return MarketPair(self.quote, self.base)
+
+    def from_minor(self, price_minor: AnyTypePrice) -> AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset]:
+        from dex_screener.handlers.hydradx.asset.asset_count.asset_price import AssetPrice
+        return AssetPrice(Decimal(price_minor)/Decimal(10**self.decimals), self)
 
     def __eq__(self, other: MarketPair) -> bool:
         if not isinstance(other, MarketPair):
