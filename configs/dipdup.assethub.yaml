@@ -1,0 +1,59 @@
+runtimes:
+  assethub:
+    kind: substrate
+    type_registry: assethub
+
+datasources:
+  subsquid:
+    kind: substrate.subsquid
+    url: https://v2.archive.subsquid.io/network/asset-hub-polkadot
+  subscan:
+    kind: substrate.subscan
+    url: https://assethub-polkadot.api.subscan.io/api
+  node:
+    kind: substrate.node
+    url: https://statemint.api.onfinality.io/rpc?apikey=${NODE_API_KEY:-''}
+    ws_url: wss://statemint.api.onfinality.io/ws?apikey=${NODE_API_KEY:-''}
+
+custom:
+  native_token:
+    name: DOT
+    symbol: DOT
+    decimals: 10
+
+indexes:
+  assethub_transfers:
+    kind: substrate.events
+    runtime: assethub
+    datasources:
+    - subsquid
+    - subscan
+    - node
+    # first_level: 6159146
+    # last_level: 6159547
+    # last_level: 6119558
+    handlers:
+      # Assets
+      #
+      - callback: assethub.on_assets_created
+        name: Assets.Created
+      - callback: assethub.on_assets_destroyed
+        name: Assets.Destroyed
+      - callback: assethub.on_assets_metadata_set
+        name: Assets.MetadataSet
+      - callback: assethub.on_assets_metadata_cleared
+        name: Assets.MetadataCleared
+      # AssetConversion
+      #
+      - callback: assethub.on_assetconversion_pool_created
+        name: AssetConversion.PoolCreated
+      - callback: assethub.on_assetconversion_liquidity_added
+        name: AssetConversion.LiquidityAdded
+      - callback: assethub.on_assetconversion_liquidity_removed
+        name: AssetConversion.LiquidityRemoved
+      - callback: assethub.on_assetconversion_swap_credit_executed
+        name: AssetConversion.SwapCreditExecuted
+      - callback: assethub.on_assetconversion_swap_executed
+        name: AssetConversion.SwapExecuted
+      - callback: assethub.on_assetconversion_touched
+        name: AssetConversion.Touched

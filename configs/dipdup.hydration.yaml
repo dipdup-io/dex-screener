@@ -1,0 +1,86 @@
+runtimes:
+  hydradx:
+    kind: substrate
+    type_registry: hydration
+
+datasources:
+  subsquid:
+    kind: substrate.subsquid
+    url: https://v2.archive.subsquid.io/network/hydradx
+  subscan:
+    kind: substrate.subscan
+    url: https://hydration.api.subscan.io/api
+  # NOTE: all running 1.17.0-967989c5d94
+  node:
+    kind: substrate.node
+    url: https://hydradx.paras.ibp.network
+    ws_url: wss://hydradx.paras.ibp.network
+  # node_2:
+  #   kind: substrate.node
+  #   url: https://rpc.hydradx.cloud
+  #   ws_url: wss://rpc.hydradx.cloud
+  # node_3:
+  #   kind: substrate.node
+  #   url: https://hydradx-rpc.dwellir.com
+  #   ws_url: wss://hydradx-rpc.dwellir.com
+
+custom:
+  native_token:
+    name: HDX
+    symbol: HDX
+    decimals: 12
+
+indexes:
+  hydradx_events:
+    kind: substrate.events
+    runtime: hydradx
+    datasources:
+      - subsquid
+      - subscan
+      - node
+    # first XYK pool: 1439857
+    # first_level: 1439857
+    # last_level: 1439857
+
+    handlers:
+      - callback: hydradx.on_assetregistry_registered
+        name: AssetRegistry.Registered
+
+      - callback: hydradx.on_xyk_pool_created
+        name: XYK.PoolCreated
+      - callback: hydradx.on_xyk_pool_destroyed
+        name: XYK.PoolDestroyed
+      - callback: hydradx.on_xyk_liquidity_added
+        name: XYK.LiquidityAdded
+      - callback: hydradx.on_xyk_liquidity_removed
+        name: XYK.LiquidityRemoved
+      - callback: hydradx.on_xyk_buy_executed
+        name: XYK.BuyExecuted
+      - callback: hydradx.on_xyk_sell_executed
+        name: XYK.SellExecuted
+
+      - callback: hydradx.on_omnipool_buy_executed
+        name: Omnipool.BuyExecuted
+      - callback: hydradx.on_omnipool_sell_executed
+        name: Omnipool.SellExecuted
+      - callback: hydradx.on_omnipool_position_created
+        name: Omnipool.PositionCreated
+      - callback: hydradx.on_omnipool_position_destroyed
+        name: Omnipool.PositionDestroyed
+      - callback: hydradx.on_omnipool_position_updated
+        name: Omnipool.PositionUpdated
+
+      - callback: hydradx.on_stableswap_buy_executed
+        name: Stableswap.BuyExecuted
+      - callback: hydradx.on_stableswap_sell_executed
+        name: Stableswap.SellExecuted
+
+      - callback: hydradx.on_otc_cancelled
+        name: OTC.Cancelled
+      - callback: hydradx.on_otc_filled
+        name: OTC.Filled
+      - callback: hydradx.on_otc_partially_filled
+        name: OTC.PartiallyFilled
+      - callback: hydradx.on_otc_placed
+        name: OTC.Placed
+    # NOTE: first asset block is 1439857
