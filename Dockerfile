@@ -30,11 +30,7 @@ RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
 	uv sync --frozen --exact --no-install-project --no-editable --no-dev --no-installer-metadata \
     --no-install-package=sympy --no-install-package=cytoolz \
-    --compile-bytecode \
-    && for i in `find "${VENV_PATH}/lib" -wholename '*/__pycache__/*'`; do \
-    cbn=`basename $i`; fn=${cbn:0:-16}; bn="${fn}.py"; cdn=`dirname $i`; dn=`dirname $cdn`; \
-    echo "${dn}/${bn}"; mv $i "${dn}/${bn}c"; rm "${dn}/${bn}"; done \
-    && find "${VENV_PATH}/lib" -type d -name '__pycache__' -print | xargs rm -d
+    && find "${VENV_PATH}/lib" -type d -name '__pycache__' -print | xargs rm -rf
 
 
 FROM python:${PYTHON_VERSION} AS runtime-base
