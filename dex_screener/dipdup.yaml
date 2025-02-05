@@ -9,6 +9,13 @@ database:
   password: ${POSTGRES_PASSWORD:-changeme}
   database: ${POSTGRES_DB:-dipdup}
 
+hasura:
+  url: ${HASURA_URL:-http://hasura:8080}
+  admin_secret: ${ADMIN_SECRET:-changeme}
+  select_limit: ${SELECT_LIMIT:-1000}
+  allow_aggregations: ${ALLOW_AGGREGATIONS:-true}
+  rest: false
+
 runtimes:
   hydradx:
     kind: substrate
@@ -53,12 +60,7 @@ indexes:
       - callback: hydradx.isolated_pool.on_swap_executed
         name: XYK.SellExecuted
 
-      - callback: hydradx.omnipool.on_buy_executed
-        name: Omnipool.BuyExecuted
-      - callback: hydradx.omnipool.on_sell_executed
-        name: Omnipool.SellExecuted
-
-      - callback: hydradx.stableswap.on_buy_executed
-        name: Stableswap.BuyExecuted
-      - callback: hydradx.stableswap.on_sell_executed
-        name: Stableswap.SellExecuted
+advanced:
+  reindex:
+    config_modified: ignore
+    schema_modified: exception

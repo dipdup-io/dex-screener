@@ -22,8 +22,8 @@ async def on_swap_executed(
             case SubstrateEvent(
                 name='XYK.BuyExecuted',
                 payload={
-                    'buy_price': int(minor_amount_out),
-                    'amount': int(minor_amount_in),
+                    'buy_price': int(minor_amount_in),
+                    'amount': int(minor_amount_out),
                 }
             ):
                 direction = False
@@ -31,8 +31,8 @@ async def on_swap_executed(
             case SubstrateEvent(
                 name='XYK.SellExecuted',
                 payload={
-                    'sale_price': int(minor_amount_in),
-                    'amount': int(minor_amount_out),
+                    'sale_price': int(minor_amount_out),
+                    'amount': int(minor_amount_in),
                 }
             ):
                 direction = True
@@ -47,17 +47,18 @@ async def on_swap_executed(
             swap_data = {
                 'amount_0_in': asset_amount_in,
                 'amount_1_out': asset_amount_out,
+                'price': asset_amount_out / asset_amount_in,
             }
         else:
             swap_data = {
                 'amount_0_out': asset_amount_out,
                 'amount_1_in': asset_amount_in,
+                'price': asset_amount_in / asset_amount_out,
             }
 
         swap_data.update(
             {
                 'direction': direction,
-                'price': asset_amount_out / asset_amount_in,
                 'maker': event.payload['who'],
                 'pair_id': event.payload['pool'],
             }
@@ -71,4 +72,5 @@ async def on_swap_executed(
         **event_info.model_dump(),
         **swap_data,
     )
-    assert swap
+
+    await event_info.update_latest_block()

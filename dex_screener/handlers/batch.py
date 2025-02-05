@@ -1,7 +1,11 @@
 from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from dipdup.context import HandlerContext
 from dipdup.index import MatchedHandler
+
+if TYPE_CHECKING:
+    from dipdup.datasources.substrate_subscan import SubstrateSubscanDatasource
 
 
 async def batch(
@@ -16,7 +20,9 @@ async def batch(
             try:
                 timestamp=handler.args[0].data.header['timestamp'] // 1000
             except (KeyError, AttributeError, ValueError):
-                timestamp=0
+                subscan: SubstrateSubscanDatasource = ctx.get_substrate_datasource('subscan')
+                block_data = await subscan.request('post', 'scan/block', json={'block_num': handler.level})
+                timestamp=block_data['data']['block_timestamp']
             block = await Block.create(
                 level=handler.level,
                 timestamp=timestamp,

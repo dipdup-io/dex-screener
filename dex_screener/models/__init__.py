@@ -33,6 +33,15 @@ class Block(Model):
     level = fields.IntField(primary_key=True)
     timestamp = fields.IntField()
 
+class LatestBlock(Model):
+    class Meta:
+        table = 'ds_latest_block'
+        model = 'models.LatestBlock'
+
+    id = fields.BooleanField(primary_key=True)
+    block_number = fields.IntField()
+    block_timestamp = fields.IntField()
+
 
 class Asset(Model):
     class Meta:
@@ -154,7 +163,7 @@ class SwapEvent(Model):
         model = 'models.SwapEvent'
 
     id = fields.IntField(primary_key=True)
-    timestamp = fields.DatetimeField()
+    name = fields.CharField(max_length=32)
     tx_id = fields.CharField(max_length=20)
     tx_index = fields.IntField(null=True)
     event_index = fields.CharField(max_length=20)

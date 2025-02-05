@@ -7,7 +7,7 @@
             "args": {
                 "collection_name": "allowed-queries",
                 "query_name": "LatestBlock",
-                "query": "query LatestBlock { block: dex_block(order_by: {level: desc}, where: {dex_swap_events: {id: {_is_null: false}}}, limit: 1) { blockNumber: level blockTimestamp: timestamp }}"
+                "query": "query LatestBlock { block: ds_latest_block_by_pk(id: true) { BlockNumber:block_number BlockTimestamp:block_timestamp }}"
             }
         },
         {

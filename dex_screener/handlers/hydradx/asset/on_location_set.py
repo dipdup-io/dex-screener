@@ -23,7 +23,7 @@ async def on_location_set(
             pass
 
         case _:
-            ctx.logger.error('Unhandled AssetNativeLocation')
+            ctx.logger.error('Unhandled AssetNativeLocation: %r.', event.payload)
             return
 
     try:
