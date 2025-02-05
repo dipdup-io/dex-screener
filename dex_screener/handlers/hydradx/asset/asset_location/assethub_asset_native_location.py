@@ -4,6 +4,7 @@ from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_lo
 from dex_screener.handlers.hydradx.asset.asset_location.dto import ExternalMetadataDTO
 from dex_screener.handlers.hydradx.asset.asset_location.types import GeneralIndex
 from dex_screener.handlers.hydradx.asset.asset_location.types import Interior
+from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 
 
 class AssetHubAssetNativeLocation(AbstractAssetNativeLocation):
@@ -16,7 +17,7 @@ class AssetHubAssetNativeLocation(AbstractAssetNativeLocation):
                 pass
 
             case _:
-                raise ValueError('Unhandled interior value: %s.', interior)
+                raise InvalidEventDataError(f'Unhandled interior value: {interior}.')
 
         return [external_id]
 

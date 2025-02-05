@@ -1,8 +1,9 @@
 from dipdup.models.substrate import SubstrateEvent
-from scalecodec.exceptions import RemainingScaleBytesNotEmptyException
 
-from dex_screener.handlers.hydradx.asset.asset_type import BaseHydrationAsset
-from dex_screener.handlers.hydradx.asset.asset_type import InvalidEventDataError
+from dex_screener.handlers.hydradx.asset.asset_type import DipDupEventDataCollectPayloadUnhandledError
+from dex_screener.handlers.hydradx.asset.asset_type import validate_framework_exception
+from dex_screener.handlers.hydradx.asset.asset_type.abstract_hydration_asset import BaseHydrationAsset
+from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 from dex_screener.models import Asset
 
@@ -14,12 +15,9 @@ class HydrationTokenAsset(BaseHydrationAsset):
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
         try:
             return await super(cls, cls).handle_register_asset(event)
-        except ValueError:
-            pass
-        except RemainingScaleBytesNotEmptyException:
-            pass
-        except NotImplementedError:
-            pass
+        except DipDupEventDataCollectPayloadUnhandledError as exception:
+            validate_framework_exception(exception)
+
 
         match event.data.args:
             case {
@@ -47,12 +45,8 @@ class HydrationTokenAsset(BaseHydrationAsset):
     async def handle_update_asset(cls, event: SubstrateEvent) -> Asset:
         try:
             return await super().handle_update_asset(event)
-        except ValueError:
-            pass
-        except RemainingScaleBytesNotEmptyException:
-            pass
-        except NotImplementedError:
-            pass
+        except DipDupEventDataCollectPayloadUnhandledError as exception:
+            validate_framework_exception(exception)
 
         match event.data.args:
             case {

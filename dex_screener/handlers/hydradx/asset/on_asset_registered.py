@@ -2,8 +2,8 @@ from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 from scalecodec.exceptions import RemainingScaleBytesNotEmptyException
 
-from dex_screener.handlers.hydradx.asset.asset_type import AbstractHydrationAsset
-from dex_screener.handlers.hydradx.asset.asset_type import InvalidEventDataError
+from dex_screener.handlers.hydradx.asset.asset_type.abstract_hydration_asset import AbstractHydrationAsset
+from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.handlers.hydradx.asset.asset_type.const import ASSET_TYPE_MAP
 from dex_screener.types.hydradx.substrate_events.asset_registry_registered import AssetRegistryRegisteredPayload
 

@@ -1,4 +1,4 @@
-from dex_screener.handlers.hydradx.asset.asset_type import BaseHydrationAsset
+from dex_screener.handlers.hydradx.asset.asset_type.abstract_hydration_asset import BaseHydrationAsset
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 
 

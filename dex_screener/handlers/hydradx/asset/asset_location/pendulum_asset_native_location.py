@@ -4,6 +4,7 @@ from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_lo
 from dex_screener.handlers.hydradx.asset.asset_location.dto import ExternalMetadataDTO
 from dex_screener.handlers.hydradx.asset.asset_location.types import GeneralKey
 from dex_screener.handlers.hydradx.asset.asset_location.types import Interior
+from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 
 
 class PendulumAssetNativeLocation(AbstractAssetNativeLocation):
@@ -19,7 +20,7 @@ class PendulumAssetNativeLocation(AbstractAssetNativeLocation):
             ]:
                 return [{'Stellar': {'AlphaNum4': {'code': str(asset_code), 'issuer': str(issuer)}}}]
 
-        raise ValueError('Unhandled interior value: %s.', interior)
+        raise InvalidEventDataError(f'Unhandled interior value: {interior}.')
 
     async def _request_parachain_query(self, params: list) -> Any:
         return await self._client.query('AssetRegistry', 'Metadata', params)

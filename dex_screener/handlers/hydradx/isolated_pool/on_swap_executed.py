@@ -61,6 +61,7 @@ async def on_swap_executed(
                 'direction': direction,
                 'maker': event.payload['who'],
                 'pair_id': event.payload['pool'],
+                'event_type': 'swap',
             }
         )
     except (DoesNotExist, AssertionError):

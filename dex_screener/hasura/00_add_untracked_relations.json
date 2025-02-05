@@ -110,6 +110,26 @@
                     }
                 }
             }
+        },
+        {
+            "type": "pg_create_object_relationship",
+            "args": {
+                "name": "dex_pool",
+                "table": {
+                    "name": "dex_asset",
+                    "schema": "public"
+                },
+                "using": {
+                    "foreign_key_constraint_on": {
+                        "table": {
+                            "name": "dex_pool",
+                            "schema": "public"
+                        },
+                        "column": "lp_token_id"
+                    }
+                },
+                "source": "default"
+            }
         }
     ]
 }

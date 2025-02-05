@@ -4,6 +4,7 @@ from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_lo
 from dex_screener.handlers.hydradx.asset.asset_location.dto import ExternalMetadataDTO
 from dex_screener.handlers.hydradx.asset.asset_location.types import AccountKey20
 from dex_screener.handlers.hydradx.asset.asset_location.types import Interior
+from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 
 
 class MoonbeamAssetNativeLocation(AbstractAssetNativeLocation):
@@ -15,7 +16,7 @@ class MoonbeamAssetNativeLocation(AbstractAssetNativeLocation):
             case [*_, AccountKey20(external_id)]:
                 pass
             case _:
-                raise ValueError('Unhandled interior value: %s.', interior)
+                raise InvalidEventDataError(f'Unhandled interior value: {interior}.')
 
         return [external_id]
 

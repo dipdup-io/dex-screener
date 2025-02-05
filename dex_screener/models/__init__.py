@@ -163,6 +163,7 @@ class SwapEvent(Model):
         model = 'models.SwapEvent'
 
     id = fields.IntField(primary_key=True)
+    event_type = fields.CharField(max_length=4)
     name = fields.CharField(max_length=32)
     tx_id = fields.CharField(max_length=20)
     tx_index = fields.IntField(null=True)

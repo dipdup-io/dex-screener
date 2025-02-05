@@ -1,4 +1,4 @@
-from dex_screener.handlers.hydradx.asset.asset_type import AbstractHydrationAsset
+from dex_screener.handlers.hydradx.asset.asset_type.abstract_hydration_asset import AbstractHydrationAsset
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType as AssetType
 from dex_screener.handlers.hydradx.asset.asset_type.hydration_bond_asset import HydrationBondAsset
 from dex_screener.handlers.hydradx.asset.asset_type.hydration_erc20_asset import HydrationERC20Asset

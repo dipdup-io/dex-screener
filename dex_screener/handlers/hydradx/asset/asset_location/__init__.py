@@ -3,6 +3,7 @@ from aiosubstrate import SubstrateInterface
 from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_location import AbstractAssetNativeLocation
 from dex_screener.handlers.hydradx.asset.asset_location.assethub_asset_native_location import AssetHubAssetNativeLocation
 from dex_screener.handlers.hydradx.asset.asset_location.pendulum_asset_native_location import PendulumAssetNativeLocation
+from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 
 ASSET_LOCATION_CLASS_LIST = [
     AssetHubAssetNativeLocation,
@@ -18,7 +19,7 @@ ASSET_LOCATION_MAP: dict[int, AbstractAssetNativeLocation] = {}
 
 def get_asset_location(parachain_id: int):
     if parachain_id not in ASSET_LOCATION_CLASS_MAP:
-        raise ValueError(f'Unsupported parachain_id: {parachain_id}.')
+        raise InvalidEventDataError(f'Unsupported `parachain_id`: {parachain_id}.')
     if parachain_id not in ASSET_LOCATION_MAP:
         asset_location_class = ASSET_LOCATION_CLASS_MAP[parachain_id]
         parachain_client = SubstrateInterface(asset_location_class.node_url)
