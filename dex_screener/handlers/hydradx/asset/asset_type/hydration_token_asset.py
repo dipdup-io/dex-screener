@@ -14,7 +14,11 @@ class HydrationTokenAsset(BaseHydrationAsset):
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
         try:
             return await super(cls, cls).handle_register_asset(event)
-        except (RemainingScaleBytesNotEmptyException, NotImplementedError):
+        except ValueError:
+            pass
+        except RemainingScaleBytesNotEmptyException:
+            pass
+        except NotImplementedError:
             pass
 
         match event.data.args:
@@ -43,7 +47,11 @@ class HydrationTokenAsset(BaseHydrationAsset):
     async def handle_update_asset(cls, event: SubstrateEvent) -> Asset:
         try:
             return await super().handle_update_asset(event)
-        except (ValueError, RemainingScaleBytesNotEmptyException, NotImplementedError):
+        except ValueError:
+            pass
+        except RemainingScaleBytesNotEmptyException:
+            pass
+        except NotImplementedError:
             pass
 
         match event.data.args:
