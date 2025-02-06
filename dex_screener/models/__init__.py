@@ -33,6 +33,7 @@ class Block(Model):
     level = fields.IntField(primary_key=True)
     timestamp = fields.IntField()
 
+
 class LatestBlock(Model):
     class Meta:
         table = 'ds_latest_block'
@@ -51,7 +52,7 @@ class Asset(Model):
     id = fields.IntField(primary_key=True)
     name = fields.CharField(max_length=255, null=True)
     symbol = fields.CharField(max_length=16, null=True)
-    decimals = fields.SmallIntField(null=True)
+    decimals = fields.SmallIntField(null=True, default=0)  # fixme
     asset_type = fields.EnumField(enum_type=HydrationAssetType, db_index=True)
 
     updated_at_block: ForeignKeyFieldInstance[Block] = ForeignKeyField(
@@ -98,6 +99,9 @@ class Pool(Model):
         source_field='lp_token_id',
         null=True,
     )
+
+    def __repr__(self) -> str:
+        return f'<Pool[{self.dex_key}](id={self.id}, account={self.account})>'
 
 
 class AssetPoolReserve(Model):
@@ -156,6 +160,9 @@ class Pair(Model):
     created_at_txn_id = fields.CharField(max_length=66)
     fee_bps = fields.IntField(null=True)
 
+    def __repr__(self) -> str:
+        return f'<Pair[{self.dex_key}]({self.asset_0}/{self.asset_1})>'
+
 
 class SwapEvent(Model):
     class Meta:
@@ -178,10 +185,10 @@ class SwapEvent(Model):
     amount_1_in = AssetAmountField(null=True)
     amount_0_out = AssetAmountField(null=True)
     amount_1_out = AssetAmountField(null=True)
-    direction = fields.BooleanField(description='0: Buy, 1: Sell')
-    price = AssetPriceField(description='Always amount_1/amount_0')
+    price = AssetPriceField()
     block: ForeignKeyFieldInstance[Block] = ForeignKeyField(
         model_name=Block.Meta.model,
         source_field='block_id',
         to_field='level',
     )
+    metadata = fields.JSONField(null=True)

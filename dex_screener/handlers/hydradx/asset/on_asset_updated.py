@@ -4,8 +4,8 @@ from scalecodec.exceptions import RemainingScaleBytesNotEmptyException
 from tortoise.exceptions import IntegrityError
 
 from dex_screener.handlers.hydradx.asset.asset_type.abstract_hydration_asset import AbstractHydrationAsset
-from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.handlers.hydradx.asset.asset_type.const import ASSET_TYPE_MAP
+from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.types.hydradx.substrate_events.asset_registry_updated import AssetRegistryUpdatedPayload
 
 

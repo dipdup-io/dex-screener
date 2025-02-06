@@ -26,13 +26,13 @@ def _prepare(amount: AnyTypeAmount, decimals: int) -> Decimal:
 
     return amount.quantize(Decimal(f'1e-{decimals}'))
 
+
 class AssetAmount(Decimal):
     def __new__(cls, asset: Asset, amount: AnyTypeAmount):
         amount = _prepare(amount, asset.decimals)
         new: Self = Decimal.__new__(cls, amount)
         new.__init__(asset, amount)
         return new
-
 
     def __init__(self, asset: Asset, amount: Decimal):
         self.asset = asset
@@ -77,13 +77,13 @@ class AssetAmount(Decimal):
         return Decimal(other) / Decimal(self.amount)
 
     @overload
-    def __truediv__(self: Self, other: Self)-> Decimal: ...
+    def __truediv__(self: Self, other: Self) -> Decimal: ...
     @overload
-    def __truediv__(self: Self, other: AssetAmount)-> AssetPrice: ...
+    def __truediv__(self: Self, other: AssetAmount) -> AssetPrice: ...
     @overload
     def __truediv__(self: Self, other: AssetPrice) -> AssetAmount: ...
     @overload
-    def __truediv__(self: Self, other: AnyTypeDecimal)-> Self: ...
+    def __truediv__(self: Self, other: AnyTypeDecimal) -> Self: ...
 
     def __truediv__(self: Self, other):
         from .asset_price import AssetPrice
@@ -93,7 +93,7 @@ class AssetAmount(Decimal):
         if isinstance(other, AssetAmount):
             return other.__rtruediv__(self)
         if isinstance(other, AnyTypeDecimal):
-            return AssetAmount(asset=self.asset, amount=self.amount/Decimal(other))
+            return AssetAmount(asset=self.asset, amount=self.amount / Decimal(other))
 
         raise TypeError('Unsupported operand type')
 

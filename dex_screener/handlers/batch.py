@@ -18,11 +18,11 @@ async def batch(
     for handler in handlers:
         if handler.level not in batch_levels:
             try:
-                timestamp=handler.args[0].data.header['timestamp'] // 1000
+                timestamp = handler.args[0].data.header['timestamp'] // 1000
             except (KeyError, AttributeError, ValueError):
                 subscan: SubstrateSubscanDatasource = ctx.get_substrate_datasource('subscan')
                 block_data = await subscan.request('post', 'scan/block', json={'block_num': handler.level})
-                timestamp=block_data['data']['block_timestamp']
+                timestamp = block_data['data']['block_timestamp']
             block = await Block.create(
                 level=handler.level,
                 timestamp=timestamp,

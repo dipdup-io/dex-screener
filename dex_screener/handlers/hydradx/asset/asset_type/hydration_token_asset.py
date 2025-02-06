@@ -3,8 +3,8 @@ from dipdup.models.substrate import SubstrateEvent
 from dex_screener.handlers.hydradx.asset.asset_type import DipDupEventDataCollectPayloadUnhandledError
 from dex_screener.handlers.hydradx.asset.asset_type import validate_framework_exception
 from dex_screener.handlers.hydradx.asset.asset_type.abstract_hydration_asset import BaseHydrationAsset
-from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
+from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.models import Asset
 
 
@@ -17,7 +17,6 @@ class HydrationTokenAsset(BaseHydrationAsset):
             return await super(cls, cls).handle_register_asset(event)
         except DipDupEventDataCollectPayloadUnhandledError as exception:
             validate_framework_exception(exception)
-
 
         match event.data.args:
             case {

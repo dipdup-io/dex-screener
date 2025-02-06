@@ -39,9 +39,9 @@ class Here:
 
 
 class Interior(tuple):
-    def __new__(cls, interior_data: tuple|str, *args, **kwargs) -> type[Self]:
+    def __new__(cls, interior_data: tuple | str, *args, **kwargs) -> type[Self]:
         value = interior_data
-        if isinstance(interior_data , tuple):
+        if isinstance(interior_data, tuple):
             value = tuple(cls.convert(element) for element in interior_data)
         elif interior_data == 'Here':
             value = Here()
@@ -92,7 +92,7 @@ class AssetRegistryLocation:
             self.location = NativeLocation(**self.location)
 
     @classmethod
-    def from_event(cls, payload: dict|tuple) -> type[Self]:
+    def from_event(cls, payload: dict | tuple) -> type[Self]:
         if isinstance(payload, tuple):
             payload = {
                 'asset_id': payload[0],

@@ -41,9 +41,13 @@ class DexScreenerEventInfoDTO(BaseModel):
     async def update_latest_block(self):
         from dex_screener.models import Block
         from dex_screener.models import LatestBlock
+
         block = await Block.get(level=self.block_id)
 
         await LatestBlock.update_or_create(
             id=True,
             defaults={'block_number': block.level, 'block_timestamp': block.timestamp},
         )
+
+    def get_explorer_url(self) -> str:
+        return f'https://hydration.subscan.io/block/{self.block_id}?tab=event&event={self.event_index}'

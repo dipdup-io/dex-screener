@@ -30,7 +30,8 @@ class MarketPair(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
 
     def from_minor(self, price_minor: AnyTypePrice) -> AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset]:
         from dex_screener.handlers.hydradx.asset.asset_count.asset_price import AssetPrice
-        return AssetPrice(Decimal(price_minor)/Decimal(10**self.decimals), self)
+
+        return AssetPrice(Decimal(price_minor) / Decimal(10**self.decimals), self)
 
     def __eq__(self, other: MarketPair) -> bool:
         if not isinstance(other, MarketPair):

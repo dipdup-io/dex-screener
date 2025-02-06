@@ -54,11 +54,17 @@ indexes:
 
       - callback: hydradx.isolated_pool.on_pool_created
         name: XYK.PoolCreated
-
       - callback: hydradx.isolated_pool.on_swap_executed
         name: XYK.BuyExecuted
       - callback: hydradx.isolated_pool.on_swap_executed
         name: XYK.SellExecuted
+
+      - callback: hydradx.omnipool.on_token_added
+        name: Omnipool.TokenAdded
+      - callback: hydradx.omnipool.on_swap_executed
+        name: Omnipool.BuyExecuted
+      - callback: hydradx.omnipool.on_swap_executed
+        name: Omnipool.SellExecuted
 
 advanced:
   reindex:

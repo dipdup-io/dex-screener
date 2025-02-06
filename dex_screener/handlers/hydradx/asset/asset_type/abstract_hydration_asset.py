@@ -35,6 +35,16 @@ class BaseHydrationAsset(AbstractHydrationAsset):
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
         match event.payload:
             case {
+                'asset_id': int(0) as asset_id,
+                'asset_name': str(asset_name),
+            }:
+                return await cls.update_asset(
+                    asset_id=asset_id,
+                    updated_fields={'name': asset_name},
+                    event=event,
+                )
+
+            case {
                 'asset_id': int(asset_id),
                 'name': str(asset_name),
             }:

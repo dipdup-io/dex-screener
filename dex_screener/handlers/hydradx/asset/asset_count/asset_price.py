@@ -23,16 +23,17 @@ from dex_screener.handlers.hydradx.asset.asset_count.market_pair import MarketPa
 MarketPairBaseAssetAmount = TypeVar('MarketPairBaseAssetAmount', bound=AssetAmount)
 MarketPairQuoteAssetAmount = TypeVar('MarketPairQuoteAssetAmount', bound=AssetAmount)
 
+
 class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
     def __init__(self, price: AnyTypePrice, market_pair: MarketPair[MarketPairBaseAsset, MarketPairQuoteAsset]):
         self.pair: MarketPair = market_pair
         price = Decimal(price)
         _, digits, exponent = price.as_tuple()
-        self.price: Decimal = price.quantize(Decimal(''.join(['0.'] + ['0'] * min(
-            (DEX_SCREENER_PRICE_MAX_DIGITS - (len(digits) + exponent)),
-            DEX_SCREENER_PRICE_MAX_DECIMALS
-        ))))
-
+        self.price: Decimal = price.quantize(
+            Decimal(
+                ''.join(['0.'] + ['0'] * min((DEX_SCREENER_PRICE_MAX_DIGITS - (len(digits) + exponent)), DEX_SCREENER_PRICE_MAX_DECIMALS))
+            )
+        )
 
     @overload
     def __rtruediv__(self: Self, other: AnyTypeDecimal) -> AssetPrice[MarketPairQuoteAsset, MarketPairBaseAsset]:
@@ -108,8 +109,7 @@ class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
         return self.pair == other.pair and self.price.normalize() == other.price.normalize()
 
     def __str__(self) -> str:
-        return f'{self.price:f}'
-
+        return f'{self.price.normalize():f}'
 
     def __repr__(self) -> str:
         return f'{self.pair!s}({self})'
