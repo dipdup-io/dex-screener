@@ -133,4 +133,4 @@ class IsolatedPoolService:
         )
         cls.logger.info('Swap Event %s registered: %s [%s].', event_info.name, swap.id, event_info.get_explorer_url())
 
-        await event_info.update_latest_block()
+        # await event_info.update_latest_block()

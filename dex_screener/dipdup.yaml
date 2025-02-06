@@ -70,3 +70,13 @@ advanced:
   reindex:
     config_modified: ignore
     schema_modified: exception
+
+
+jobs:
+  refresh_blocks:
+    hook: refresh_blocks
+    interval: 10
+
+hooks:
+  refresh_blocks:
+    callback: refresh_blocks

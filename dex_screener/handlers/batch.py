@@ -31,13 +31,13 @@ async def batch(
 
         await ctx.fire_matched_handler(handler)
 
-    if block is not None:
-        await block.fetch_related('dex_assets', 'dex_pairs', 'dex_swap_events')
-        if all(
-            [
-                not block.dex_assets.related_objects,
-                not block.dex_pairs.related_objects,
-                not block.dex_swap_events.related_objects,
-            ]
-        ):
-            await block.delete()
+    # if block is not None:
+    #     await block.fetch_related('dex_assets', 'dex_pairs', 'dex_swap_events')
+    #     if all(
+    #         [
+    #             not block.dex_assets.related_objects,
+    #             not block.dex_pairs.related_objects,
+    #             not block.dex_swap_events.related_objects,
+    #         ]
+    #     ):
+    #         await block.delete()
