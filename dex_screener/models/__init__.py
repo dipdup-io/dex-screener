@@ -132,7 +132,7 @@ class Pair(Model):
         model = 'models.Pair'
         unique_together = ('pool', 'asset_0', 'asset_1')
 
-    id = fields.CharField(primary_key=True, max_length=80)
+    id = fields.CharField(primary_key=True, max_length=100)
     dex_key = fields.EnumField(DexKey, db_index=True)
     asset_0: ForeignKeyFieldInstance[Asset] = ForeignKeyField(
         model_name=Asset.Meta.model,
