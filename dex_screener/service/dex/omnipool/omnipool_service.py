@@ -93,6 +93,9 @@ class OmnipoolService:
 
             case _:
                 raise InvalidEventDataError(f'Unhandled Omnipool Swap Event: {event}.')
+        if minor_amount_in * minor_amount_out == 0:
+            cls.logger.warning('Invalid Swap Event: minor amount must be natural!')
+            return 
 
         asset_in = await Asset.get(id=asset_in_id)
         asset_out = await Asset.get(id=asset_out_id)
