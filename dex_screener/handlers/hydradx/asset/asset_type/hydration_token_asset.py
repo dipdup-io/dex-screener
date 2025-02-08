@@ -77,24 +77,3 @@ class HydrationTokenAsset(BaseHydrationAsset):
             updated_fields=updated_fields,
             event=event,
         )
-
-    @classmethod
-    async def set_metadata(cls, event: SubstrateEvent) -> Asset:
-        match event.payload:
-            case {
-                'asset_id': int(asset_id),
-                'symbol': str(asset_symbol),
-                'decimals': int(asset_decimals),
-            }:
-                updated_fields = {
-                    'symbol': asset_symbol,
-                    'decimals': asset_decimals,
-                }
-            case _:
-                raise InvalidEventDataError('Unhandled Event Data.')
-
-        return await cls.update_asset(
-            asset_id=asset_id,
-            updated_fields=updated_fields,
-            event=event,
-        )

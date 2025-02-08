@@ -11,7 +11,7 @@ async def on_metadata_set(
     event: SubstrateEvent[AssetRegistryMetadataSetPayload],
 ) -> None:
     try:
-        asset = await HydrationTokenAsset.set_metadata(event)
+        asset = await HydrationTokenAsset.handle_update_asset(event)
         ctx.logger.info('Asset Metadata updated: %s.', asset)
     except IntegrityError as exception:
         ctx.logger.error('Asset Metadata Update Error: %s', exception.args[0].detail)

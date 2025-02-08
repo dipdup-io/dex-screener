@@ -12,11 +12,10 @@ def validate_framework_exception(exception):
                 'Decoder class for "bounded_collections:bounded_vec:BoundedVec@65" not found'
                 | 'Decoder class for "bounded_collections:bounded_vec:BoundedVec@68" not found'
                 | 'Decoder class for "bounded_collections:bounded_vec:BoundedVec@70" not found'
-                | 'Decoder class for "bounded_collections:bounded_vec:BoundedVec@193" not found',
+                | 'Decoder class for "bounded_collections:bounded_vec:BoundedVec@193" not found'
+                | 'Decoder class for "bounded_collections:bounded_vec:BoundedVec@194" not found',
             )
         ):
-            pass
-        case RemainingScaleBytesNotEmptyException():
             pass
         case _:
             raise

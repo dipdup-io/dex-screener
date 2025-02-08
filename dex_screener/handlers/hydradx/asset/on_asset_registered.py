@@ -13,6 +13,8 @@ def get_asset_type(
 ) -> type[AbstractHydrationAsset]:
     try:
         match event.payload:
+            case {'asset_type': str(asset_type)}:
+                pass
             case {'asset_type': {'__kind': str(asset_type)}}:
                 pass
             case {'type': {'__kind': str(asset_type)}}:
