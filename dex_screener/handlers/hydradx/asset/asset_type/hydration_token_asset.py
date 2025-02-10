@@ -18,26 +18,12 @@ class HydrationTokenAsset(BaseHydrationAsset):
         except DipDupEventDataCollectPayloadUnhandledError as exception:
             validate_framework_exception(exception)
 
-        match event.data.args:
-            case {
-                'assetId': int(asset_id),
-                'assetName': str(asset_name_hex),
-                'symbol': str(asset_symbol_hex),
-                'decimals': int(asset_decimals),
-            }:
-                asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
-                asset_symbol = bytes.fromhex(asset_symbol_hex.removeprefix('0x')).decode()
-            case _:
-                raise InvalidEventDataError('Unhandled Event Data.')
+        asset_id, fields = cls._match_event_args(event.data.args)
 
         return await cls.create_asset(
             asset_id=asset_id,
             event=event,
-            fields={
-                'name': asset_name,
-                'symbol': asset_symbol,
-                'decimals': asset_decimals,
-            },
+            fields=fields,
         )
 
     @classmethod
@@ -47,33 +33,38 @@ class HydrationTokenAsset(BaseHydrationAsset):
         except DipDupEventDataCollectPayloadUnhandledError as exception:
             validate_framework_exception(exception)
 
-        match event.data.args:
-            case {
-                'assetId': int(asset_id),
-                'assetName': str(asset_name_hex),
-                'symbol': str(asset_symbol_hex),
-                'decimals': int(asset_decimals),
-            }:
-                asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
-                asset_symbol = bytes.fromhex(asset_symbol_hex.removeprefix('0x')).decode()
-                updated_fields = {
-                    'name': asset_name,
-                    'symbol': asset_symbol,
-                    'decimals': asset_decimals,
-                }
-            case {
-                'assetId': int(asset_id),
-                'assetName': str(asset_name_hex),
-            }:
-                asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
-                updated_fields = {
-                    'name': asset_name,
-                }
-            case _:
-                raise InvalidEventDataError('Unhandled Event Data.')
+        asset_id, fields = cls._match_event_args(event.data.args)
 
         return await cls.update_asset(
             asset_id=asset_id,
-            updated_fields=updated_fields,
+            updated_fields=fields,
             event=event,
         )
+
+    @classmethod
+    def _match_event_args(cls, args) -> tuple[int, dict[str, int|str]]:
+        match args:
+            case {
+                'assetId': int(asset_id),
+                **event_items,
+            }:
+                fields = {}
+                for key, value in event_items.items():
+                    match key, value:
+                        case 'assetName', str(asset_name_hex):
+                            asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
+                            fields.update({'name': asset_name})
+                        case 'symbol', str(asset_symbol_hex):
+                            asset_symbol = bytes.fromhex(asset_symbol_hex.removeprefix('0x')).decode()
+                            fields.update({'symbol': asset_symbol})
+                        case 'decimals', int(asset_decimals):
+                            fields.update({'decimals': asset_decimals})
+                        case 'assetType'|'existentialDeposit'|'isSufficient', _:
+                            pass
+                        case _:
+                            raise InvalidEventDataError(f'Unhandled Event Data: {event_items}.')
+
+            case _:
+                raise InvalidEventDataError(f'Unhandled Event Data: {args}.')
+
+        return asset_id, fields

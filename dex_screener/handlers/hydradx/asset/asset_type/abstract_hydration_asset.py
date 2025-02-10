@@ -36,16 +36,6 @@ class BaseHydrationAsset(AbstractHydrationAsset):
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
         match event.payload:
             case {
-                'asset_id': int(0) as asset_id,
-                'asset_name': str(asset_name),
-            }:
-                return await cls.update_asset(
-                    asset_id=asset_id,
-                    updated_fields={'name': asset_name},
-                    event=event,
-                )
-
-            case {
                 'asset_id': int(asset_id),
                 'name': str(asset_name),
             }:
@@ -56,7 +46,7 @@ class BaseHydrationAsset(AbstractHydrationAsset):
             }:
                 pass
             case _:
-                raise InvalidEventDataError('Unhandled Event Payload.')
+                raise InvalidEventDataError(f'Unhandled Event Payload: {event.payload}.')
 
         return await cls.create_asset(asset_id, event, {'name': asset_name})
 
@@ -80,7 +70,7 @@ class BaseHydrationAsset(AbstractHydrationAsset):
                     'name': asset_name,
                 }
             case _:
-                raise InvalidEventDataError('Unhandled Event Data.')
+                raise InvalidEventDataError(f'Unhandled Event Payload: {event.payload}.')
 
         return await cls.update_asset(
             asset_id=asset_id,
@@ -89,24 +79,23 @@ class BaseHydrationAsset(AbstractHydrationAsset):
         )
 
     @classmethod
-    async def create_asset(cls, asset_id: int, event: SubstrateEvent, fields: dict[str, Any] | None = None) -> Asset:
+    async def create_asset(cls, asset_id: int, event: SubstrateEvent, fields: dict[str, int|str] | None = None) -> Asset:
         from .const import PRE_RESOLVED_TOKENS_METADATA
 
         if fields is None:
             fields = {}
 
         if asset_id in PRE_RESOLVED_TOKENS_METADATA:
-            fields.update(PRE_RESOLVED_TOKENS_METADATA[asset_id])
+            fields.update(PRE_RESOLVED_TOKENS_METADATA.pop(asset_id))
 
-        return await Asset.create(
-            id=asset_id,
-            asset_type=cls.asset_type,
-            updated_at_block_id=event.level,
-            **fields,
+        return await cls.update_asset(
+            asset_id=asset_id,
+            updated_fields=fields,
+            event=event,
         )
 
     @classmethod
-    async def update_asset(cls, asset_id: int, updated_fields: dict[str, Any], event: SubstrateEvent) -> Asset:
+    async def update_asset(cls, asset_id: int, updated_fields: dict[str, int|str], event: SubstrateEvent) -> Asset:
         updated_fields.setdefault('asset_type', cls.asset_type)
         updated_fields.setdefault('updated_at_block_id', event.level)
         asset, _ = await Asset.update_or_create(
@@ -124,7 +113,7 @@ class HexNamedHydrationAsset(BaseHydrationAsset):
                 data=SubstrateEventData(
                     args={
                         'assetId': int(asset_id),
-                        'assetName': str(asset_name),
+                        'assetName': str(asset_name_hex_prefixed),
                     }
                 )
             ):
@@ -135,10 +124,18 @@ class HexNamedHydrationAsset(BaseHydrationAsset):
                     'asset_name': str(asset_name),
                 }
             ):
-                asset_name = '0x'+asset_name.encode().hex()
+                asset_name_hex_prefixed = '0x' + asset_name.encode().hex()
                 pass
 
             case _:
-                raise InvalidEventDataError('Unhandled Event Data.')
+                raise InvalidEventDataError(f'Unhandled Event Data: {event.payload}.')
 
-        return await cls.create_asset(asset_id, event, {'name': asset_name})
+        base_asset = await Asset.get(id=cls._get_base_asset_id(asset_name_hex_prefixed))
+
+        return await cls.create_asset(asset_id, event, {'name': asset_name_hex_prefixed, 'decimals': base_asset.decimals})
+
+    @classmethod
+    def _get_base_asset_id(cls, asset_name_hex_prefixed: str) -> int:
+        asset_0_id = int.from_bytes(bytes.fromhex(asset_name_hex_prefixed[2:10]),'little', signed=False)
+        asset_1_id = int.from_bytes(bytes.fromhex(asset_name_hex_prefixed[-8:]),'little', signed=False)
+        return min(asset_0_id, asset_1_id)

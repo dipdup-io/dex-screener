@@ -43,28 +43,33 @@ indexes:
       - node
 
     handlers:
-      - callback: hydradx.asset.on_location_set
-        name: AssetRegistry.LocationSet
       - callback: hydradx.asset.on_asset_registered
         name: AssetRegistry.Registered
       - callback: hydradx.asset.on_asset_updated
         name: AssetRegistry.Updated
       - callback: hydradx.asset.on_metadata_set
         name: AssetRegistry.MetadataSet
+      - callback: hydradx.asset.on_location_set
+        name: AssetRegistry.LocationSet
 
       - callback: hydradx.isolated_pool.on_pool_created
         name: XYK.PoolCreated
-      - callback: hydradx.isolated_pool.on_swap_executed
+      - callback: hydradx.on_swap_executed
         name: XYK.BuyExecuted
-      - callback: hydradx.isolated_pool.on_swap_executed
+      - callback: hydradx.on_swap_executed
         name: XYK.SellExecuted
 
       - callback: hydradx.omnipool.on_token_added
         name: Omnipool.TokenAdded
-      - callback: hydradx.omnipool.on_swap_executed
+      - callback: hydradx.on_swap_executed
         name: Omnipool.BuyExecuted
-      - callback: hydradx.omnipool.on_swap_executed
+      - callback: hydradx.on_swap_executed
         name: Omnipool.SellExecuted
+
+#      - callback: hydradx.on_swap_executed
+#        name: Stableswap.BuyExecuted
+#      - callback: hydradx.on_swap_executed
+#        name: Stableswap.SellExecuted
 
 advanced:
   reindex:

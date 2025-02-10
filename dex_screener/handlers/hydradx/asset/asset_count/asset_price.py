@@ -15,10 +15,10 @@ if TYPE_CHECKING:
     from typing import Self
 
     from dex_screener.handlers.hydradx.asset.asset_count.market_pair import MarketPair
-    from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypePrice
 
 from dex_screener.handlers.hydradx.asset.asset_count.market_pair import MarketPairBaseAsset
 from dex_screener.handlers.hydradx.asset.asset_count.market_pair import MarketPairQuoteAsset
+from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypePrice
 
 MarketPairBaseAssetAmount = TypeVar('MarketPairBaseAssetAmount', bound=AssetAmount)
 MarketPairQuoteAssetAmount = TypeVar('MarketPairQuoteAssetAmount', bound=AssetAmount)
@@ -27,22 +27,19 @@ MarketPairQuoteAssetAmount = TypeVar('MarketPairQuoteAssetAmount', bound=AssetAm
 class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
     def __init__(self, price: AnyTypePrice, market_pair: MarketPair[MarketPairBaseAsset, MarketPairQuoteAsset]):
         self.pair: MarketPair = market_pair
-        price = Decimal(price)
+        if not isinstance(AnyTypePrice, Decimal):
+            price = Decimal(price)
         _, digits, exponent = price.as_tuple()
-        self.price: Decimal = price.quantize(
-            Decimal(
-                ''.join(['0.'] + ['0'] * min((DEX_SCREENER_PRICE_MAX_DIGITS - (len(digits) + exponent)), DEX_SCREENER_PRICE_MAX_DECIMALS))
-            )
+        decimals_limit = min(
+            (DEX_SCREENER_PRICE_MAX_DIGITS - (len(digits) + exponent)),
+            DEX_SCREENER_PRICE_MAX_DECIMALS,
         )
+        self.price: Decimal = price.quantize(Decimal(f'1e{-decimals_limit}'))
 
     @overload
-    def __rtruediv__(self: Self, other: AnyTypeDecimal) -> AssetPrice[MarketPairQuoteAsset, MarketPairBaseAsset]:
-        pass
-
+    def __rtruediv__(self: Self, other: AnyTypeDecimal) -> AssetPrice[MarketPairQuoteAsset, MarketPairBaseAsset]: ...
     @overload
-    def __rtruediv__(self: Self, other: MarketPairQuoteAssetAmount) -> MarketPairBaseAssetAmount:
-        pass
-
+    def __rtruediv__(self: Self, other: MarketPairQuoteAssetAmount) -> MarketPairBaseAssetAmount: ...
     def __rtruediv__(self, other):
         if isinstance(other, AssetAmount):
             if other.asset.id != self.pair.quote.id:
@@ -78,12 +75,10 @@ class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
     def __mul__(
         self: AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset], other: MarketPairBaseAssetAmount
     ) -> MarketPairQuoteAssetAmount: ...
-
     @overload
     def __mul__(
         self: AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset], other: AnyTypeDecimal
     ) -> AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset]: ...
-
     def __mul__(self, other):
         if isinstance(other, AssetAmount):
             if other.asset.id != self.pair.base.id:

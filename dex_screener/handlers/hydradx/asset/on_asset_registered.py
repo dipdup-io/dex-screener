@@ -1,9 +1,10 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
-from scalecodec.exceptions import RemainingScaleBytesNotEmptyException
 
+from dex_screener.handlers.hydradx.asset.asset_type import DipDupEventDataCollectPayloadUnhandledError
 from dex_screener.handlers.hydradx.asset.asset_type.abstract_hydration_asset import AbstractHydrationAsset
 from dex_screener.handlers.hydradx.asset.asset_type.const import ASSET_TYPE_MAP
+from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType as AssetType
 from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.types.hydradx.substrate_events.asset_registry_registered import AssetRegistryRegisteredPayload
 
@@ -13,21 +14,21 @@ def get_asset_type(
 ) -> type[AbstractHydrationAsset]:
     try:
         match event.payload:
+            case {'type': str(asset_type)}:
+                pass
             case {'asset_type': str(asset_type)}:
                 pass
-            case {'asset_type': {'__kind': str(asset_type)}}:
-                pass
-            case {'type': {'__kind': str(asset_type)}}:
-                pass
+            case {'asset_type': {AssetType.PoolShare: _}}:
+                asset_type = AssetType.PoolShare
             case _:
-                raise InvalidEventDataError('Unhandled Event Payload.')
+                raise InvalidEventDataError(f'Unhandled Event Payload: {event.payload}.')
 
-    except (AssertionError, RemainingScaleBytesNotEmptyException, ValueError, NotImplementedError):
+    except DipDupEventDataCollectPayloadUnhandledError:
         match event.data.args:
             case {'assetType': {'__kind': str(asset_type)}}:
                 pass
             case _:
-                raise InvalidEventDataError('Unhandled Event Data.') from None
+                raise InvalidEventDataError(f'Unhandled Event Data: {event.data.args}.') from None
 
     if asset_type in ASSET_TYPE_MAP:
         return ASSET_TYPE_MAP[asset_type]
@@ -42,8 +43,8 @@ async def on_asset_registered(
     try:
         asset_type = get_asset_type(event)
     except InvalidEventDataError as exception:
-        ctx.logger.warning(exception.args[0])
-        return
+        ctx.logger.error(exception)
+        raise
 
     asset = await asset_type.handle_register_asset(event)
     ctx.logger.info('Asset registered: %s.', asset)

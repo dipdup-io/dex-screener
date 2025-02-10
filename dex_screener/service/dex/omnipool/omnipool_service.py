@@ -1,6 +1,7 @@
-import logging
+from __future__ import annotations
 
-from dipdup.models.substrate import SubstrateEvent
+import logging
+from typing import TYPE_CHECKING
 
 from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.models import Asset
@@ -11,18 +12,21 @@ from dex_screener.models import SwapEvent
 from dex_screener.models.dto import DexScreenerEventInfoDTO
 from dex_screener.service.dex.omnipool.const import OMNIPOOL_HUB_ASSET_ID
 from dex_screener.service.dex.omnipool.const import OMNIPOOL_SYSTEM_ACCOUNT
-from dex_screener.types.hydradx.substrate_events.omnipool_buy_executed import OmnipoolBuyExecutedPayload
-from dex_screener.types.hydradx.substrate_events.omnipool_sell_executed import OmnipoolSellExecutedPayload
-from dex_screener.types.hydradx.substrate_events.omnipool_token_added import OmnipoolTokenAddedPayload
+
+if TYPE_CHECKING:
+    from dipdup.models.substrate import SubstrateEvent
+
+    from dex_screener.types.hydradx.substrate_events.omnipool_buy_executed import OmnipoolBuyExecutedPayload
+    from dex_screener.types.hydradx.substrate_events.omnipool_sell_executed import OmnipoolSellExecutedPayload
+    from dex_screener.types.hydradx.substrate_events.omnipool_token_added import OmnipoolTokenAddedPayload
 
 
 class OmnipoolService:
     logger = logging.getLogger('omnipool_service')
 
-
     @classmethod
     def get_pair_id(cls, asset_a_id: int, asset_b_id: int) -> str:
-        asset_id_list = [str(asset_id) for asset_id in sorted([asset_a_id, asset_b_id]) if asset_id != OMNIPOOL_HUB_ASSET_ID]
+        asset_id_list = [str(asset_id) for asset_id in sorted([int(asset_a_id), int(asset_b_id)]) if asset_id != OMNIPOOL_HUB_ASSET_ID]
 
         return '-'.join([OMNIPOOL_SYSTEM_ACCOUNT, *asset_id_list])
 
@@ -48,9 +52,8 @@ class OmnipoolService:
 
         return pool
 
-
     @classmethod
-    async def register_pair(cls, pool:Pool, event: SubstrateEvent[OmnipoolTokenAddedPayload]):
+    async def register_pair(cls, pool: Pool, event: SubstrateEvent[OmnipoolTokenAddedPayload]):
         new_asset = await Asset.get(id=event.payload['asset_id'])
         async for pool_asset in pool.assets:
             if pool_asset.id == new_asset.id:
@@ -78,9 +81,8 @@ class OmnipoolService:
         await pool.assets.add(new_asset)
         cls.logger.info('Pair Asset added to pool %r: %s.', pool, new_asset)
 
-
     @classmethod
-    async def  register_swap(cls, event: SubstrateEvent[OmnipoolBuyExecutedPayload | OmnipoolSellExecutedPayload]):
+    async def register_swap(cls, event: SubstrateEvent[OmnipoolBuyExecutedPayload | OmnipoolSellExecutedPayload]):
         match event.payload:
             case {
                 'who': str(maker),
@@ -95,7 +97,7 @@ class OmnipoolService:
                 raise InvalidEventDataError(f'Unhandled Omnipool Swap Event: {event}.')
         if minor_amount_in * minor_amount_out == 0:
             cls.logger.warning('Invalid Swap Event: minor amount must be natural!')
-            return 
+            return
 
         asset_in = await Asset.get(id=asset_in_id)
         asset_out = await Asset.get(id=asset_out_id)

@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any
 from typing import Self
@@ -65,8 +66,7 @@ class Interior(tuple):
             case {'PalletInstance': int(pallet_id)}:
                 return PalletInstance(pallet_id)
             case _:
-                pass
-        return element
+                return element
 
     def __repr__(self) -> str:
         return f'<{self.__class__.__name__}[{super().__repr__()[1:-1]}]>'
@@ -92,7 +92,8 @@ class AssetRegistryLocation:
             self.location = NativeLocation(**self.location)
 
     @classmethod
-    def from_event(cls, payload: dict | tuple) -> type[Self]:
+    def from_event(cls, event_payload: dict | tuple) -> type[Self]:
+        payload = deepcopy(event_payload)
         if isinstance(payload, tuple):
             payload = {
                 'asset_id': payload[0],

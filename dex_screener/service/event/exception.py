@@ -1,0 +1,2 @@
+class RegisterDexScreenerEventError(ValueError):
+    pass

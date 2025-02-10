@@ -1,10 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from typing import Annotated
 from typing import Self
 
-from dipdup.models.substrate import SubstrateEvent
 from pydantic import BaseModel
 from pydantic import Field
 from pydantic import computed_field
+
+if TYPE_CHECKING:
+    from dipdup.models.substrate import SubstrateEvent
 
 
 class DexScreenerEventInfoDTO(BaseModel):

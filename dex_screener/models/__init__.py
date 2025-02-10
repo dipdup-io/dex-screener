@@ -11,6 +11,7 @@ from dipdup.models import Model
 
 from dex_screener.models.dex_fields import AssetAmountField
 from dex_screener.models.dex_fields import AssetPriceField
+from dex_screener.service.event.const import DexScreenerEventType
 
 if TYPE_CHECKING:
     from tortoise.fields.relational import ForeignKeyFieldInstance
@@ -170,7 +171,7 @@ class SwapEvent(Model):
         model = 'models.SwapEvent'
 
     id = fields.IntField(primary_key=True)
-    event_type = fields.CharField(max_length=4)
+    event_type = fields.EnumField(DexScreenerEventType, db_index=True)
     name = fields.CharField(max_length=32)
     tx_id = fields.CharField(max_length=20)
     tx_index = fields.IntField(null=True)
@@ -192,3 +193,6 @@ class SwapEvent(Model):
         to_field='level',
     )
     metadata = fields.JSONField(null=True)
+
+    def __repr__(self) -> str:
+        return f'<SwapEvent[{self.name}]({self.event_index})>'
