@@ -59,6 +59,13 @@ indexes:
       - callback: hydradx.on_swap_executed
         name: XYK.SellExecuted
 
+      - callback: hydradx.lbp.on_pool_created
+        name: LBP.PoolCreated
+      - callback: hydradx.on_swap_executed
+        name: LBP.BuyExecuted
+      - callback: hydradx.on_swap_executed
+        name: LBP.SellExecuted
+
       - callback: hydradx.omnipool.on_token_added
         name: Omnipool.TokenAdded
       - callback: hydradx.on_swap_executed

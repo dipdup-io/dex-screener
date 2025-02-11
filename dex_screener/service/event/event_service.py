@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from dex_screener.service.event.entity.swap.isolated_pool_swap_event_entity import IsolatedPoolSwapEventEntity
+from dex_screener.service.event.entity.swap.lbp_swap_event_entity import LBPSwapEventEntity
 from dex_screener.service.event.entity.swap.omnipool_swap_event_entity import OmnipoolSwapEventEntity
 
 if TYPE_CHECKING:
@@ -26,6 +27,8 @@ class DexScreenerEventService:
                 return IsolatedPoolSwapEventEntity(event)
             case 'Omnipool.BuyExecuted' | 'Omnipool.SellExecuted':
                 return OmnipoolSwapEventEntity(event)
+            case 'LBP.BuyExecuted' | 'LBP.SellExecuted':
+                return LBPSwapEventEntity(event)
 
     @classmethod
     async def register_join_exit(cls, event): ...
