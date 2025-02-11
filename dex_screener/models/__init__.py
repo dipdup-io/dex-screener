@@ -32,7 +32,7 @@ class Block(Model):
         model = 'models.Block'
 
     level = fields.IntField(primary_key=True)
-    timestamp = fields.IntField()
+    timestamp = fields.IntField(null=True)
 
 
 class LatestBlock(Model):

@@ -6,7 +6,6 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from dipdup.context import HandlerContext
-    from dipdup.datasources.substrate_subscan import SubstrateSubscanDatasource
     from dipdup.index import MatchedHandler
 
 
@@ -20,10 +19,8 @@ async def batch(
         if handler.level not in batch_levels and isinstance(handler.index, SubstrateEventsIndex):
             try:
                 timestamp = int(handler.args[0].data.header_extra['timestamp'] // 1000)
-            except (KeyError, AttributeError, ValueError):
-                subscan: SubstrateSubscanDatasource = ctx.get_substrate_datasource('subscan')
-                block_data = await subscan.request('post', 'scan/block', json={'block_num': handler.level})
-                timestamp = int(block_data['data']['block_timestamp'])
+            except (KeyError, AttributeError, ValueError, TypeError):
+                timestamp = None
 
             from dex_screener.models import Block
             await Block.create(
