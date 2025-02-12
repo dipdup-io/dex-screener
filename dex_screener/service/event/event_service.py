@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from dex_screener.service.event.entity.swap.isolated_pool_swap_event_entity import IsolatedPoolSwapEventEntity
 from dex_screener.service.event.entity.swap.lbp_swap_event_entity import LBPSwapEventEntity
 from dex_screener.service.event.entity.swap.omnipool_swap_event_entity import OmnipoolSwapEventEntity
+from dex_screener.service.event.entity.swap.stableswap_pool_swap_event_entity import StableSwapPoolSwapEventEntity
 
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
@@ -23,10 +24,12 @@ class DexScreenerEventService:
     @classmethod
     def build_swap_event_entity(cls, event: SubstrateEvent) -> SwapEventEntity:
         match event.data.name:
-            case 'XYK.BuyExecuted' | 'XYK.SellExecuted':
-                return IsolatedPoolSwapEventEntity(event)
             case 'Omnipool.BuyExecuted' | 'Omnipool.SellExecuted':
                 return OmnipoolSwapEventEntity(event)
+            case 'Stableswap.BuyExecuted' | 'Stableswap.SellExecuted':
+                return StableSwapPoolSwapEventEntity(event)
+            case 'XYK.BuyExecuted' | 'XYK.SellExecuted':
+                return IsolatedPoolSwapEventEntity(event)
             case 'LBP.BuyExecuted' | 'LBP.SellExecuted':
                 return LBPSwapEventEntity(event)
 

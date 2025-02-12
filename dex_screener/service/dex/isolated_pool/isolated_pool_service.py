@@ -22,10 +22,10 @@ class IsolatedPoolService:
     @classmethod
     async def register_pool(cls, event: SubstrateEvent[XYKPoolCreatedPayload]):
         pool, _ = await Pool.update_or_create(
-            id=event.payload['pool'],
+            dex_key=DexKey.IsolatedPool,
+            dex_pool_id=event.payload['pool'],
             defaults={
                 'account': event.payload['pool'],
-                'dex_key': DexKey.IsolatedPool,
                 'lp_token_id': event.payload['share_token'],
             },
         )

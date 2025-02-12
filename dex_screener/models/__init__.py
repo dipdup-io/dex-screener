@@ -81,10 +81,12 @@ class Pool(Model):
     class Meta:
         table = 'dex_pool'
         model = 'models.Pool'
+        unique_together = ('dex_key', 'dex_pool_id')
 
-    id = fields.TextField(primary_key=True)
-    account = AccountField(null=True)
+    id = fields.IntField(primary_key=True)
     dex_key = fields.EnumField(enum_type=DexKey, db_index=True)
+    dex_pool_id = fields.TextField(db_index=True)
+    account = AccountField(null=True)
     assets: ManyToManyFieldInstance[Asset] = ManyToManyField(
         model_name=Asset.Meta.model,
         # through='models.AssetPoolReserve',
@@ -102,7 +104,7 @@ class Pool(Model):
     )
 
     def __repr__(self) -> str:
-        return f'<Pool[{self.dex_key}](id={self.id}, account={self.account})>'
+        return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'
 
 
 class AssetPoolReserve(Model):

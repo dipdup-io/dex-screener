@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING
 from dex_screener.models import Asset
 from dex_screener.service.event.const import DexScreenerEventType
 from dex_screener.service.event.entity.event_entity import DexScreenerEventEntity
+from dex_screener.service.event.entity.swap.dto import MarketDataArgsDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.exception import InvalidSwapEventMarketDataError
 
 if TYPE_CHECKING:
     from dex_screener.models import SwapEvent
     from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
-    from dex_screener.service.event.entity.swap.dto import MarketDataArgsDTO
     from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
 
 
@@ -73,3 +73,61 @@ class SwapEventEntity(DexScreenerEventEntity):
             )
 
         raise InvalidSwapEventMarketDataError(f'Invalid Swap Event: Asset0==Asset1. Payload: {self._event.payload}.')
+
+
+class ClassicPoolSwapEventEntity(SwapEventEntity):
+    async def resolve_market_data(self) -> SwapEventMarketDataDTO:
+        match self._event.payload:
+            case {
+                'who': str(maker),
+                'asset_in': int(asset_in_id),
+                'asset_out': int(asset_out_id),
+                'buy_price': int(minor_amount_in),
+                'amount': int(minor_amount_out),
+            }:
+                pass
+            case {
+                'who': str(maker),
+                'asset_in': int(asset_in_id),
+                'asset_out': int(asset_out_id),
+                'sale_price': int(minor_amount_out),
+                'amount': int(minor_amount_in),
+            }:
+                pass
+            case _:
+                raise InvalidSwapEventMarketDataError(f'Unhandled Swap Event Payload: {self._event.payload}.')
+
+        resolved_args = MarketDataArgsDTO(
+            maker=maker,
+            asset_in_id=asset_in_id,
+            asset_out_id=asset_out_id,
+            minor_amount_in=minor_amount_in,
+            minor_amount_out=minor_amount_out,
+        )
+
+        return await self._market_data_from_args(resolved_args)
+
+
+class MultiAssetPoolSwapEventEntity(SwapEventEntity):
+    async def resolve_market_data(self) -> SwapEventMarketDataDTO:
+        match self._event.payload:
+            case {
+                'who': str(maker),
+                'asset_in': int(asset_in_id),
+                'asset_out': int(asset_out_id),
+                'amount_in': int(minor_amount_in),
+                'amount_out': int(minor_amount_out),
+            }:
+                pass
+            case _:
+                raise InvalidSwapEventMarketDataError(f'Unhandled Swap Event Payload: {self._event.payload}.')
+
+        resolved_args = MarketDataArgsDTO(
+            maker=maker,
+            asset_in_id=asset_in_id,
+            asset_out_id=asset_out_id,
+            minor_amount_in=minor_amount_in,
+            minor_amount_out=minor_amount_out,
+        )
+
+        return await self._market_data_from_args(resolved_args)
