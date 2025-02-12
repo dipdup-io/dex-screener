@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
@@ -9,7 +10,7 @@ if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
 
 
-class DexScreenerEventEntity:
+class DexScreenerEventEntity(ABC):
     event_type: str = NotImplemented
 
     _event: SubstrateEvent
@@ -19,7 +20,7 @@ class DexScreenerEventEntity:
         raise NotImplementedError
 
     async def resolve_event_data(self) -> DexScreenerEventDataDTO:
-        event_data = DexScreenerEventDataDTO(
+        event_data: DexScreenerEventDataDTO = DexScreenerEventDataDTO(
             id=self._event.data.index,
             name=self._event.data.name,
             block_id=self._event.data.level,

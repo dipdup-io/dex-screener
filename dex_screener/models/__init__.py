@@ -86,10 +86,9 @@ class Pool(Model):
     id = fields.IntField(primary_key=True)
     dex_key = fields.EnumField(enum_type=DexKey, db_index=True)
     dex_pool_id = fields.TextField(db_index=True)
-    account = AccountField(null=True)
+    account = AccountField(db_index=True, unique=True, null=True)
     assets: ManyToManyFieldInstance[Asset] = ManyToManyField(
         model_name=Asset.Meta.model,
-        # through='models.AssetPoolReserve',
         through='dex_asset_pool_reserve',
         forward_key='asset_id',
         backward_key='pool_id',

@@ -28,7 +28,7 @@ class OmnipoolService:
 
     @classmethod
     async def get_pool(cls):
-        pool = await Pool.get_or_none(id=OMNIPOOL_SYSTEM_ACCOUNT)
+        pool = await Pool.get_or_none(account=OMNIPOOL_SYSTEM_ACCOUNT)
         if pool is None:
             pool = await cls.register_pool()
         return pool
