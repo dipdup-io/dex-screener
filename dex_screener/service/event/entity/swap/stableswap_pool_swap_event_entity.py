@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from dex_screener.models import DexKey
+from dex_screener.models import Pair
 from dex_screener.models import Pool
 from dex_screener.models import SwapEvent
 from dex_screener.service.dex.stableswap.stableswap_service import StableSwapService
@@ -34,16 +35,19 @@ class StableSwapPoolSwapEventEntity(SwapEventEntity):
         )
 
         pair_id = StableSwapService.get_pair_id(
-            pool_account=pool.account,
+            pool=pool,
             asset_a_id=self._event.payload['asset_in'],
             asset_b_id=self._event.payload['asset_out'],
         )
 
+        pair = await Pair.get(id=pair_id)
+        asset_0_reserve, asset_1_reserve = await pair.get_reserves()
         return SwapEventPoolDataDTO(
             pair_id=pair_id,
-            # asset_0_reserve=None,
-            # asset_1_reserve=None,
+            asset_0_reserve=asset_0_reserve,
+            asset_1_reserve=asset_1_reserve,
         )
+
 
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:
         resolved_args = await MultiAssetPoolSwapEventMarketDataHelper.extract_args_from_payload(self._event.payload)

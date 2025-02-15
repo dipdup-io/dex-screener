@@ -83,6 +83,18 @@ indexes:
       - callback: hydradx.on_swap_executed
         name: LBP.SellExecuted
 
+      - callback: hydradx.on_swap_executed
+        name: Broadcast.Swapped
+
+      - callback: hydradx.currencies.on_balance_updated
+        name: Currencies.BalanceUpdated
+      - callback: hydradx.currencies.on_deposited
+        name: Currencies.Deposited
+      - callback: hydradx.currencies.on_withdrawn
+        name: Currencies.Withdrawn
+      - callback: hydradx.currencies.on_transferred
+        name: Currencies.Transferred
+
 
 advanced:
   reindex:

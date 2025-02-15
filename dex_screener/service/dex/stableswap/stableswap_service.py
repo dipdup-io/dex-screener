@@ -21,10 +21,10 @@ class StableSwapService:
     logger = logging.getLogger('stableswap_service')
 
     @classmethod
-    def get_pair_id(cls, pool_account: str, asset_a_id: int, asset_b_id: int) -> str:
-        asset_id_list = [str(asset_id) for asset_id in sorted([int(asset_a_id), int(asset_b_id)])]
+    def get_pair_id(cls, pool: Pool, asset_a_id: int, asset_b_id: int) -> str:
+        asset_id_list = [str(asset_id) for asset_id in sorted([int(asset_a_id), int(asset_b_id)]) if asset_id != pool.lp_token_id]
 
-        return '-'.join([pool_account, *asset_id_list])
+        return '-'.join([pool.account, *asset_id_list])
 
     @classmethod
     async def register_pool(cls, event: SubstrateEvent[StableswapPoolCreatedPayload]):
@@ -42,9 +42,10 @@ class StableSwapService:
 
     @classmethod
     async def register_pair(cls, pool: Pool, event: SubstrateEvent[StableswapPoolCreatedPayload]):
-
-        for asset_a_id, asset_b_id in combinations(event.payload['assets'], 2):
-            pair_id = cls.get_pair_id(pool.account, asset_a_id, asset_b_id)
+        pool_assets: list[int] = list(event.payload['assets'])
+        pool_assets.append(pool.lp_token_id)
+        for asset_a_id, asset_b_id in combinations(pool_assets, 2):
+            pair_id = cls.get_pair_id(pool, int(asset_a_id), int(asset_b_id))
 
             event_info = DexScreenerEventInfoDTO.from_event(event)
 

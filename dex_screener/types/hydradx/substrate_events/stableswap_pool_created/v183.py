@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, TypedDict
+from typing import TypedDict
 
 
 class V183(TypedDict):
@@ -11,6 +11,6 @@ class V183(TypedDict):
     """
 
     pool_id: int
-    assets: List[int]
+    assets: list[int]
     amplification: int
     fee: int

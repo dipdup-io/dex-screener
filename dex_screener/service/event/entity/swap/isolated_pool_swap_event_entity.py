@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from dex_screener.models import Pair
 from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
 from dex_screener.service.event.entity.swap.resolve_helper import ClassicPoolSwapEventMarketDataHelper
@@ -25,10 +26,12 @@ class IsolatedPoolSwapEventEntity(SwapEventEntity):
         return await super().resolve_event_data()
 
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
+        pair = await Pair.get(id=str(self._event.payload['pool']))
+        asset_0_reserve, asset_1_reserve = await pair.get_reserves()
         return SwapEventPoolDataDTO(
-            pair_id=str(self._event.payload['pool'])
-            # asset_0_reserve=None,
-            # asset_1_reserve=None,
+            pair_id=pair.id,
+            asset_0_reserve=asset_0_reserve,
+            asset_1_reserve=asset_1_reserve,
         )
 
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:
