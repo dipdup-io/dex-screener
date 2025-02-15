@@ -6,6 +6,7 @@ from dex_screener.service.event.entity.swap.isolated_pool_swap_event_entity impo
 from dex_screener.service.event.entity.swap.lbp_swap_event_entity import LBPSwapEventEntity
 from dex_screener.service.event.entity.swap.omnipool_swap_event_entity import OmnipoolSwapEventEntity
 from dex_screener.service.event.entity.swap.stableswap_pool_swap_event_entity import StableSwapPoolSwapEventEntity
+from dex_screener.service.event.entity.swap.unified_trade_event_entity import UnifiedTradeEventEntity
 
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
@@ -32,6 +33,8 @@ class DexScreenerEventService:
                 return IsolatedPoolSwapEventEntity(event)
             case 'LBP.BuyExecuted' | 'LBP.SellExecuted':
                 return LBPSwapEventEntity(event)
+            case 'Broadcast.Swapped':
+                return UnifiedTradeEventEntity(event)
 
     @classmethod
     async def register_join_exit(cls, event): ...

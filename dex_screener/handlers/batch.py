@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from dipdup.config.substrate_events import SubstrateEventsHandlerConfig
+
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
@@ -9,10 +11,38 @@ if TYPE_CHECKING:
     from dipdup.index import MatchedHandler
 
 
+class DeprecatedEvent:
+    names = (
+        'Omnipool.BuyExecuted',
+        'Omnipool.SellExecuted',
+        'Stableswap.BuyExecuted',
+        'Stableswap.SellExecuted',
+        'XYK.BuyExecuted',
+        'XYK.SellExecuted',
+        'LBP.BuyExecuted',
+        'LBP.SellExecuted',
+    )
+    done: bool = False
+    level: int = 6837788
+
 async def batch(
     ctx: HandlerContext,
     handlers: Iterable[MatchedHandler],
 ) -> None:
+    if DeprecatedEvent.done or handlers[0].level < DeprecatedEvent.level:
+        pass
+    else:
+        ctx.config.indexes['hydradx_events'].handlers = tuple([
+            hc for hc in ctx.config.indexes['hydradx_events'].handlers if hc.name not in DeprecatedEvent.names
+        ])
+        handlers = tuple([
+            mh for mh in handlers if
+            mh.index.name == 'hydradx_events'
+            and isinstance(mh.config, SubstrateEventsHandlerConfig)
+            and mh.config.name not in DeprecatedEvent.names
+        ])
+        DeprecatedEvent.done = True
+
     batch_levels = []
     for handler in handlers:
         from dipdup.indexes.substrate_events.index import SubstrateEventsIndex
@@ -28,5 +58,6 @@ async def batch(
                 timestamp=timestamp,
             )
             batch_levels.append(handler.level)
+
 
         await ctx.fire_matched_handler(handler)

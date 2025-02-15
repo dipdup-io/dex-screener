@@ -34,10 +34,11 @@ class LBPSwapEventEntity(SwapEventEntity):
             asset_0_id=min(asset_a_id, asset_b_id),
             asset_1_id=max(asset_a_id, asset_b_id),
         ).first()
+        asset_0_reserve, asset_1_reserve = await pair.get_reserves()
         return SwapEventPoolDataDTO(
             pair_id=pair.id,
-            # asset_0_reserve=None,
-            # asset_1_reserve=None,
+            asset_0_reserve=asset_0_reserve,
+            asset_1_reserve=asset_1_reserve,
         )
 
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:

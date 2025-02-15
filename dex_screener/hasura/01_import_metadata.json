@@ -1,0 +1,1306 @@
+{
+    "type": "bulk",
+    "source": "",
+    "args": [
+        {
+            "type": "replace_metadata",
+            "args": {
+                "version": 3,
+                "sources": [
+                    {
+                        "name": "default",
+                        "kind": "postgres",
+                        "tables": [
+                            {
+                                "table": {
+                                    "name": "dex_asset",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "asset_type": {
+                                            "custom_name": "asset_type"
+                                        },
+                                        "decimals": {
+                                            "custom_name": "decimals"
+                                        },
+                                        "id": {
+                                            "custom_name": "id"
+                                        },
+                                        "name": {
+                                            "custom_name": "name"
+                                        },
+                                        "symbol": {
+                                            "custom_name": "symbol"
+                                        },
+                                        "updated_at_block_id": {
+                                            "custom_name": "updated_at_block_id"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "asset_type": "asset_type",
+                                        "decimals": "decimals",
+                                        "id": "id",
+                                        "name": "name",
+                                        "symbol": "symbol",
+                                        "updated_at_block_id": "updated_at_block_id"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dex_asset",
+                                        "delete_by_pk": "delete_dex_asset_by_pk",
+                                        "insert": "insert_dex_asset",
+                                        "insert_one": "insert_dex_asset_one",
+                                        "select": "dex_asset",
+                                        "select_aggregate": "dex_asset_aggregate",
+                                        "select_by_pk": "dex_asset_by_pk",
+                                        "update": "update_dex_asset",
+                                        "update_by_pk": "update_dex_asset_by_pk"
+                                    }
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "dex_pool",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "lp_token_id",
+                                                "table": {
+                                                    "name": "dex_pool",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "updated_at_block",
+                                        "using": {
+                                            "foreign_key_constraint_on": "updated_at_block_id"
+                                        }
+                                    }
+                                ],
+                                "array_relationships": [
+                                    {
+                                        "name": "dex_asset_pools",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "asset_id",
+                                                "table": {
+                                                    "name": "dex_asset_pool_reserve",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "liquidity_pool",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "lp_token_id",
+                                                "table": {
+                                                    "name": "dex_pool",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "pair_asset_0",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "asset_0_id",
+                                                "table": {
+                                                    "name": "dex_pair",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "pair_asset_1",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "asset_1_id",
+                                                "table": {
+                                                    "name": "dex_pair",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "reserve",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "asset_id",
+                                                "table": {
+                                                    "name": "dex_asset_pool_reserve",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_asset_pool_reserve",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "asset_id": {
+                                            "custom_name": "asset_id"
+                                        },
+                                        "id": {
+                                            "custom_name": "id"
+                                        },
+                                        "pool_id": {
+                                            "custom_name": "pool_id"
+                                        },
+                                        "reserve": {
+                                            "custom_name": "reserve"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "asset_id": "asset_id",
+                                        "id": "id",
+                                        "pool_id": "pool_id",
+                                        "reserve": "reserve"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dex_asset_pool_reserve",
+                                        "delete_by_pk": "delete_dex_asset_pool_reserve_by_pk",
+                                        "insert": "insert_dex_asset_pool_reserve",
+                                        "insert_one": "insert_dex_asset_pool_reserve_one",
+                                        "select": "dex_asset_pool_reserve",
+                                        "select_aggregate": "dex_asset_pool_reserve_aggregate",
+                                        "select_by_pk": "dex_asset_pool_reserve_by_pk",
+                                        "update": "update_dex_asset_pool_reserve",
+                                        "update_by_pk": "update_dex_asset_pool_reserve_by_pk"
+                                    }
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "dex_asset",
+                                        "using": {
+                                            "foreign_key_constraint_on": "asset_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pool",
+                                        "using": {
+                                            "foreign_key_constraint_on": "pool_id"
+                                        }
+                                    }
+                                ],
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_block",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "level": {
+                                            "custom_name": "level"
+                                        },
+                                        "timestamp": {
+                                            "custom_name": "timestamp"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "level": "level",
+                                        "timestamp": "timestamp"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dex_block",
+                                        "delete_by_pk": "delete_dex_block_by_pk",
+                                        "insert": "insert_dex_block",
+                                        "insert_one": "insert_dex_block_one",
+                                        "select": "dex_block",
+                                        "select_aggregate": "dex_block_aggregate",
+                                        "select_by_pk": "dex_block_by_pk",
+                                        "update": "update_dex_block",
+                                        "update_by_pk": "update_dex_block_by_pk"
+                                    }
+                                },
+                                "array_relationships": [
+                                    {
+                                        "name": "dex_assets",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "updated_at_block_id",
+                                                "table": {
+                                                    "name": "dex_asset",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pairs",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "created_at_block_id",
+                                                "table": {
+                                                    "name": "dex_pair",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_swap_events",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "block_id",
+                                                "table": {
+                                                    "name": "dex_swap_event",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_pair",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "asset_0_id": {
+                                            "custom_name": "asset_0_id"
+                                        },
+                                        "asset_1_id": {
+                                            "custom_name": "asset_1_id"
+                                        },
+                                        "created_at_block_id": {
+                                            "custom_name": "created_at_block_id"
+                                        },
+                                        "created_at_txn_id": {
+                                            "custom_name": "created_at_txn_id"
+                                        },
+                                        "dex_key": {
+                                            "custom_name": "dex_key"
+                                        },
+                                        "fee_bps": {
+                                            "custom_name": "fee_bps"
+                                        },
+                                        "id": {
+                                            "custom_name": "id"
+                                        },
+                                        "pool_id": {
+                                            "custom_name": "pool_id"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "asset_0_id": "asset_0_id",
+                                        "asset_1_id": "asset_1_id",
+                                        "created_at_block_id": "created_at_block_id",
+                                        "created_at_txn_id": "created_at_txn_id",
+                                        "dex_key": "dex_key",
+                                        "fee_bps": "fee_bps",
+                                        "id": "id",
+                                        "pool_id": "pool_id"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dex_pair",
+                                        "delete_by_pk": "delete_dex_pair_by_pk",
+                                        "insert": "insert_dex_pair",
+                                        "insert_one": "insert_dex_pair_one",
+                                        "select": "dex_pair",
+                                        "select_aggregate": "dex_pair_aggregate",
+                                        "select_by_pk": "dex_pair_by_pk",
+                                        "update": "update_dex_pair",
+                                        "update_by_pk": "update_dex_pair_by_pk"
+                                    }
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "asset_0",
+                                        "using": {
+                                            "foreign_key_constraint_on": "asset_0_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "asset_1",
+                                        "using": {
+                                            "foreign_key_constraint_on": "asset_1_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "created_at_block",
+                                        "using": {
+                                            "foreign_key_constraint_on": "created_at_block_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "pool",
+                                        "using": {
+                                            "foreign_key_constraint_on": "pool_id"
+                                        }
+                                    }
+                                ],
+                                "array_relationships": [
+                                    {
+                                        "name": "dex_swap_events",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "pair_id",
+                                                "table": {
+                                                    "name": "dex_swap_event",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_pool",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "account": {
+                                            "custom_name": "account"
+                                        },
+                                        "dex_key": {
+                                            "custom_name": "dex_key"
+                                        },
+                                        "dex_pool_id": {
+                                            "custom_name": "dex_pool_id"
+                                        },
+                                        "id": {
+                                            "custom_name": "id"
+                                        },
+                                        "lp_token_id": {
+                                            "custom_name": "lp_token_id"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "account": "account",
+                                        "dex_key": "dex_key",
+                                        "dex_pool_id": "dex_pool_id",
+                                        "id": "id",
+                                        "lp_token_id": "lp_token_id"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dex_pool",
+                                        "delete_by_pk": "delete_dex_pool_by_pk",
+                                        "insert": "insert_dex_pool",
+                                        "insert_one": "insert_dex_pool_one",
+                                        "select": "dex_pool",
+                                        "select_aggregate": "dex_pool_aggregate",
+                                        "select_by_pk": "dex_pool_by_pk",
+                                        "update": "update_dex_pool",
+                                        "update_by_pk": "update_dex_pool_by_pk"
+                                    }
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "lp_token",
+                                        "using": {
+                                            "foreign_key_constraint_on": "lp_token_id"
+                                        }
+                                    }
+                                ],
+                                "array_relationships": [
+                                    {
+                                        "name": "dex_pairs",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "pool_id",
+                                                "table": {
+                                                    "name": "dex_pair",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pool_assets",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "pool_id",
+                                                "table": {
+                                                    "name": "dex_asset_pool_reserve",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "reserves",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "pool_id",
+                                                "table": {
+                                                    "name": "dex_asset_pool_reserve",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_swap_event",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "amount_0_in": {
+                                            "custom_name": "amount_0_in"
+                                        },
+                                        "amount_0_out": {
+                                            "custom_name": "amount_0_out"
+                                        },
+                                        "amount_1_in": {
+                                            "custom_name": "amount_1_in"
+                                        },
+                                        "amount_1_out": {
+                                            "custom_name": "amount_1_out"
+                                        },
+                                        "asset_0_reserve": {
+                                            "custom_name": "asset_0_reserve"
+                                        },
+                                        "asset_1_reserve": {
+                                            "custom_name": "asset_1_reserve"
+                                        },
+                                        "block_id": {
+                                            "custom_name": "block_id"
+                                        },
+                                        "event_index": {
+                                            "custom_name": "event_index"
+                                        },
+                                        "event_type": {
+                                            "custom_name": "event_type"
+                                        },
+                                        "id": {
+                                            "custom_name": "id"
+                                        },
+                                        "maker": {
+                                            "custom_name": "maker"
+                                        },
+                                        "metadata": {
+                                            "custom_name": "metadata"
+                                        },
+                                        "name": {
+                                            "custom_name": "name"
+                                        },
+                                        "pair_id": {
+                                            "custom_name": "pair_id"
+                                        },
+                                        "price": {
+                                            "custom_name": "price"
+                                        },
+                                        "tx_id": {
+                                            "custom_name": "tx_id"
+                                        },
+                                        "tx_index": {
+                                            "custom_name": "tx_index"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "amount_0_in": "amount_0_in",
+                                        "amount_0_out": "amount_0_out",
+                                        "amount_1_in": "amount_1_in",
+                                        "amount_1_out": "amount_1_out",
+                                        "asset_0_reserve": "asset_0_reserve",
+                                        "asset_1_reserve": "asset_1_reserve",
+                                        "block_id": "block_id",
+                                        "event_index": "event_index",
+                                        "event_type": "event_type",
+                                        "id": "id",
+                                        "maker": "maker",
+                                        "metadata": "metadata",
+                                        "name": "name",
+                                        "pair_id": "pair_id",
+                                        "price": "price",
+                                        "tx_id": "tx_id",
+                                        "tx_index": "tx_index"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dex_swap_event",
+                                        "delete_by_pk": "delete_dex_swap_event_by_pk",
+                                        "insert": "insert_dex_swap_event",
+                                        "insert_one": "insert_dex_swap_event_one",
+                                        "select": "dex_swap_event",
+                                        "select_aggregate": "dex_swap_event_aggregate",
+                                        "select_by_pk": "dex_swap_event_by_pk",
+                                        "update": "update_dex_swap_event",
+                                        "update_by_pk": "update_dex_swap_event_by_pk"
+                                    }
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "block",
+                                        "using": {
+                                            "foreign_key_constraint_on": "block_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "pair",
+                                        "using": {
+                                            "foreign_key_constraint_on": "pair_id"
+                                        }
+                                    }
+                                ],
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_contract",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "address": {
+                                            "custom_name": "address"
+                                        },
+                                        "code_hash": {
+                                            "custom_name": "code_hash"
+                                        },
+                                        "created_at": {
+                                            "custom_name": "created_at"
+                                        },
+                                        "kind": {
+                                            "custom_name": "kind"
+                                        },
+                                        "name": {
+                                            "custom_name": "name"
+                                        },
+                                        "typename": {
+                                            "custom_name": "typename"
+                                        },
+                                        "updated_at": {
+                                            "custom_name": "updated_at"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "address": "address",
+                                        "code_hash": "code_hash",
+                                        "created_at": "created_at",
+                                        "kind": "kind",
+                                        "name": "name",
+                                        "typename": "typename",
+                                        "updated_at": "updated_at"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dipdup_contract",
+                                        "delete_by_pk": "delete_dipdup_contract_by_pk",
+                                        "insert": "insert_dipdup_contract",
+                                        "insert_one": "insert_dipdup_contract_one",
+                                        "select": "dipdup_contract",
+                                        "select_aggregate": "dipdup_contract_aggregate",
+                                        "select_by_pk": "dipdup_contract_by_pk",
+                                        "update": "update_dipdup_contract",
+                                        "update_by_pk": "update_dipdup_contract_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_contract_metadata",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "contract": {
+                                            "custom_name": "contract"
+                                        },
+                                        "created_at": {
+                                            "custom_name": "created_at"
+                                        },
+                                        "id": {
+                                            "custom_name": "id"
+                                        },
+                                        "metadata": {
+                                            "custom_name": "metadata"
+                                        },
+                                        "network": {
+                                            "custom_name": "network"
+                                        },
+                                        "update_id": {
+                                            "custom_name": "update_id"
+                                        },
+                                        "updated_at": {
+                                            "custom_name": "updated_at"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "contract": "contract",
+                                        "created_at": "created_at",
+                                        "id": "id",
+                                        "metadata": "metadata",
+                                        "network": "network",
+                                        "update_id": "update_id",
+                                        "updated_at": "updated_at"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dipdup_contract_metadata",
+                                        "delete_by_pk": "delete_dipdup_contract_metadata_by_pk",
+                                        "insert": "insert_dipdup_contract_metadata",
+                                        "insert_one": "insert_dipdup_contract_metadata_one",
+                                        "select": "dipdup_contract_metadata",
+                                        "select_aggregate": "dipdup_contract_metadata_aggregate",
+                                        "select_by_pk": "dipdup_contract_metadata_by_pk",
+                                        "update": "update_dipdup_contract_metadata",
+                                        "update_by_pk": "update_dipdup_contract_metadata_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_head",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "created_at": {
+                                            "custom_name": "created_at"
+                                        },
+                                        "hash": {
+                                            "custom_name": "hash"
+                                        },
+                                        "level": {
+                                            "custom_name": "level"
+                                        },
+                                        "name": {
+                                            "custom_name": "name"
+                                        },
+                                        "timestamp": {
+                                            "custom_name": "timestamp"
+                                        },
+                                        "updated_at": {
+                                            "custom_name": "updated_at"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "created_at": "created_at",
+                                        "hash": "hash",
+                                        "level": "level",
+                                        "name": "name",
+                                        "timestamp": "timestamp",
+                                        "updated_at": "updated_at"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dipdup_head",
+                                        "delete_by_pk": "delete_dipdup_head_by_pk",
+                                        "insert": "insert_dipdup_head",
+                                        "insert_one": "insert_dipdup_head_one",
+                                        "select": "dipdup_head",
+                                        "select_aggregate": "dipdup_head_aggregate",
+                                        "select_by_pk": "dipdup_head_by_pk",
+                                        "update": "update_dipdup_head",
+                                        "update_by_pk": "update_dipdup_head_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_index",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "config_hash": {
+                                            "custom_name": "config_hash"
+                                        },
+                                        "created_at": {
+                                            "custom_name": "created_at"
+                                        },
+                                        "level": {
+                                            "custom_name": "level"
+                                        },
+                                        "name": {
+                                            "custom_name": "name"
+                                        },
+                                        "status": {
+                                            "custom_name": "status"
+                                        },
+                                        "template": {
+                                            "custom_name": "template"
+                                        },
+                                        "template_values": {
+                                            "custom_name": "template_values"
+                                        },
+                                        "type": {
+                                            "custom_name": "type"
+                                        },
+                                        "updated_at": {
+                                            "custom_name": "updated_at"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "config_hash": "config_hash",
+                                        "created_at": "created_at",
+                                        "level": "level",
+                                        "name": "name",
+                                        "status": "status",
+                                        "template": "template",
+                                        "template_values": "template_values",
+                                        "type": "type",
+                                        "updated_at": "updated_at"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dipdup_index",
+                                        "delete_by_pk": "delete_dipdup_index_by_pk",
+                                        "insert": "insert_dipdup_index",
+                                        "insert_one": "insert_dipdup_index_one",
+                                        "select": "dipdup_index",
+                                        "select_aggregate": "dipdup_index_aggregate",
+                                        "select_by_pk": "dipdup_index_by_pk",
+                                        "update": "update_dipdup_index",
+                                        "update_by_pk": "update_dipdup_index_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_meta",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "created_at": {
+                                            "custom_name": "created_at"
+                                        },
+                                        "key": {
+                                            "custom_name": "key"
+                                        },
+                                        "updated_at": {
+                                            "custom_name": "updated_at"
+                                        },
+                                        "value": {
+                                            "custom_name": "value"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "created_at": "created_at",
+                                        "key": "key",
+                                        "updated_at": "updated_at",
+                                        "value": "value"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dipdup_meta",
+                                        "delete_by_pk": "delete_dipdup_meta_by_pk",
+                                        "insert": "insert_dipdup_meta",
+                                        "insert_one": "insert_dipdup_meta_one",
+                                        "select": "dipdup_meta",
+                                        "select_aggregate": "dipdup_meta_aggregate",
+                                        "select_by_pk": "dipdup_meta_by_pk",
+                                        "update": "update_dipdup_meta",
+                                        "update_by_pk": "update_dipdup_meta_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_model_update",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "action": {
+                                            "custom_name": "action"
+                                        },
+                                        "created_at": {
+                                            "custom_name": "created_at"
+                                        },
+                                        "data": {
+                                            "custom_name": "data"
+                                        },
+                                        "id": {
+                                            "custom_name": "id"
+                                        },
+                                        "index": {
+                                            "custom_name": "index"
+                                        },
+                                        "level": {
+                                            "custom_name": "level"
+                                        },
+                                        "model_name": {
+                                            "custom_name": "model_name"
+                                        },
+                                        "model_pk": {
+                                            "custom_name": "model_pk"
+                                        },
+                                        "updated_at": {
+                                            "custom_name": "updated_at"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "action": "action",
+                                        "created_at": "created_at",
+                                        "data": "data",
+                                        "id": "id",
+                                        "index": "index",
+                                        "level": "level",
+                                        "model_name": "model_name",
+                                        "model_pk": "model_pk",
+                                        "updated_at": "updated_at"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dipdup_model_update",
+                                        "delete_by_pk": "delete_dipdup_model_update_by_pk",
+                                        "insert": "insert_dipdup_model_update",
+                                        "insert_one": "insert_dipdup_model_update_one",
+                                        "select": "dipdup_model_update",
+                                        "select_aggregate": "dipdup_model_update_aggregate",
+                                        "select_by_pk": "dipdup_model_update_by_pk",
+                                        "update": "update_dipdup_model_update",
+                                        "update_by_pk": "update_dipdup_model_update_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_schema",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "created_at": {
+                                            "custom_name": "created_at"
+                                        },
+                                        "hash": {
+                                            "custom_name": "hash"
+                                        },
+                                        "name": {
+                                            "custom_name": "name"
+                                        },
+                                        "reindex": {
+                                            "custom_name": "reindex"
+                                        },
+                                        "updated_at": {
+                                            "custom_name": "updated_at"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "created_at": "created_at",
+                                        "hash": "hash",
+                                        "name": "name",
+                                        "reindex": "reindex",
+                                        "updated_at": "updated_at"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dipdup_schema",
+                                        "delete_by_pk": "delete_dipdup_schema_by_pk",
+                                        "insert": "insert_dipdup_schema",
+                                        "insert_one": "insert_dipdup_schema_one",
+                                        "select": "dipdup_schema",
+                                        "select_aggregate": "dipdup_schema_aggregate",
+                                        "select_by_pk": "dipdup_schema_by_pk",
+                                        "update": "update_dipdup_schema",
+                                        "update_by_pk": "update_dipdup_schema_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_status",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "level": {
+                                            "custom_name": "level"
+                                        },
+                                        "name": {
+                                            "custom_name": "name"
+                                        },
+                                        "size": {
+                                            "custom_name": "size"
+                                        },
+                                        "type": {
+                                            "custom_name": "type"
+                                        },
+                                        "updated_at": {
+                                            "custom_name": "updated_at"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "level": "level",
+                                        "name": "name",
+                                        "size": "size",
+                                        "type": "type",
+                                        "updated_at": "updated_at"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dipdup_status",
+                                        "delete_by_pk": "delete_dipdup_status_by_pk",
+                                        "insert": "insert_dipdup_status",
+                                        "insert_one": "insert_dipdup_status_one",
+                                        "select": "dipdup_status",
+                                        "select_aggregate": "dipdup_status_aggregate",
+                                        "select_by_pk": "dipdup_status_by_pk",
+                                        "update": "update_dipdup_status",
+                                        "update_by_pk": "update_dipdup_status_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_token_metadata",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "contract": {
+                                            "custom_name": "contract"
+                                        },
+                                        "created_at": {
+                                            "custom_name": "created_at"
+                                        },
+                                        "id": {
+                                            "custom_name": "id"
+                                        },
+                                        "metadata": {
+                                            "custom_name": "metadata"
+                                        },
+                                        "network": {
+                                            "custom_name": "network"
+                                        },
+                                        "token_id": {
+                                            "custom_name": "token_id"
+                                        },
+                                        "update_id": {
+                                            "custom_name": "update_id"
+                                        },
+                                        "updated_at": {
+                                            "custom_name": "updated_at"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "contract": "contract",
+                                        "created_at": "created_at",
+                                        "id": "id",
+                                        "metadata": "metadata",
+                                        "network": "network",
+                                        "token_id": "token_id",
+                                        "update_id": "update_id",
+                                        "updated_at": "updated_at"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_dipdup_token_metadata",
+                                        "delete_by_pk": "delete_dipdup_token_metadata_by_pk",
+                                        "insert": "insert_dipdup_token_metadata",
+                                        "insert_one": "insert_dipdup_token_metadata_one",
+                                        "select": "dipdup_token_metadata",
+                                        "select_aggregate": "dipdup_token_metadata_aggregate",
+                                        "select_by_pk": "dipdup_token_metadata_by_pk",
+                                        "update": "update_dipdup_token_metadata",
+                                        "update_by_pk": "update_dipdup_token_metadata_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "ds_latest_block",
+                                    "schema": "public"
+                                },
+                                "configuration": {
+                                    "column_config": {
+                                        "block_number": {
+                                            "custom_name": "block_number"
+                                        },
+                                        "block_timestamp": {
+                                            "custom_name": "block_timestamp"
+                                        },
+                                        "id": {
+                                            "custom_name": "id"
+                                        }
+                                    },
+                                    "custom_column_names": {
+                                        "block_number": "block_number",
+                                        "block_timestamp": "block_timestamp",
+                                        "id": "id"
+                                    },
+                                    "custom_root_fields": {
+                                        "delete": "delete_ds_latest_block",
+                                        "delete_by_pk": "delete_ds_latest_block_by_pk",
+                                        "insert": "insert_ds_latest_block",
+                                        "insert_one": "insert_ds_latest_block_one",
+                                        "select": "ds_latest_block",
+                                        "select_aggregate": "ds_latest_block_aggregate",
+                                        "select_by_pk": "ds_latest_block_by_pk",
+                                        "update": "update_ds_latest_block",
+                                        "update_by_pk": "update_ds_latest_block_by_pk"
+                                    }
+                                },
+                                "select_permissions": [
+                                    {
+                                        "role": "user",
+                                        "permission": {
+                                            "columns": "*",
+                                            "filter": {},
+                                            "limit": 1000,
+                                            "allow_aggregations": true
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "configuration": {
+                            "connection_info": {
+                                "database_url": {
+                                    "from_env": "HASURA_GRAPHQL_DATABASE_URL"
+                                },
+                                "isolation_level": "read-committed",
+                                "pool_settings": {
+                                    "connection_lifetime": 600,
+                                    "idle_timeout": 180,
+                                    "max_connections": 50,
+                                    "retries": 1
+                                },
+                                "use_prepared_statements": true
+                            }
+                        }
+                    }
+                ],
+                "query_collections": [
+                    {
+                        "name": "allowed-queries",
+                        "definition": {
+                            "queries": [
+                                {
+                                    "name": "dipdup_contract",
+                                    "query": "query dipdup_contract ($name: String!) {dipdup_contract_by_pk(name: $name) {address code_hash created_at kind name typename updated_at}}"
+                                },
+                                {
+                                    "name": "dipdup_contract_metadata",
+                                    "query": "query dipdup_contract_metadata ($id: Int!) {dipdup_contract_metadata_by_pk(id: $id) {contract created_at id metadata network update_id updated_at}}"
+                                },
+                                {
+                                    "name": "dipdup_head",
+                                    "query": "query dipdup_head ($name: String!) {dipdup_head_by_pk(name: $name) {created_at hash level name timestamp updated_at}}"
+                                },
+                                {
+                                    "name": "dipdup_index",
+                                    "query": "query dipdup_index ($name: String!) {dipdup_index_by_pk(name: $name) {config_hash created_at level name status template template_values type updated_at}}"
+                                },
+                                {
+                                    "name": "dipdup_meta",
+                                    "query": "query dipdup_meta ($key: String!) {dipdup_meta_by_pk(key: $key) {created_at key updated_at value}}"
+                                },
+                                {
+                                    "name": "dipdup_model_update",
+                                    "query": "query dipdup_model_update ($id: Int!) {dipdup_model_update_by_pk(id: $id) {action created_at data id index level model_name model_pk updated_at}}"
+                                },
+                                {
+                                    "name": "dipdup_schema",
+                                    "query": "query dipdup_schema ($name: String!) {dipdup_schema_by_pk(name: $name) {created_at hash name reindex updated_at}}"
+                                },
+                                {
+                                    "name": "dipdup_token_metadata",
+                                    "query": "query dipdup_token_metadata ($id: Int!) {dipdup_token_metadata_by_pk(id: $id) {contract created_at id metadata network token_id update_id updated_at}}"
+                                },
+                                {
+                                    "name": "dex_asset",
+                                    "query": "query dex_asset ($id: Int!) {dex_asset_by_pk(id: $id) {asset_type decimals id name symbol updated_at_block_id}}"
+                                },
+                                {
+                                    "name": "dex_asset_pool_reserve",
+                                    "query": "query dex_asset_pool_reserve ($id: Int!) {dex_asset_pool_reserve_by_pk(id: $id) {asset_id id pool_id reserve}}"
+                                },
+                                {
+                                    "name": "dex_block",
+                                    "query": "query dex_block ($level: Int!) {dex_block_by_pk(level: $level) {level timestamp}}"
+                                },
+                                {
+                                    "name": "ds_latest_block",
+                                    "query": "query ds_latest_block ($id: Boolean!) {ds_latest_block_by_pk(id: $id) {block_number block_timestamp id}}"
+                                },
+                                {
+                                    "name": "dex_pair",
+                                    "query": "query dex_pair ($id: String!) {dex_pair_by_pk(id: $id) {asset_0_id asset_1_id created_at_block_id created_at_txn_id dex_key fee_bps id pool_id}}"
+                                },
+                                {
+                                    "name": "dex_pool",
+                                    "query": "query dex_pool ($id: Int!) {dex_pool_by_pk(id: $id) {account dex_key dex_pool_id id lp_token_id}}"
+                                },
+                                {
+                                    "name": "dex_swap_event",
+                                    "query": "query dex_swap_event ($id: Int!) {dex_swap_event_by_pk(id: $id) {amount_0_in amount_0_out amount_1_in amount_1_out asset_0_reserve asset_1_reserve block_id event_index event_type id maker metadata name pair_id price tx_id tx_index}}"
+                                },
+                                {
+                                    "name": "dipdup_status",
+                                    "query": "query dipdup_status ($name: String!) {dipdup_status(where: {name: {_eq: $name}}) {type name level size updated_at}}"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

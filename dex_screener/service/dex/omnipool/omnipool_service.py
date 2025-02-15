@@ -4,6 +4,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from dex_screener.models import Asset
+from dex_screener.models import AssetPoolReserve
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import Pool
@@ -75,4 +76,5 @@ class OmnipoolService:
             cls.logger.info('Pair registered in pool %r: %r.', pool, pair)
 
         await pool.assets.add(new_asset)
+        await AssetPoolReserve.update_or_create(pool=pool, asset=new_asset, defaults={'reserve': event.payload['initial_amount']})
         cls.logger.info('Pair Asset added to pool %r: %s.', pool, new_asset)

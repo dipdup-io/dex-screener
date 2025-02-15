@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from dex_screener.models import Pair
 from dex_screener.service.dex.omnipool.omnipool_service import OmnipoolService
 from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
@@ -26,10 +27,13 @@ class OmnipoolSwapEventEntity(SwapEventEntity):
         return await super().resolve_event_data()
 
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
+        pair_id = OmnipoolService.get_pair_id(self._event.payload['asset_in'], self._event.payload['asset_out'])
+        pair = await Pair.get(id=pair_id)
+        asset_0_reserve, asset_1_reserve = await pair.get_reserves()
         return SwapEventPoolDataDTO(
-            pair_id=OmnipoolService.get_pair_id(self._event.payload['asset_in'], self._event.payload['asset_out']),
-            # asset_0_reserve=None,
-            # asset_1_reserve=None,
+            pair_id=pair_id,
+            asset_0_reserve=asset_0_reserve,
+            asset_1_reserve=asset_1_reserve,
         )
 
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:

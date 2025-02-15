@@ -31,11 +31,11 @@ class SwapEventEntity(DexScreenerEventEntity, ABC):
         self.market_data = await self.resolve_market_data()
 
     @abstractmethod
-    async def resolve_pool_data(self):
+    async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
         raise NotImplementedError
 
     @abstractmethod
-    async def resolve_market_data(self):
+    async def resolve_market_data(self) -> SwapEventMarketDataDTO:
         raise NotImplementedError
 
     async def save(self) -> SwapEvent:
@@ -48,8 +48,7 @@ class SwapEventEntity(DexScreenerEventEntity, ABC):
         }
         fields.update({'event_type': self.event_type})
 
-        record = await SwapEvent.create(**fields)
-
+        record: SwapEvent = await SwapEvent.create(**fields)
         return record
 
     async def _market_data_from_args(self, args: MarketDataArgsDTO):

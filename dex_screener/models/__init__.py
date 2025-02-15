@@ -2,18 +2,21 @@ from __future__ import annotations
 
 from decimal import Decimal
 from typing import TYPE_CHECKING
+from typing import ClassVar
 
 from dipdup import fields
 from dipdup.fields import ForeignKeyField
 from dipdup.fields import ManyToManyField
 from dipdup.fields import OneToOneField
 from dipdup.models import Model
+from tortoise.signals import post_save
 
 from dex_screener.models.dex_fields import AssetAmountField
 from dex_screener.models.dex_fields import AssetPriceField
 from dex_screener.service.event.const import DexScreenerEventType
 
 if TYPE_CHECKING:
+    from tortoise import BaseDBAsyncClient
     from tortoise.fields.relational import ForeignKeyFieldInstance
     from tortoise.fields.relational import ManyToManyFieldInstance
     from tortoise.fields.relational import OneToOneFieldInstance
@@ -128,6 +131,22 @@ class AssetPoolReserve(Model):
     reserve = fields.CharField(max_length=40, null=True)
 
 
+class CachedPools:
+    account_list: ClassVar[set[str]] = {()}
+
+
+@post_save(Pool)
+async def update_pools_list(
+    sender: type[Pool],
+    instance: Pool,
+    created: bool,
+    using_db: BaseDBAsyncClient | None,
+    update_fields: list[str],
+):
+    if created:
+        CachedPools.account_list.add(instance.account)
+
+
 class Pair(Model):
     class Meta:
         table = 'dex_pair'
@@ -165,6 +184,21 @@ class Pair(Model):
     def __repr__(self) -> str:
         return f'<Pair[{self.dex_key}]({self.asset_0}/{self.asset_1})>'
 
+    async def get_reserves(self) -> tuple[str, str]:
+        await self.fetch_related('asset_0', 'asset_1', 'pool')
+        asset_0_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_0).values_list('reserve', flat=True)
+        asset_1_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_1).values_list('reserve', flat=True)
+        if asset_0_minor_reserve is None:
+            asset_0_reserve = None
+        else:
+            asset_0_reserve = self.asset_0.from_minor(asset_0_minor_reserve)
+
+        if asset_1_minor_reserve is None:
+            asset_1_reserve = None
+        else:
+            asset_1_reserve = self.asset_1.from_minor(asset_1_minor_reserve)
+        return str(asset_0_reserve), str(asset_1_reserve)
+
 
 class SwapEvent(Model):
     class Meta:
@@ -188,6 +222,8 @@ class SwapEvent(Model):
     amount_0_out = AssetAmountField(null=True)
     amount_1_out = AssetAmountField(null=True)
     price = AssetPriceField()
+    asset_0_reserve = AssetAmountField(null=True)
+    asset_1_reserve = AssetAmountField(null=True)
     block: ForeignKeyFieldInstance[Block] = ForeignKeyField(
         model_name=Block.Meta.model,
         source_field='block_id',
