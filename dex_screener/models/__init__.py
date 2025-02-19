@@ -86,10 +86,9 @@ class Pool(Model):
         model = 'models.Pool'
         unique_together = ('dex_key', 'dex_pool_id')
 
-    id = fields.IntField(primary_key=True)
+    account = AccountField(primary_key=True)
     dex_key = fields.EnumField(enum_type=DexKey, db_index=True)
     dex_pool_id = fields.TextField(db_index=True)
-    account = AccountField(db_index=True, unique=True, null=True)
     assets: ManyToManyFieldInstance[Asset] = ManyToManyField(
         model_name=Asset.Meta.model,
         through='dex_asset_pool_reserve',
@@ -125,7 +124,7 @@ class AssetPoolReserve(Model):
     pool: ForeignKeyFieldInstance[Pool] = ForeignKeyField(
         model_name=Pool.Meta.model,
         source_field='pool_id',
-        to_field='id',
+        to_field='account',
         related_name='reserves',
     )
     reserve = fields.CharField(max_length=40, null=True)
@@ -170,7 +169,7 @@ class Pair(Model):
     pool: ForeignKeyFieldInstance[Pool] = ForeignKeyField(
         model_name=Pool.Meta.model,
         source_field='pool_id',
-        to_field='id',
+        to_field='account',
     )
 
     created_at_block: ForeignKeyFieldInstance[Block] = ForeignKeyField(
@@ -178,7 +177,7 @@ class Pair(Model):
         source_field='created_at_block_id',
         to_field='level',
     )
-    created_at_txn_id = fields.CharField(max_length=66)
+    created_at_tx_id = fields.IntField()
     fee_bps = fields.IntField(null=True)
 
     def __repr__(self) -> str:
@@ -200,30 +199,35 @@ class Pair(Model):
         return str(asset_0_reserve), str(asset_1_reserve)
 
 
-class SwapEvent(Model):
+class DexEvent(Model):
     class Meta:
-        table = 'dex_swap_event'
-        model = 'models.SwapEvent'
+        table = 'dex_event'
+        model = 'models.DexEvent'
 
     id = fields.IntField(primary_key=True)
     event_type = fields.EnumField(DexScreenerEventType, db_index=True)
     name = fields.CharField(max_length=32)
-    tx_id = fields.CharField(max_length=20)
-    tx_index = fields.IntField(null=True)
-    event_index = fields.CharField(max_length=20)
     maker = AccountField()
     pair: ForeignKeyFieldInstance[Pair] = ForeignKeyField(
         model_name=Pair.Meta.model,
         source_field='pair_id',
         to_field='id',
     )
+
     amount_0_in = AssetAmountField(null=True)
     amount_1_in = AssetAmountField(null=True)
     amount_0_out = AssetAmountField(null=True)
     amount_1_out = AssetAmountField(null=True)
-    price = AssetPriceField()
+    price = AssetPriceField(null=True)
+
+    amount_0 = AssetAmountField(null=True)
+    amount_1 = AssetAmountField(null=True)
+
     asset_0_reserve = AssetAmountField(null=True)
     asset_1_reserve = AssetAmountField(null=True)
+
+    event_index = fields.IntField(db_index=True)
+    tx_index = fields.IntField(db_index=True)
     block: ForeignKeyFieldInstance[Block] = ForeignKeyField(
         model_name=Block.Meta.model,
         source_field='block_id',
@@ -232,4 +236,4 @@ class SwapEvent(Model):
     metadata = fields.JSONField(null=True)
 
     def __repr__(self) -> str:
-        return f'<SwapEvent[{self.name}]({self.event_index})>'
+        return f'<{self.event_type!s}Event[{self.name}]({self.block_id}-{self.event_index})>'

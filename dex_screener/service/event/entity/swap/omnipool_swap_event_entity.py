@@ -12,7 +12,7 @@ from dex_screener.service.event.entity.swap.swap_event_entity import SwapEventEn
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
 
-    from dex_screener.models import SwapEvent
+    from dex_screener.models import DexEvent
     from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
 
 
@@ -40,5 +40,5 @@ class OmnipoolSwapEventEntity(SwapEventEntity):
         resolved_args = await MultiAssetPoolSwapEventMarketDataHelper.extract_args_from_payload(self._event.payload)
         return await self._market_data_from_args(resolved_args)
 
-    async def save(self) -> SwapEvent:
+    async def save(self) -> DexEvent:
         return await super().save()

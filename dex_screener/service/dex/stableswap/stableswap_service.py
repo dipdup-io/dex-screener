@@ -31,9 +31,9 @@ class StableSwapService:
         dex_pool_id = event.payload['pool_id']
         account = DEX_PULL_ACCOUNT_MAPPING[int(dex_pool_id)]
         pool = await Pool.create(
+            account=account,
             dex_key=DexKey.StableSwap,
             dex_pool_id=dex_pool_id,
-            account=account,
             lp_token_id=dex_pool_id,
         )
         cls.logger.info('StableSwap Pool registered: %r.', pool)
@@ -42,9 +42,9 @@ class StableSwapService:
 
     @classmethod
     async def register_pair(cls, pool: Pool, event: SubstrateEvent[StableswapPoolCreatedPayload]):
-        pool_assets: list[int] = list(event.payload['assets'])
-        pool_assets.append(pool.lp_token_id)
-        for asset_a_id, asset_b_id in combinations(pool_assets, 2):
+        pool_assets_id: list[int] = list(event.payload['assets'])
+        pool_assets_id.append(pool.lp_token_id)
+        for asset_a_id, asset_b_id in combinations(pool_assets_id, 2):
             pair_id = cls.get_pair_id(pool, int(asset_a_id), int(asset_b_id))
 
             event_info = DexScreenerEventInfoDTO.from_event(event)
@@ -56,10 +56,10 @@ class StableSwapService:
                 asset_1_id=max(asset_a_id, asset_b_id),
                 pool=pool,
                 created_at_block_id=event_info.block_id,
-                created_at_txn_id=event_info.tx_id,
+                created_at_tx_id=event_info.tx_index,
                 fee_bps=event.payload['fee'],
             )
             cls.logger.info('Pair registered in pool %r: %r.', pool, pair)
-        pool_assets: list[Asset] = await Asset.filter(id__in=event.payload['assets'])
+        pool_assets: list[Asset] = await Asset.filter(id__in=pool_assets_id)
         await pool.assets.add(*pool_assets)
         cls.logger.info('Assets added to pool %r: %s.', pool, pool_assets)

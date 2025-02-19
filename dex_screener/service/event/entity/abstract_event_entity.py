@@ -21,7 +21,7 @@ class DexScreenerEventEntity(ABC):
 
     async def resolve_event_data(self) -> DexScreenerEventDataDTO:
         event_data: DexScreenerEventDataDTO = DexScreenerEventDataDTO(
-            id=self._event.data.index,
+            event_index=self._event.data.index,
             name=self._event.data.name,
             block_id=self._event.data.level,
             tx_index=self._event.data.extrinsic_index if self._event.data.extrinsic_index is not None else 0,

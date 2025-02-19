@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from dex_screener.models import DexEvent
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import Pool
-from dex_screener.models import SwapEvent
 from dex_screener.service.dex.stableswap.stableswap_service import StableSwapService
 from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
@@ -53,5 +53,5 @@ class StableSwapPoolSwapEventEntity(SwapEventEntity):
         resolved_args = await MultiAssetPoolSwapEventMarketDataHelper.extract_args_from_payload(self._event.payload)
         return await self._market_data_from_args(resolved_args)
 
-    async def save(self) -> SwapEvent:
+    async def save(self) -> DexEvent:
         return await super().save()

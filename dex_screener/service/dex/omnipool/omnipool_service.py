@@ -37,9 +37,9 @@ class OmnipoolService:
     @classmethod
     async def register_pool(cls):
         pool = await Pool.create(
+            account=OMNIPOOL_SYSTEM_ACCOUNT,
             dex_key=DexKey.Omnipool,
             dex_pool_id = OMNIPOOL_SYSTEM_ACCOUNT,
-            account=OMNIPOOL_SYSTEM_ACCOUNT,
         )
         cls.logger.info('Omnipool registered: %r.', pool)
 
@@ -70,7 +70,7 @@ class OmnipoolService:
                 asset_1_id=max(pool_asset.id, new_asset.id),
                 pool=pool,
                 created_at_block_id=event_info.block_id,
-                created_at_txn_id=event_info.tx_id,
+                created_at_tx_id=event_info.tx_index,
                 # fee_bps=None,
             )
             cls.logger.info('Pair registered in pool %r: %r.', pool, pair)

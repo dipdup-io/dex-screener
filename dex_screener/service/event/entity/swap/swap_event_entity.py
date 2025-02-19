@@ -12,13 +12,13 @@ from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.exception import InvalidSwapEventMarketDataError
 
 if TYPE_CHECKING:
-    from dex_screener.models import SwapEvent
+    from dex_screener.models import DexEvent
     from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
     from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
 
 
 class SwapEventEntity(DexScreenerEventEntity, ABC):
-    event_type: str = DexScreenerEventType.swap
+    event_type: str = DexScreenerEventType.Swap
 
     event_data: DexScreenerEventDataDTO = NotImplemented
     pool_data: SwapEventPoolDataDTO = NotImplemented
@@ -28,7 +28,10 @@ class SwapEventEntity(DexScreenerEventEntity, ABC):
     async def resolve(self):
         self.event_data = await self.resolve_event_data()
         self.pool_data = await self.resolve_pool_data()
-        self.market_data = await self.resolve_market_data()
+        try:
+            self.market_data = await self.resolve_market_data()
+        except ValueError as exception:
+            raise InvalidSwapEventMarketDataError from exception
 
     @abstractmethod
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
@@ -38,8 +41,8 @@ class SwapEventEntity(DexScreenerEventEntity, ABC):
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:
         raise NotImplementedError
 
-    async def save(self) -> SwapEvent:
-        from dex_screener.models import SwapEvent
+    async def save(self) -> DexEvent:
+        from dex_screener.models import DexEvent
 
         fields = {
             **self.event_data.model_dump(),
@@ -48,7 +51,7 @@ class SwapEventEntity(DexScreenerEventEntity, ABC):
         }
         fields.update({'event_type': self.event_type})
 
-        record: SwapEvent = await SwapEvent.create(**fields)
+        record: DexEvent = await DexEvent.create(**fields)
         return record
 
     async def _market_data_from_args(self, args: MarketDataArgsDTO):

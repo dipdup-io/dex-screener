@@ -1,4 +1,7 @@
+from typing import Self
+
 from pydantic import BaseModel
+from pydantic import model_validator
 
 
 class SwapEventPoolDataDTO(BaseModel):
@@ -15,9 +18,16 @@ class SwapEventMarketDataDTO(BaseModel):
     amount_1_out: str | None = None
     price: str
 
+
 class MarketDataArgsDTO(BaseModel):
     maker: str
     asset_in_id: int
     asset_out_id: int
     minor_amount_in: int
     minor_amount_out: int
+
+    @model_validator(mode='after')
+    def check_amounts(self) -> Self:
+        if self.minor_amount_in * self.minor_amount_out == 0:
+            raise ValueError(f'Amount must be positive int: {self!r}.')
+        return self

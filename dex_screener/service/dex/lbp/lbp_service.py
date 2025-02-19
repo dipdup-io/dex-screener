@@ -21,10 +21,10 @@ class LBPService:
     @classmethod
     async def register_pool(cls, event: SubstrateEvent[LBPPoolCreatedPayload]):
         pool, _ = await Pool.update_or_create(
-            dex_key = DexKey.LBP,
-            dex_pool_id = event.payload['pool'],
+            account=event.payload['pool'],
             defaults={
-                'account': event.payload['pool'],
+                'dex_key': DexKey.LBP,
+                'dex_pool_id': event.payload['pool'],
             },
         )
         cls.logger.info('Pool registered: %r.', pool)
@@ -49,7 +49,7 @@ class LBPService:
             asset_1_id=max(asset_a.id, asset_b.id),
             pool=pool,
             created_at_block_id=event_info.block_id,
-            created_at_txn_id=event_info.tx_id,
+            created_at_tx_id=event_info.tx_index,
             fee_bps=event.payload['data']['fee'][1],
         )
         cls.logger.info('Pair registered in pool %r: %r.', pool, pair)

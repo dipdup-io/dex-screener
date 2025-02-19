@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from dex_screener.models import DexEvent
 from dex_screener.models import Pair
-from dex_screener.models import SwapEvent
 from dex_screener.service.event.entity.swap.dto import MarketDataArgsDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
@@ -68,5 +68,5 @@ class UnifiedTradeEventEntity(SwapEventEntity):
         )
         return await self._market_data_from_args(resolved_args)
 
-    async def save(self) -> SwapEvent:
+    async def save(self) -> DexEvent:
         return await super().save()

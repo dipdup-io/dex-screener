@@ -22,10 +22,10 @@ class IsolatedPoolService:
     @classmethod
     async def register_pool(cls, event: SubstrateEvent[XYKPoolCreatedPayload]):
         pool, _ = await Pool.update_or_create(
-            dex_key=DexKey.IsolatedPool,
-            dex_pool_id=event.payload['pool'],
+            account=event.payload['pool'],
             defaults={
-                'account': event.payload['pool'],
+                'dex_key': DexKey.IsolatedPool,
+                'dex_pool_id': event.payload['pool'],
                 'lp_token_id': event.payload['share_token'],
             },
         )
@@ -51,7 +51,7 @@ class IsolatedPoolService:
             asset_1_id=max(asset_a.id, asset_b.id),
             pool=pool,
             created_at_block_id=event_info.block_id,
-            created_at_txn_id=event_info.tx_id,
+            created_at_tx_id=event_info.tx_index,
             fee_bps=XYK_GET_EXCHANGE_FEE_BPS,
         )
         cls.logger.info('Pair registered in pool %r: %r.', pool, pair)

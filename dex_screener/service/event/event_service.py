@@ -11,13 +11,13 @@ from dex_screener.service.event.entity.swap.unified_trade_event_entity import Un
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
 
-    from dex_screener.models import SwapEvent
+    from dex_screener.models import DexEvent
     from dex_screener.service.event.entity.swap.swap_event_entity import SwapEventEntity
 
 
 class DexScreenerEventService:
     @classmethod
-    async def register_swap(cls, event: SubstrateEvent) -> SwapEvent:
+    async def register_swap(cls, event: SubstrateEvent) -> DexEvent:
         swap_event: SwapEventEntity = cls.build_swap_event_entity(event)
         await swap_event.resolve()
         return await swap_event.save()
