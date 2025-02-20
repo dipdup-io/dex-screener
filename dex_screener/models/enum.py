@@ -6,3 +6,4 @@ class DexKey(StrEnum):
     Omnipool: str = 'hydradx_omnipool'
     LBP: str = 'hydradx_lbp'
     StableSwap: str = 'hydradx_stableswap'
+    OTC: str = 'hydradx_otc'

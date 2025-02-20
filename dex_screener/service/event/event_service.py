@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from dex_screener.service.event.entity.swap.isolated_pool_swap_event_entity import IsolatedPoolSwapEventEntity
 from dex_screener.service.event.entity.swap.lbp_swap_event_entity import LBPSwapEventEntity
 from dex_screener.service.event.entity.swap.omnipool_swap_event_entity import OmnipoolSwapEventEntity
+from dex_screener.service.event.entity.swap.otc_swap_event_entity import OTCSwapEventEntity
 from dex_screener.service.event.entity.swap.stableswap_pool_swap_event_entity import StableSwapPoolSwapEventEntity
 from dex_screener.service.event.entity.swap.unified_trade_event_entity import UnifiedTradeEventEntity
 
@@ -33,6 +34,8 @@ class DexScreenerEventService:
                 return IsolatedPoolSwapEventEntity(event)
             case 'LBP.BuyExecuted' | 'LBP.SellExecuted':
                 return LBPSwapEventEntity(event)
+            case 'OTC.Filled' | 'OTC.PartiallyFilled':
+                return OTCSwapEventEntity(event)
             case 'Broadcast.Swapped':
                 return UnifiedTradeEventEntity(event)
 

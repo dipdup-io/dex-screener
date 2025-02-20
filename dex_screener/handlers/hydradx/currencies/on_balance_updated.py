@@ -16,7 +16,7 @@ async def on_balance_updated(
 
     pool = await Pool.get(account=event.payload['who'])
     await AssetPoolReserve.update_or_create(
-        pool_id=pool.id,
+        pool_id=pool.account,
         asset_id=event.payload['currency_id'],
         defaults={
             'reserve': event.payload['amount'],

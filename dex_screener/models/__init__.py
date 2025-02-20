@@ -142,8 +142,11 @@ async def update_pools_list(
     using_db: BaseDBAsyncClient | None,
     update_fields: list[str],
 ):
-    if created:
-        CachedPools.account_list.add(instance.account)
+    if not created:
+        return
+    if instance.dex_key==DexKey.OTC:
+        return
+    CachedPools.account_list.add(instance.account)
 
 
 class Pair(Model):
@@ -237,3 +240,16 @@ class DexEvent(Model):
 
     def __repr__(self) -> str:
         return f'<{self.event_type!s}Event[{self.name}]({self.block_id}-{self.event_index})>'
+
+
+class DexOmnipoolPosition(Model):
+    class Meta:
+        table = 'dex_omnipool_position'
+        model = 'models.DexOmnipoolPosition'
+
+    position_id = fields.IntField(primary_key=True)
+    owner = AccountField()
+    asset_id = fields.IntField()
+    amount = AssetAmountField()
+    shares = AssetAmountField()
+    created = fields.BooleanField(db_index=True, default=False)

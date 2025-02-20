@@ -23,6 +23,8 @@ class DeprecatedEvent:
         'XYK.SellExecuted',
         'LBP.BuyExecuted',
         'LBP.SellExecuted',
+        'OTC.Filled',
+        'OTC.PartiallyFilled',
     )
     done: bool = False
     level: int = 6837788

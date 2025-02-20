@@ -1,0 +1,66 @@
+{
+    "type": "bulk",
+    "source": "default",
+    "args": [
+        {
+            "type": "pg_add_computed_field",
+            "args": {
+                "table": {
+                    "schema": "public",
+                    "name": "dex_pair"
+                },
+                "name": "pair_tx_id",
+                "definition": {
+                    "function": {
+                        "name": "pair_tx_id",
+                        "schema": "public"
+                    },
+                    "table_argument": null,
+                    "session_argument": null
+                },
+                "comment": "",
+                "source": "default"
+            }
+        },
+        {
+            "type": "pg_add_computed_field",
+            "args": {
+                "table": {
+                    "schema": "public",
+                    "name": "dex_event"
+                },
+                "name": "tx_id",
+                "definition": {
+                    "function": {
+                        "name": "tx_id",
+                        "schema": "public"
+                    },
+                    "table_argument": null,
+                    "session_argument": null
+                },
+                "comment": "",
+                "source": "default"
+            }
+        },
+        {
+            "type": "pg_add_computed_field",
+            "args": {
+                "table": {
+                    "schema": "public",
+                    "name": "dex_event"
+                },
+                "name": "event_id",
+                "definition": {
+                    "function": {
+                        "name": "event_id",
+                        "schema": "public"
+                    },
+                    "table_argument": null,
+                    "session_argument": null
+                },
+                "comment": "",
+                "source": "default"
+            }
+        }
+    ]
+}

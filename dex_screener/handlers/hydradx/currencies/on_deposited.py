@@ -16,7 +16,7 @@ async def on_deposited(
 
     pool = await Pool.get(account=event.payload['who'])
     record, _ = await AssetPoolReserve.get_or_create(
-        pool_id=pool.id,
+        pool_id=pool.account,
         asset_id=event.payload['currency_id'],
         defaults={
             'reserve': 0,

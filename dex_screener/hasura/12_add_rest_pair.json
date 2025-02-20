@@ -7,7 +7,7 @@
             "args": {
                 "collection_name": "allowed-queries",
                 "query_name": "Pair",
-                "query": "query Pair($id: String!) { pair: dex_pair_by_pk(id: $id) { id dexKey: dex_key asset0Id: asset_0_id asset1Id: asset_1_id createdAtBlockNumber: created_at_block_id createdAtTxnId: created_at_txn_id }}"
+                "query": "query Pair($id: String!) { pair: dex_pair_by_pk(id: $id) { id dexKey: dex_key asset0Id: asset_0_id asset1Id: asset_1_id createdAtBlockNumber: created_at_block_id createdAtTxnId: created_at_tx_id }}"
             }
         },
         {

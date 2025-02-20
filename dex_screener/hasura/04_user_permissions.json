@@ -1,0 +1,42 @@
+{
+    "type": "bulk",
+    "source": "default",
+    "args": [
+        {
+            "type": "pg_create_select_permission",
+            "args": {
+                "table": {
+                    "name": "dex_asset",
+                    "schema": "public"
+                },
+                "role": "user",
+                "permission": {
+                    "columns": [
+                        "name",
+                        "symbol",
+                        "id",
+                        "updated_at_block_id",
+                        "decimals",
+                        "asset_type"
+                    ],
+                    "subscription_root_fields": null,
+                    "query_root_fields": null,
+                    "computed_fields": [],
+                    "backend_only": false,
+                    "filter": {},
+                    "limit": 10000,
+                    "allow_aggregations": true
+                },
+                "comment": "",
+                "source": "default"
+            }
+        },
+        {"type":"pg_create_select_permission","args":{"table":{"name":"dex_asset_pool_reserve","schema":"public"},"role":"user","permission":{"columns":["pool_id","reserve","asset_id","id"],"subscription_root_fields":null,"query_root_fields":null,"computed_fields":[],"backend_only":false,"filter":{},"limit":10000,"allow_aggregations":true},"comment":"","source":"default"}},
+        {"type":"pg_create_select_permission","args":{"table":{"name":"dex_block","schema":"public"},"role":"user","permission":{"columns":["level","timestamp"],"subscription_root_fields":null,"query_root_fields":null,"computed_fields":[],"backend_only":false,"filter":{},"limit":10000,"allow_aggregations":true},"comment":"","source":"default"}},
+        {"type":"pg_create_select_permission","args":{"table":{"name":"dex_event","schema":"public"},"role":"user","permission":{"columns":["amount_0","amount_0_in","amount_0_out","amount_1","amount_1_in","amount_1_out","asset_0_reserve","asset_1_reserve","maker","name","pair_id","price","block_id","event_index","id","tx_index","metadata","event_type"],"subscription_root_fields":null,"query_root_fields":null,"computed_fields":["event_id","tx_id"],"backend_only":false,"filter":{},"limit":10000,"allow_aggregations":true},"comment":"","source":"default"}},
+        {"type":"pg_create_select_permission","args":{"table":{"name":"dex_omnipool_position","schema":"public"},"role":"user","permission":{"columns":["created","amount","owner","shares","asset_id","position_id"],"subscription_root_fields":null,"query_root_fields":null,"computed_fields":[],"backend_only":false,"filter":{},"limit":10000,"allow_aggregations":true},"comment":"","source":"default"}},
+        {"type":"pg_create_select_permission","args":{"table":{"name":"dex_pair","schema":"public"},"role":"user","permission":{"columns":["id","pool_id","asset_0_id","asset_1_id","created_at_block_id","created_at_tx_id","fee_bps","dex_key"],"subscription_root_fields":null,"query_root_fields":null,"computed_fields":["pair_tx_id"],"backend_only":false,"filter":{},"limit":10000,"allow_aggregations":true},"comment":"","source":"default"}},
+        {"type":"pg_create_select_permission","args":{"table":{"name":"dex_pool","schema":"public"},"role":"user","permission":{"columns":["account","lp_token_id","dex_key","dex_pool_id"],"subscription_root_fields":null,"query_root_fields":null,"computed_fields":[],"backend_only":false,"filter":{},"limit":10000,"allow_aggregations":true},"comment":"","source":"default"}},
+        {"type":"pg_create_select_permission","args":{"table":{"name":"ds_latest_block","schema":"public"},"role":"user","permission":{"columns":["id","block_number","block_timestamp"],"subscription_root_fields":null,"query_root_fields":null,"computed_fields":[],"backend_only":false,"filter":{},"limit":10000,"allow_aggregations":true},"comment":"","source":"default"}}
+    ]
+}

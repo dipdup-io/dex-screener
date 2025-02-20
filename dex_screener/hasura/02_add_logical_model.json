@@ -32,7 +32,7 @@
                 "root_field_name": "swap_reserves",
                 "comment": "",
                 "arguments": {},
-                "code": "select id, asset_0_reserve as asset_0, asset_1_reserve as asset_1 from dex_swap_event;",
+                "code": "select id, asset_0_reserve as asset_0, asset_1_reserve as asset_1 from dex_event;",
                 "returns": "reserve",
                 "array_relationships": [],
                 "object_relationships": [],
@@ -44,7 +44,7 @@
             "args": {
                 "name": "reserves",
                 "table": {
-                    "name": "dex_swap_event",
+                    "name": "dex_event",
                     "schema": "public"
                 },
                 "using": {
