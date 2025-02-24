@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from dex_screener.models import DexEvent
+from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.service.event.entity.swap.dto import MarketDataArgsDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
@@ -29,19 +30,55 @@ class UnifiedTradeEventEntity(SwapEventEntity):
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
         match self._event.payload:
             case {
+                'filler_type': {'XYK': int(lp_token_id)},
+            }:
+                pair = await Pair.get(
+                    pool__dex_key=DexKey.IsolatedPool,
+                    pool__lp_token_id=lp_token_id,
+                )
+            case {
+                'filler_type': {'OTC': int(otc_order_id)},
+            }:
+                pair = await Pair.get(
+                    pool__dex_key=DexKey.OTC,
+                    pool__dex_pool_id=otc_order_id,
+                )
+            case {
+                'filler_type': {'Stableswap': int(stableswap_pool_id)},
+                'inputs': ({'asset': int(asset_a_id)},),
+                'outputs': ({'asset': int(asset_b_id)},),
+            }:
+                pair = await Pair.get(
+                    pool__dex_key=DexKey.StableSwap,
+                    pool__dex_pool_id=stableswap_pool_id,
+                    asset_0_id=min(asset_a_id, asset_b_id),
+                    asset_1_id=max(asset_a_id, asset_b_id),
+                )
+            case {
+                'filler_type': 'Omnipool',
+                'inputs': ({'asset': int(asset_a_id)},),
+                'outputs': ({'asset': int(asset_b_id)},),
+            }:
+                pair = await Pair.get(
+                    pool__dex_key=DexKey.Omnipool,
+                    asset_0_id=min(asset_a_id, asset_b_id),
+                    asset_1_id=max(asset_a_id, asset_b_id),
+                )
+            case {
                 'filler': str(pool_account),
                 'inputs': ({'asset': int(asset_a_id)},),
                 'outputs': ({'asset': int(asset_b_id)},),
             }:
                 pair = await Pair.get(
-                    pool__account=pool_account,
+                    pool_id=pool_account,
                     asset_0_id=min(asset_a_id, asset_b_id),
                     asset_1_id=max(asset_a_id, asset_b_id),
                 )
-                asset_0_reserve, asset_1_reserve = await pair.get_reserves()
 
             case _:
                 raise RuntimeError(self._event.payload)
+
+        asset_0_reserve, asset_1_reserve = await pair.get_reserves()
 
         return SwapEventPoolDataDTO(
             pair_id=pair.id,
