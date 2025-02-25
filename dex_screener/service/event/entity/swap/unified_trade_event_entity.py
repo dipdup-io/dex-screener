@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from scalecodec import is_valid_ss58_address
+from scalecodec import ss58_decode
+
 from dex_screener.models import DexEvent
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
@@ -93,6 +96,9 @@ class UnifiedTradeEventEntity(SwapEventEntity):
                 'inputs': ({'asset': int(asset_in_id), 'amount': minor_amount_in},),
                 'outputs': ({'asset': int(asset_out_id), 'amount': minor_amount_out},),
             }:
+                if is_valid_ss58_address(maker):
+                    maker = '0x'+ss58_decode(maker)
+
                 pass
             case _:
                 raise InvalidSwapEventMarketDataError(f'Unhandled Swap Event Payload: {self._event.payload}.')
