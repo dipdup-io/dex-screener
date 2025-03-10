@@ -1,0 +1,2 @@
+class InvalidEventDataError(ValueError):
+    pass

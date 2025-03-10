@@ -1,0 +1,31 @@
+{
+    "type": "bulk",
+    "source": "default",
+    "args": [
+        {
+            "type": "add_query_to_collection",
+            "args": {
+                "collection_name": "allowed-queries",
+                "query_name": "Asset",
+                "query": "query Asset($id: Int!) { asset: dex_asset_by_pk(id: $id) { id name symbol decimals asset_type updated_at_block_id }}"
+            }
+        },
+        {
+            "type": "create_rest_endpoint",
+            "args": {
+                "name": "Asset",
+                "url": "asset",
+                "definition": {
+                    "query": {
+                        "query_name": "Asset",
+                        "collection_name": "allowed-queries"
+                    }
+                },
+                "methods": [
+                    "GET"
+                ],
+                "comment": ""
+            }
+        }
+    ]
+}

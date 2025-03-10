@@ -1,0 +1,62 @@
+{
+    "type": "bulk",
+    "args": [
+        {
+            "type": "postgres_track_logical_model",
+            "args": {
+                "source": "default",
+                "name": "reserve",
+                "fields": [
+                    {"name": "id", "type": {"scalar": "integer", "nullable": false}},
+                    {"name": "asset_0", "type": {"scalar": "varchar", "nullable": true}},
+                    {"name": "asset_1", "type": {"scalar": "varchar", "nullable": true}}
+                ]
+            }
+        },
+        {
+            "type": "pg_create_logical_model_select_permission",
+            "args": {
+                "name": "reserve",
+                "role": "user",
+                "permission": {
+                    "filter": {},
+                    "columns": ["id", "asset_0", "asset_1"]
+                },
+                "source": "default"
+            }
+        },
+        {
+            "type": "postgres_track_native_query",
+            "args": {
+                "source": "default",
+                "root_field_name": "swap_reserves",
+                "comment": "",
+                "arguments": {},
+                "code": "select id, asset_0_reserve as asset_0, asset_1_reserve as asset_1 from dex_event;",
+                "returns": "reserve",
+                "array_relationships": [],
+                "object_relationships": [],
+                "type": "query"
+            }
+        },
+        {
+            "type": "pg_create_object_relationship",
+            "args": {
+                "name": "reserves",
+                "table": {
+                    "name": "dex_event",
+                    "schema": "public"
+                },
+                "using": {
+                    "manual_configuration": {
+                        "remote_native_query": "swap_reserves",
+                        "column_mapping": {
+                            "id": "id"
+                        }
+                    }
+                },
+                "source": "default"
+            }
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+# Ignore all
+*
+
+# Add metadata and build files
+!dex_screener/
+!pyproject.toml
+!uv.lock

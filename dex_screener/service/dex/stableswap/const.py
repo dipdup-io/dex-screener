@@ -1,0 +1,5 @@
+DEX_PULL_ACCOUNT_MAPPING: dict[int, str] = {
+    100: '0x22bb00df7706a5965728b60f96406ee59ce675fd5fd10652a4ed6f618856ccfe',
+    101: '0xaffeef2e0ccac1986d8ac3b557e1e0d682d649bf61aee81e1a7faaab7eae35e0',
+    102: '0x7fe7d370617e793b178de6efc9bc5813382f2e2866ee298ea1917d8b8dce436b',
+}

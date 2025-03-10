@@ -1,0 +1,335 @@
+{
+    "type": "bulk",
+    "source": "default",
+    "args": [
+        {
+            "type": "replace_metadata",
+            "args": {
+                "version": 3,
+                "sources": [
+                    {
+                        "name": "default",
+                        "kind": "postgres",
+                        "tables": [
+                            {
+                                "table": {
+                                    "name": "dex_asset",
+                                    "schema": "public"
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "dex_block",
+                                        "using": {
+                                            "foreign_key_constraint_on": "updated_at_block_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pool",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "lp_token_id",
+                                                "table": {
+                                                    "name": "dex_pool",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "array_relationships": [
+                                    {
+                                        "name": "dexPairsByAsset1Id",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "asset_1_id",
+                                                "table": {
+                                                    "name": "dex_pair",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_asset_pool_reserves",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "asset_id",
+                                                "table": {
+                                                    "name": "dex_asset_pool_reserve",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pairs",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "asset_0_id",
+                                                "table": {
+                                                    "name": "dex_pair",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_asset_pool_reserve",
+                                    "schema": "public"
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "dex_asset",
+                                        "using": {
+                                            "foreign_key_constraint_on": "asset_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pool",
+                                        "using": {
+                                            "foreign_key_constraint_on": "pool_id"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_block",
+                                    "schema": "public"
+                                },
+                                "array_relationships": [
+                                    {
+                                        "name": "dex_assets",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "updated_at_block_id",
+                                                "table": {
+                                                    "name": "dex_asset",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_events",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "block_id",
+                                                "table": {
+                                                    "name": "dex_event",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pairs",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "created_at_block_id",
+                                                "table": {
+                                                    "name": "dex_pair",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_event",
+                                    "schema": "public"
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "dex_block",
+                                        "using": {
+                                            "foreign_key_constraint_on": "block_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pair",
+                                        "using": {
+                                            "foreign_key_constraint_on": "pair_id"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_omnipool_position",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_pair",
+                                    "schema": "public"
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "dexAssetByAsset1Id",
+                                        "using": {
+                                            "foreign_key_constraint_on": "asset_1_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_asset",
+                                        "using": {
+                                            "foreign_key_constraint_on": "asset_0_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_block",
+                                        "using": {
+                                            "foreign_key_constraint_on": "created_at_block_id"
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pool",
+                                        "using": {
+                                            "foreign_key_constraint_on": "pool_id"
+                                        }
+                                    }
+                                ],
+                                "array_relationships": [
+                                    {
+                                        "name": "dex_events",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "pair_id",
+                                                "table": {
+                                                    "name": "dex_event",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dex_pool",
+                                    "schema": "public"
+                                },
+                                "object_relationships": [
+                                    {
+                                        "name": "dex_asset",
+                                        "using": {
+                                            "foreign_key_constraint_on": "lp_token_id"
+                                        }
+                                    }
+                                ],
+                                "array_relationships": [
+                                    {
+                                        "name": "dex_asset_pool_reserves",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "pool_id",
+                                                "table": {
+                                                    "name": "dex_asset_pool_reserve",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "dex_pairs",
+                                        "using": {
+                                            "foreign_key_constraint_on": {
+                                                "column": "pool_id",
+                                                "table": {
+                                                    "name": "dex_pair",
+                                                    "schema": "public"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_contract",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_contract_metadata",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_head",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_index",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_meta",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_model_update",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_schema",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_status",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "dipdup_token_metadata",
+                                    "schema": "public"
+                                }
+                            },
+                            {
+                                "table": {
+                                    "name": "ds_latest_block",
+                                    "schema": "public"
+                                }
+                            }
+                        ],
+                        "configuration": {
+                            "connection_info": {
+                                "database_url": {
+                                    "from_env": "HASURA_GRAPHQL_DATABASE_URL"
+                                },
+                                "isolation_level": "read-committed",
+                                "pool_settings": {
+                                    "connection_lifetime": 600,
+                                    "idle_timeout": 180,
+                                    "max_connections": 50,
+                                    "retries": 1
+                                },
+                                "use_prepared_statements": true
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

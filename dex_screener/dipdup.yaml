@@ -1,0 +1,123 @@
+spec_version: 3.0
+package: dex_screener
+
+database:
+  kind: postgres
+  host: ${POSTGRES_HOST:-db}
+  port: ${POSTGRES_PORT:-5432}
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASSWORD:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: ${HASURA_URL:-http://hasura:8080}
+  admin_secret: ${ADMIN_SECRET:-changeme}
+  select_limit: ${SELECT_LIMIT:-1000}
+  allow_aggregations: ${ALLOW_AGGREGATIONS:-true}
+  rest: false
+
+runtimes:
+  hydradx:
+    kind: substrate
+    type_registry: statemint
+
+datasources:
+  subsquid:
+    kind: substrate.subsquid
+    url: https://v2.archive.subsquid.io/network/hydradx
+  subscan:
+    kind: substrate.subscan
+    url: https://hydration.api.subscan.io/api
+  node:
+    kind: substrate.node
+    url: https://rpc.hydradx.cloud
+    ws_url: wss://hydration-rpc.n.dwellir.com
+  explorer:
+    kind: http
+    url: https://explorer.hydradx.cloud/
+
+indexes:
+  hydradx_events:
+    kind: substrate.events
+    runtime: hydradx
+    datasources:
+      - subsquid
+      - subscan
+      - node
+
+    handlers:
+      - callback: hydradx.asset.on_asset_registered
+        name: AssetRegistry.Registered
+      - callback: hydradx.asset.on_asset_updated
+        name: AssetRegistry.Updated
+      - callback: hydradx.asset.on_metadata_set
+        name: AssetRegistry.MetadataSet
+      - callback: hydradx.asset.on_location_set
+        name: AssetRegistry.LocationSet
+
+      - callback: hydradx.omnipool.on_token_added
+        name: Omnipool.TokenAdded
+      - callback: hydradx.on_swap_executed
+        name: Omnipool.BuyExecuted
+      - callback: hydradx.on_swap_executed
+        name: Omnipool.SellExecuted
+      - callback: hydradx.omnipool.on_position_created
+        name: Omnipool.PositionCreated
+      - callback: hydradx.omnipool.on_position_destroyed
+        name: Omnipool.PositionDestroyed
+
+      - callback: hydradx.stableswap.on_pool_created
+        name: Stableswap.PoolCreated
+      - callback: hydradx.on_swap_executed
+        name: Stableswap.BuyExecuted
+      - callback: hydradx.on_swap_executed
+        name: Stableswap.SellExecuted
+
+      - callback: hydradx.isolated_pool.on_pool_created
+        name: XYK.PoolCreated
+      - callback: hydradx.on_swap_executed
+        name: XYK.BuyExecuted
+      - callback: hydradx.on_swap_executed
+        name: XYK.SellExecuted
+
+      - callback: hydradx.lbp.on_pool_created
+        name: LBP.PoolCreated
+      - callback: hydradx.on_swap_executed
+        name: LBP.BuyExecuted
+      - callback: hydradx.on_swap_executed
+        name: LBP.SellExecuted
+
+      - callback: hydradx.otc.on_order_placed
+        name: OTC.Placed
+      - callback: hydradx.on_swap_executed
+        name: OTC.Filled
+      - callback: hydradx.on_swap_executed
+        name: OTC.PartiallyFilled
+
+      - callback: hydradx.on_swap_executed
+        name: Broadcast.Swapped
+
+      - callback: hydradx.currencies.on_balance_updated
+        name: Currencies.BalanceUpdated
+      - callback: hydradx.currencies.on_deposited
+        name: Currencies.Deposited
+      - callback: hydradx.currencies.on_withdrawn
+        name: Currencies.Withdrawn
+      - callback: hydradx.currencies.on_transferred
+        name: Currencies.Transferred
+
+
+advanced:
+  reindex:
+    config_modified: ignore
+    schema_modified: exception
+
+
+jobs:
+  refresh_blocks:
+    hook: refresh_blocks
+    interval: 10
+
+hooks:
+  refresh_blocks:
+    callback: refresh_blocks
