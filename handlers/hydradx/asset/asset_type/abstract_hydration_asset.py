@@ -79,7 +79,9 @@ class BaseHydrationAsset(AbstractHydrationAsset):
         )
 
     @classmethod
-    async def create_asset(cls, asset_id: int, event: SubstrateEvent, fields: dict[str, int | str] | None = None) -> Asset:
+    async def create_asset(
+        cls, asset_id: int, event: SubstrateEvent, fields: dict[str, int | str] | None = None
+    ) -> Asset:
         from .const import PRE_RESOLVED_TOKENS_METADATA
 
         if fields is None:
@@ -132,7 +134,9 @@ class HexNamedHydrationAsset(BaseHydrationAsset):
 
         base_asset = await Asset.get(id=cls._get_base_asset_id(asset_name_hex_prefixed))
 
-        return await cls.create_asset(asset_id, event, {'name': asset_name_hex_prefixed, 'decimals': base_asset.decimals})
+        return await cls.create_asset(
+            asset_id, event, {'name': asset_name_hex_prefixed, 'decimals': base_asset.decimals}
+        )
 
     @classmethod
     def _get_base_asset_id(cls, asset_name_hex_prefixed: str) -> int:

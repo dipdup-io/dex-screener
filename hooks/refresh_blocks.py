@@ -10,7 +10,9 @@ async def refresh_blocks(
 ) -> None:
     await ctx.execute_sql_script('refresh_blocks')
 
-    levels: list[int] = await Block.filter(timestamp__isnull=True).order_by('level').limit(100).values_list('level', flat=True)
+    levels: list[int] = (
+        await Block.filter(timestamp__isnull=True).order_by('level').limit(100).values_list('level', flat=True)
+    )
     if len(levels) == 0:
         return
     request_payload = {

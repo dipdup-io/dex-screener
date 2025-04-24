@@ -23,7 +23,11 @@ class OmnipoolService:
 
     @classmethod
     def get_pair_id(cls, asset_a_id: int, asset_b_id: int) -> str:
-        asset_id_list = [str(asset_id) for asset_id in sorted([int(asset_a_id), int(asset_b_id)]) if asset_id != OMNIPOOL_HUB_ASSET_ID]
+        asset_id_list = [
+            str(asset_id)
+            for asset_id in sorted([int(asset_a_id), int(asset_b_id)])
+            if asset_id != OMNIPOOL_HUB_ASSET_ID
+        ]
 
         return '-'.join([OMNIPOOL_SYSTEM_ACCOUNT, *asset_id_list])
 
@@ -76,5 +80,7 @@ class OmnipoolService:
             cls.logger.info('Pair registered in pool %r: %r.', pool, pair)
 
         await pool.assets.add(new_asset)
-        await AssetPoolReserve.update_or_create(pool=pool, asset=new_asset, defaults={'reserve': event.payload['initial_amount']})
+        await AssetPoolReserve.update_or_create(
+            pool=pool, asset=new_asset, defaults={'reserve': event.payload['initial_amount']}
+        )
         cls.logger.info('Pair Asset added to pool %r: %s.', pool, new_asset)

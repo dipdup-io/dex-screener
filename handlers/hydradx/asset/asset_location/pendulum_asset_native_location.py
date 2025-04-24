@@ -1,6 +1,8 @@
 from typing import Any
 
-from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_location import AbstractAssetNativeLocation
+from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_location import (
+    AbstractAssetNativeLocation,
+)
 from dex_screener.handlers.hydradx.asset.asset_location.dto import ExternalMetadataDTO
 from dex_screener.handlers.hydradx.asset.asset_location.types import GeneralKey
 from dex_screener.handlers.hydradx.asset.asset_location.types import Interior

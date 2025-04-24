@@ -188,8 +188,12 @@ class Pair(Model):
 
     async def get_reserves(self) -> tuple[str, str]:
         await self.fetch_related('asset_0', 'asset_1', 'pool')
-        asset_0_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_0).values_list('reserve', flat=True)
-        asset_1_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_1).values_list('reserve', flat=True)
+        asset_0_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_0).values_list(
+            'reserve', flat=True
+        )
+        asset_1_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_1).values_list(
+            'reserve', flat=True
+        )
         if asset_0_minor_reserve is None:
             asset_0_reserve = None
         else:

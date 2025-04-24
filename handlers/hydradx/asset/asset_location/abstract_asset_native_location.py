@@ -35,7 +35,9 @@ class AbstractAssetNativeLocation(ABC):
         raise NotImplementedError
 
     @staticmethod
-    async def _update_asset_metadata(asset_id: int, asset_metadata: ExternalMetadataDTO, event: SubstrateEvent) -> Asset:
+    async def _update_asset_metadata(
+        asset_id: int, asset_metadata: ExternalMetadataDTO, event: SubstrateEvent
+    ) -> Asset:
         return await HydrationExternalAsset.update_asset(asset_id, asset_metadata.model_dump(), event)
 
     async def update_asset_with_external_metadata(self, asset_id, interior: Interior, event: SubstrateEvent) -> Asset:

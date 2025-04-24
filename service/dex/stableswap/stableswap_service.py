@@ -22,7 +22,9 @@ class StableSwapService:
 
     @classmethod
     def get_pair_id(cls, pool: Pool, asset_a_id: int, asset_b_id: int) -> str:
-        asset_id_list = [str(asset_id) for asset_id in sorted([int(asset_a_id), int(asset_b_id)]) if asset_id != pool.lp_token_id]
+        asset_id_list = [
+            str(asset_id) for asset_id in sorted([int(asset_a_id), int(asset_b_id)]) if asset_id != pool.lp_token_id
+        ]
 
         return '-'.join([pool.account, *asset_id_list])
 

@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import TypedDict
 
-'''
+"""
 Currency transfer success.
-'''
+"""
 V108 = TypedDict(
     'V108',
     {

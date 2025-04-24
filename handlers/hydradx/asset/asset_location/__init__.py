@@ -1,8 +1,14 @@
 from aiosubstrate import SubstrateInterface
 
-from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_location import AbstractAssetNativeLocation
-from dex_screener.handlers.hydradx.asset.asset_location.assethub_asset_native_location import AssetHubAssetNativeLocation
-from dex_screener.handlers.hydradx.asset.asset_location.pendulum_asset_native_location import PendulumAssetNativeLocation
+from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_location import (
+    AbstractAssetNativeLocation,
+)
+from dex_screener.handlers.hydradx.asset.asset_location.assethub_asset_native_location import (
+    AssetHubAssetNativeLocation,
+)
+from dex_screener.handlers.hydradx.asset.asset_location.pendulum_asset_native_location import (
+    PendulumAssetNativeLocation,
+)
 from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 
 ASSET_LOCATION_CLASS_LIST = [
