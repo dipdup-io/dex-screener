@@ -55,7 +55,7 @@ class Asset(Model):
 
     id = fields.IntField(primary_key=True)
     name = fields.CharField(max_length=255, null=True)
-    symbol = fields.CharField(max_length=16, null=True)
+    symbol = fields.CharField(max_length=63, null=True)
     decimals = fields.SmallIntField(null=True, default=0)  # fixme
     asset_type = fields.EnumField(enum_type=HydrationAssetType, db_index=True)
 
@@ -144,7 +144,7 @@ async def update_pools_list(
 ):
     if not created:
         return
-    if instance.dex_key==DexKey.OTC:
+    if instance.dex_key == DexKey.OTC:
         return
     CachedPools.account_list.add(instance.account)
 

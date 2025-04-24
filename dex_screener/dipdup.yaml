@@ -96,6 +96,8 @@ indexes:
 
       - callback: hydradx.on_swap_executed
         name: Broadcast.Swapped
+      - callback: hydradx.on_swap_executed
+        name: Broadcast.Swapped2
 
       - callback: hydradx.currencies.on_balance_updated
         name: Currencies.BalanceUpdated

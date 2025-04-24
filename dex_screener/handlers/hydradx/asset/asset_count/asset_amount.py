@@ -34,7 +34,9 @@ class AssetAmount(Decimal):
         new.__init__(asset, amount)
         return new
 
-    def __init__(self, asset: Asset, amount: Decimal):
+    def __init__(self, asset: Asset, amount: Decimal, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self.asset = asset
         self.amount: Decimal = _prepare(amount, asset.decimals)
 

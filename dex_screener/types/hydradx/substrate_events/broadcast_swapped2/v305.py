@@ -1,0 +1,19 @@
+from typing import TypedDict
+
+
+class V305(TypedDict):
+    """
+    Trade executed.
+
+    Swapped2 is a fixed and renamed version of original Swapped,
+    as Swapped contained wrong input/output amounts for XYK buy trade
+    """
+
+    swapper: str
+    filler: str
+    filler_type: str
+    operation: str
+    inputs: list[str]
+    outputs: list[str]
+    fees: list[str]
+    operation_stack: list[str]

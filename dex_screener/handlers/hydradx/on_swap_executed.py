@@ -5,11 +5,12 @@ from dex_screener.service.event.event_service import DexScreenerEventService
 from dex_screener.service.event.exception import RegisterDexScreenerEventError
 from dex_screener.service.event.exception import UnsuitableEventMatchedError
 from dex_screener.types.hydradx.substrate_events.broadcast_swapped import BroadcastSwappedPayload
+from dex_screener.types.hydradx.substrate_events.broadcast_swapped2 import BroadcastSwapped2Payload
 
 
 async def on_swap_executed(
     ctx: HandlerContext,
-    event: SubstrateEvent[BroadcastSwappedPayload],
+    event: SubstrateEvent[BroadcastSwappedPayload | BroadcastSwapped2Payload],
 ) -> None:
     try:
         swap_event_record = await DexScreenerEventService.register_swap(event)

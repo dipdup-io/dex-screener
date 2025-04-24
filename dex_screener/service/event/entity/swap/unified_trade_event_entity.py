@@ -13,6 +13,7 @@ from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
 from dex_screener.service.event.entity.swap.exception import InvalidSwapEventMarketDataError
 from dex_screener.service.event.entity.swap.swap_event_entity import SwapEventEntity
+from dex_screener.service.event.exception import UnsuitableEventMatchedError
 
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
@@ -68,18 +69,20 @@ class UnifiedTradeEventEntity(SwapEventEntity):
                     asset_1_id=max(asset_a_id, asset_b_id),
                 )
             case {
-                'filler': str(pool_account),
-                'inputs': ({'asset': int(asset_a_id)},),
-                'outputs': ({'asset': int(asset_b_id)},),
+                'filler_type': {'Stableswap': int()},
+                'inputs': ({'asset': int()}, {'asset': int()}),
+                'outputs': ({'asset': int()},),
             }:
-                pair = await Pair.get(
-                    pool_id=pool_account,
-                    asset_0_id=min(asset_a_id, asset_b_id),
-                    asset_1_id=max(asset_a_id, asset_b_id),
-                )
+                # see: https://hydration.subscan.io/extrinsic/7242079-2?event=7242079-14
+                raise UnsuitableEventMatchedError(self._event.payload)
+            case {
+                'filler_type': 'AAVE',
+            }:
+                # see: https://hydration.subscan.io/block/7346897?tab=event&event=7346897-80
+                raise UnsuitableEventMatchedError(self._event.payload)
 
             case _:
-                raise RuntimeError(self._event.payload)
+                raise InvalidSwapEventMarketDataError(f'Unhandled Swap Event Payload: {self._event.payload}.')
 
         asset_0_reserve, asset_1_reserve = await pair.get_reserves()
 
