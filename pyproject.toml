@@ -16,8 +16,8 @@ dev = [
     "pytest>=8.3.4",
 ]
 
-[tool.uv.sources]
-dipdup = { git = "https://github.com/dipdup-io/dipdup", branch = "next" }
+# [tool.uv.sources]
+# dipdup = { git = "https://github.com/dipdup-io/dipdup", branch = "next" }
 
 [tool.ruff]
 line-length = 140
