@@ -12,6 +12,7 @@ hasura:
   allow_aggregations: ${HASURA_ALLOW_AGGREGATIONS:-false}
   select_limit: ${HASURA_SELECT_LIMIT:-100}
   camel_case: ${HASURA_CAMEL_CASE:-true}
+  rest: false
 
 sentry:
   dsn: ${SENTRY_DSN:-''}

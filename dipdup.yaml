@@ -1,21 +1,6 @@
 spec_version: 3.0
 package: dex_screener
 
-database:
-  kind: postgres
-  host: ${POSTGRES_HOST:-db}
-  port: ${POSTGRES_PORT:-5432}
-  user: ${POSTGRES_USER:-dipdup}
-  password: ${POSTGRES_PASSWORD:-changeme}
-  database: ${POSTGRES_DB:-dipdup}
-
-hasura:
-  url: ${HASURA_URL:-http://hasura:8080}
-  admin_secret: ${HASURA_SECRET:-changeme}
-  select_limit: ${SELECT_LIMIT:-1000}
-  allow_aggregations: ${ALLOW_AGGREGATIONS:-true}
-  rest: false
-
 runtimes:
   hydradx:
     kind: substrate
