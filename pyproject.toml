@@ -5,19 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "dipdup",
+    "dipdup>=8.3.2",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff>=0.8.3",
-    "black>=24.10.0",
+    "ruff>=0.11.6",
+    "black>=25.1.0",
     "ssort>=0.14.0",
-    "pytest>=8.3.4",
+    "pytest>=8.3.5",
 ]
-
-[tool.uv.sources]
-dipdup = { git = "https://github.com/dipdup-io/dipdup", branch = "next" }
 
 [tool.ruff]
 line-length = 140

@@ -4,20 +4,12 @@ from dipdup.models.substrate import SubstrateEvent
 from dex_screener.service.event.event_service import DexScreenerEventService
 from dex_screener.service.event.exception import RegisterDexScreenerEventError
 from dex_screener.service.event.exception import UnsuitableEventMatchedError
-from dex_screener.types.hydradx.substrate_events.omnipool_buy_executed import OmnipoolBuyExecutedPayload
-from dex_screener.types.hydradx.substrate_events.omnipool_sell_executed import OmnipoolSellExecutedPayload
-from dex_screener.types.hydradx.substrate_events.xyk_buy_executed import XYKBuyExecutedPayload
-from dex_screener.types.hydradx.substrate_events.xyk_sell_executed import XYKSellExecutedPayload
-
-XYKSwapPayload = XYKBuyExecutedPayload | XYKSellExecutedPayload
-OmnipoolSwapPayload = OmnipoolBuyExecutedPayload | OmnipoolSellExecutedPayload
-
-SwapPayload = XYKSwapPayload | OmnipoolSwapPayload
+from dex_screener.types.hydradx.substrate_events.broadcast_swapped import BroadcastSwappedPayload
 
 
 async def on_swap_executed(
     ctx: HandlerContext,
-    event: SubstrateEvent[SwapPayload],
+    event: SubstrateEvent[BroadcastSwappedPayload],
 ) -> None:
     try:
         swap_event_record = await DexScreenerEventService.register_swap(event)
