@@ -57,6 +57,8 @@ class TestAssets:
         assert dot_amount / '1.0' == dot_amount
 
         assert USDt.amount('614') / DOT.amount('100') == AssetPrice('6.14', MarketPair(DOT, USDt))
-        assert USDt.amount('778') / DOT.amount('3') == AssetPrice('259.33333333333333333333333333333333333333333333333333', MarketPair(DOT, USDt))
+        assert USDt.amount('778') / DOT.amount('3') == AssetPrice(
+            '259.33333333333333333333333333333333333333333333333333', MarketPair(DOT, USDt)
+        )
 
         assert dot_amount / dot_amount == 1
