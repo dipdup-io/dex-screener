@@ -97,7 +97,7 @@ class UnifiedTradeEventEntity(SwapEventEntity):
                 'outputs': ({'asset': int(asset_out_id), 'amount': minor_amount_out},),
             }:
                 if is_valid_ss58_address(maker):
-                    maker = '0x'+ss58_decode(maker)
+                    maker = '0x' + ss58_decode(maker)
 
                 pass
             case _:
