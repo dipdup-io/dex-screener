@@ -52,3 +52,6 @@ services:
 
 volumes:
   db:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
