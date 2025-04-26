@@ -99,9 +99,9 @@ advanced:
 
 
 jobs:
-  refresh_blocks:
+  refresh_blocks_job:
     hook: refresh_blocks
-    interval: 10
+    interval: 30
 
 hooks:
   refresh_blocks:
