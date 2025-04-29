@@ -48,6 +48,9 @@ up:             ## Start Compose stack
 	docker-compose -f ${COMPOSE} up -d --build
 	docker-compose -f ${COMPOSE} logs -f
 
+up_db:
+	docker-compose -f ${COMPOSE} up -d --build db hasura
+
 down:           ## Stop Compose stack
 	docker-compose -f ${COMPOSE} down
 

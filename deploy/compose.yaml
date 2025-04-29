@@ -1,19 +1,19 @@
 name: dex_screener
 
 services:
-  dipdup:
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile
-    restart: always
-    env_file: .env
-    ports:
-      - 46339
-      - 9000
-    command: ["-C", "compose", "run"]
-    depends_on:
-      - db
-      - hasura
+  # dipdup:
+  #   build:
+  #     context: ..
+  #     dockerfile: deploy/Dockerfile
+  #   restart: always
+  #   env_file: .env
+  #   ports:
+  #     - 46339
+  #     - 9000
+  #   command: ["-C", "compose", "run"]
+  #   depends_on:
+  #     - db
+  #     - hasura
 
   db:
     image: postgres:16
