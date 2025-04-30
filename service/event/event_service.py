@@ -24,7 +24,7 @@ class DexScreenerEventService:
         return await swap_event.save()
 
     @classmethod
-    def build_swap_event_entity(cls, event: SubstrateEvent) -> SwapEventEntity:
+    def build_swap_event_entity(cls, event: SubstrateEvent) -> SwapEventEntity | None:
         match event.data.name:
             case 'Omnipool.BuyExecuted' | 'Omnipool.SellExecuted':
                 return OmnipoolSwapEventEntity(event)
@@ -36,7 +36,7 @@ class DexScreenerEventService:
                 return LBPSwapEventEntity(event)
             case 'OTC.Filled' | 'OTC.PartiallyFilled':
                 return OTCSwapEventEntity(event)
-            case 'Broadcast.Swapped':
+            case 'Broadcast.Swapped' | 'Broadcast.Swapped2':
                 return UnifiedTradeEventEntity(event)
 
     @classmethod

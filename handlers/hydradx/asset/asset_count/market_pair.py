@@ -10,8 +10,10 @@ if TYPE_CHECKING:
     from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypePrice
     from models import Asset
 
-MarketPairBaseAsset = TypeVar('MarketPairBaseAsset', bound='Asset')
-MarketPairQuoteAsset = TypeVar('MarketPairQuoteAsset', bound='Asset')
+from dex_screener.models import Asset
+
+MarketPairBaseAsset = TypeVar('MarketPairBaseAsset', bound=Asset)
+MarketPairQuoteAsset = TypeVar('MarketPairQuoteAsset', bound=Asset)
 
 
 class MarketPair(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
