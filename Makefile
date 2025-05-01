@@ -33,7 +33,7 @@ lint:           ## Lint code with ruff and mypy
 ##
 
 image:          ## Build Docker image
-	docker buildx build . -t ${PACKAGE}:${TAG} --load
+	docker buildx build . -f deploy/Dockerfile -t ${PACKAGE}:${TAG} --load
 
 # up:             ## Start Compose stacks
 # 	PROJECT=hydration docker-compose -p hydration -f ${COMPOSE} --env-file hydration.compose.env up -d --build

@@ -3,6 +3,7 @@
 
 # Add metadata and build files
 !dex_screener
+!dipdup.yaml
 !pyproject.toml
 !*.lock
 !README.md
