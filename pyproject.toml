@@ -8,6 +8,9 @@ dependencies = [
     "dipdup>=8.3.2",
 ]
 
+[tool.uv.sources]
+dipdup = { git = "https://github.com/dipdup-io/dipdup", branch = "fix/re-substrate-event-index" }
+
 [dependency-groups]
 dev = [
     "ruff>=0.11.6",

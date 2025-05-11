@@ -5,3 +5,8 @@
 !dex_screener/
 !pyproject.toml
 !uv.lock
+
+# Ignore cache and .keep
+**/.*_cache
+**/__pycache__
+**/.keep
