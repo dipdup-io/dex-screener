@@ -1,26 +1,64 @@
 name: dex_screener
 
 services:
-  # dipdup:
-  #   build:
-  #     context: ..
-  #     dockerfile: deploy/Dockerfile
-  #   restart: always
-  #   env_file: .env
-  #   ports:
-  #     - 46339
-  #     - 9000
-  #   command: ["-C", "compose", "run"]
-  #   depends_on:
-  #     - db
-  #     - hasura
+  dipdup:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: always
+    env_file: .env
+    ports:
+      - 46339
+      - 9000
+    command: ["-C", "compose", "run"]
+    depends_on:
+      - db
+      - hasura
+    environment:
+      - POSTGRES_HOST=db
+      - HASURA_HOST=hasura
+
+  dipdup_reserves:
+    build:
+      context: ../reserves/
+      dockerfile: deploy/Dockerfile
+    restart: always
+    env_file: .env
+    ports:
+      - 46339
+      - 9000
+    command: ["-c", "reserves", "-c", "reserves/configs/dipdup.compose.yaml", "run"]
+    depends_on:
+      - db_reserves
+      - hasura_reserves
+    environment:
+      - POSTGRES_HOST=db_reserves
+      - HASURA_HOST=hasura_reserves
 
   db:
-    image: postgres:16
+    image: timescale/timescaledb:latest-pg16
     ports:
       - "${POSTGRES_HOST_PORT:-5432}:5432"
     volumes:
       - db:/var/lib/postgresql/data
+    restart: always
+    env_file: .env
+    environment:
+      - POSTGRES_USER=dipdup
+      - POSTGRES_DB=dipdup
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dipdup"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db_reserves:
+    image: timescale/timescaledb:latest-pg16
+    ports:
+      - "${POSTGRES_HOST_PORT_RESERVES:-5433}:5432"
+    volumes:
+      - db_reserves:/var/lib/postgresql/data
     restart: always
     env_file: .env
     environment:
@@ -50,8 +88,23 @@ services:
       - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=user
       - HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES=true
 
+  hasura_reserves:
+    image: hasura/graphql-engine:latest
+    ports:
+      - "${HASURA_HOST_PORT_RESERVES:-8081}:8080"
+    depends_on:
+      - db_reserves
+    restart: always
+    environment:
+      - HASURA_GRAPHQL_DATABASE_URL=postgres://dipdup:${POSTGRES_PASSWORD}@db_reserves:5432/dipdup
+      - HASURA_GRAPHQL_ADMIN_SECRET=${HASURA_SECRET}
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=true
+      - HASURA_GRAPHQL_DEV_MODE=true
+      - HASURA_GRAPHQL_LOG_LEVEL=info
+      - HASURA_GRAPHQL_ENABLE_TELEMETRY=false
+      - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=user
+      - HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES=true
+
 volumes:
   db:
-    # driver_opts:
-    #   type: tmpfs
-    #   device: tmpfs
+  db_reserves:

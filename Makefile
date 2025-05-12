@@ -43,13 +43,16 @@ image:          ## Build Docker image
 # 	docker-compose -p hydration -f ${COMPOSE} down
 # 	docker-compose -p assethub -f ${COMPOSE} down
 
+init:
+	dipdup init --no-base
+	cd reserves && dipdup init --no-base
 
 up:             ## Start Compose stack
 	docker-compose -f ${COMPOSE} up -d --build
 	docker-compose -f ${COMPOSE} logs -f
 
 up_db:
-	docker-compose -f ${COMPOSE} up -d --build db hasura
+	docker-compose -f ${COMPOSE} up -d --build db db_reserves hasura hasura_reserves
 
 down:           ## Stop Compose stack
 	docker-compose -f ${COMPOSE} down
