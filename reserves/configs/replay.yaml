@@ -5,9 +5,9 @@ spec_version: 3.0
 replay:
   dipdup_version: 8
   template: demo_blank
-  package: dex_screener
+  package: reserves
   version: 0.0.1
-  description: DEX Screener indexer
+  description: DEX Screener indexer - reserves service
   license: MIT
   name: John Doe
   email: john_doe@example.com

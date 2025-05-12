@@ -96,7 +96,9 @@ async def batch(
         if datetime.now(UTC) > RuntimeFlag.refresh_history_at:
             ctx.logger.info('Processing refresh `balance_history` and `supply_history`...')
             await ctx.execute_sql_script('on_refresh_history')
-            RuntimeFlag.refresh_history_at = (datetime.now(UTC) + RuntimeFlag.refresh_history_period).replace(microsecond=0)
+            RuntimeFlag.refresh_history_at = (datetime.now(UTC) + RuntimeFlag.refresh_history_period).replace(
+                microsecond=0
+            )
             ctx.logger.info('Next history refresh is scheduled at %s.', RuntimeFlag.refresh_history_at)
 
 

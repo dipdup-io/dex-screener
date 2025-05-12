@@ -1,4 +1,4 @@
-name: dex_screener
+name: reserves
 
 services:
   dipdup:
@@ -49,19 +49,6 @@ services:
       - HASURA_GRAPHQL_ENABLE_TELEMETRY=false
       - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=user
       - HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES=true
-
-  mcp:
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile
-    restart: always
-    env_file: .env
-    ports:
-      - 9999
-    command: ["-C", "compose", "mcp", "run"]
-    depends_on:
-      - db
-      - hasura
 
 volumes:
   db:

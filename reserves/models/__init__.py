@@ -75,7 +75,9 @@ class BalanceHistory(Model):
         balance_record = await cls.filter(account=account, asset_id=asset_id).order_by('-id').first()
         balance = 0 if balance_record is None else balance_record.balance
 
-        balance_update_record = await BalanceUpdateEvent.filter(account=account, asset_id=asset_id).order_by('-id').first()
+        balance_update_record = (
+            await BalanceUpdateEvent.filter(account=account, asset_id=asset_id).order_by('-id').first()
+        )
 
         await cls.create(
             id=balance_update_record.id,
