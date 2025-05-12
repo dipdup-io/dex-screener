@@ -1,11 +1,11 @@
+import asyncio
 import datetime
-import threading
 
 from dipdup.context import HookContext
 
 from dex_screener.models import Block
 
-refresh_blocks_lock = threading.Lock()
+refresh_blocks_lock = asyncio.Lock()
 
 
 async def refresh_blocks(
@@ -14,7 +14,7 @@ async def refresh_blocks(
     if refresh_blocks_lock.locked():
         return
 
-    with refresh_blocks_lock:
+    async with refresh_blocks_lock:
         await ctx.execute_sql_script('refresh_blocks.01_drop_unused_blocks')
 
         for _ in range(10):
