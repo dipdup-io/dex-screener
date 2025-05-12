@@ -395,7 +395,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "dipdup", specifier = ">=8,<9" }]
+requires-dist = [{ name = "dipdup", git = "https://github.com/dipdup-io/dipdup?branch=next" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -407,7 +407,7 @@ dev = [
 [[package]]
 name = "dipdup"
 version = "8.3.3"
-source = { registry = "https://pypi.org/simple" }
+source = { git = "https://github.com/dipdup-io/dipdup?branch=next#a4b2c14676e799bed29da2ee1ed501c78a20d30c" }
 dependencies = [
     { name = "aiohttp" },
     { name = "aiolimiter" },
@@ -441,10 +441,6 @@ dependencies = [
     { name = "tortoise-orm" },
     { name = "uvloop" },
     { name = "web3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/22/c9/d3964f7c6a4e2bfc7851aabafc24ec6d45f072eb0bcc9295866eb3114a26/dipdup-8.3.3.tar.gz", hash = "sha256:00a5a6b8d379372e423d0c747bd13a24420cd427711ad4fb6c18d19fcf0211f0", size = 218302 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/e6/091acbe7f9a5d0a87d727569eaec2940f264f19243507855d133dae03fe8/dipdup-8.3.3-py3-none-any.whl", hash = "sha256:6538c1dca410b558915aa4431ec210974c8c020a103c42c9b9a3b2326fa05bce", size = 350426 },
 ]
 
 [[package]]
