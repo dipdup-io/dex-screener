@@ -44,6 +44,8 @@ async def refresh_blocks(
                 for block_data in response['data']['blocks']
             ]
 
+            if not blocks:
+                break
             await Block.bulk_update(objects=blocks, fields=['timestamp'])
 
         # await ctx.execute_sql_script('refresh_blocks.02_vacuum_tables')
