@@ -31,15 +31,13 @@ datasources:
   node:
     kind: substrate.node
     url: https://rpc.hydradx.cloud
-    ws_url: wss://hydration-rpc.n.dwellir.com
+    ws_url: wss://rpc.hydradx.cloud
   explorer:
     kind: http
     url: https://explorer.hydradx.cloud/
 
 indexes:
   hydradx_events:
-#    first_level: 7505250
-#    last_level: 6910000
     kind: substrate.events
     runtime: hydradx
     datasources:
@@ -48,8 +46,6 @@ indexes:
       - node
 
     handlers:
-#      - name: Currencies.BalanceUpdated
-#        callback: hydradx.currencies.on_balance_set
       - name: Currencies.Deposited
         callback: hydradx.currencies.on_balance_updated
       - name: Currencies.Withdrawn
@@ -64,8 +60,8 @@ indexes:
       - name: Tokens.Transfer
         callback: hydradx.currencies.on_balance_transfer
 
-#      - name: Balances.BalanceSet
-#        callback: hydradx.balances.on_balance_set
+      - name: Balances.BalanceSet
+        callback: hydradx.balances.on_balance_set
       - name: Balances.Deposit
         callback: hydradx.balances.on_balance_updated
       - name: Balances.Minted
@@ -82,3 +78,8 @@ advanced:
   reindex:
     config_modified: ignore
     schema_modified: exception
+
+custom:
+  history_refresh_period:
+    seconds: 0
+    minutes: 5

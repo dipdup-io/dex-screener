@@ -12,19 +12,28 @@ async def on_reindex(
     client = ctx.get_substrate_datasource('node')._interface
 
     block_hash = await client.get_block_hash(0)
-    account_map = await client.query_map('System', 'Account', block_hash=block_hash, max_results=1000)
+    account_map = await client.query_map('System', 'Account', block_hash=block_hash, page_size=1000)
     counter = 0
-    for account, account_info in account_map:
-        initial_balance = account_info.value['data']['free']
+    initial_balances_list = []
+    async for account, account_info in account_map:
+        initial_balance = sum(
+            [
+                account_info.value['data']['free'],
+                account_info.value['data']['reserved'],
+            ]
+        )
         if initial_balance == 0:
             continue
         counter += 1
-        asset_id = 0
         account = f'0x{ss58_decode(account.value)}'
+        asset_id = 0
 
-        await BalanceUpdateEvent.create(
-            id=counter,
-            account=account,
-            asset_id=asset_id,
-            balance_update=initial_balance,
+        initial_balances_list.append(
+            BalanceUpdateEvent(
+                id=counter,
+                account=account,
+                asset_id=asset_id,
+                balance_update=initial_balance,
+            )
         )
+    await BalanceUpdateEvent.bulk_create(initial_balances_list)

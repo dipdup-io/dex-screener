@@ -3,6 +3,7 @@
 
 # Add metadata and build files
 !dex_screener/
+!reserves/
 !pyproject.toml
 !uv.lock
 

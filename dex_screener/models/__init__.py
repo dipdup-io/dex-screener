@@ -130,25 +130,6 @@ class AssetPoolReserve(Model):
     reserve = fields.CharField(max_length=40, null=True)
 
 
-class CachedPools:
-    account_list: ClassVar[set[str]] = {()}
-
-
-@post_save(Pool)
-async def update_pools_list(
-    sender: type[Pool],
-    instance: Pool,
-    created: bool,
-    using_db: BaseDBAsyncClient | None,
-    update_fields: list[str],
-):
-    if not created:
-        return
-    if instance.dex_key == DexKey.OTC:
-        return
-    CachedPools.account_list.add(instance.account)
-
-
 class Pair(Model):
     class Meta:
         table = 'dex_pair'

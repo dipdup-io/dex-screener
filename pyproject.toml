@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "dipdup>=8.3.2",
+    "dipdup>=8.3.3",
 ]
 
 [tool.uv.sources]

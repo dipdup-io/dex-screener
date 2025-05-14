@@ -30,6 +30,6 @@ async def on_balance_updated(
 
     await BalanceUpdateEvent.insert(event, account, asset_id, balance_update)
 
-    if RuntimeFlag.synchronized:
+    if RuntimeFlag.realtime:
         await BalanceHistory.insert(account, asset_id)
         await SupplyHistory.insert(asset_id)

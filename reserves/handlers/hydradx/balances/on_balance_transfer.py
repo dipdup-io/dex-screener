@@ -19,11 +19,14 @@ async def on_balance_transfer(
         if amount_key in event.payload:
             break
 
+    if event.payload[amount_key] == 0:
+        return
+
     for account, balance_update in [
         (event.payload['from'], -event.payload[amount_key]),
         (event.payload['to'], event.payload[amount_key]),
     ]:
         await BalanceUpdateEvent.insert(event, account, asset_id, balance_update)
 
-        if RuntimeFlag.synchronized:
+        if RuntimeFlag.realtime:
             await BalanceHistory.insert(account, asset_id)
