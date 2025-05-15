@@ -1,4 +1,5 @@
 ALTER TABLE dex_block DISABLE TRIGGER ALL;
+
 WITH cte AS (
     SELECT b.level
     FROM dex_block b
@@ -12,4 +13,5 @@ WITH cte AS (
 DELETE FROM dex_block
 USING cte
 WHERE dex_block.level = cte.level;
+
 ALTER TABLE dex_block ENABLE TRIGGER ALL;

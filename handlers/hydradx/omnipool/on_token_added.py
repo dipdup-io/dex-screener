@@ -1,5 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
+from scalecodec import ss58_decode
 
 from dex_screener.models import DexEvent
 from dex_screener.models import DexOmnipoolPosition
@@ -45,6 +46,9 @@ async def on_token_added(
             amount_0=str(amount_list[0]),
             amount_1=str(amount_list[1]),
         )
+
+        if not market_data.maker.startswith('0x'):
+            market_data.maker = f'0x{ss58_decode(market_data.maker)}'
 
         fields = {
             **event_data.model_dump(),

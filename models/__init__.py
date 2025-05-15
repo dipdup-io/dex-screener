@@ -2,21 +2,18 @@ from __future__ import annotations
 
 from decimal import Decimal
 from typing import TYPE_CHECKING
-from typing import ClassVar
 
 from dipdup import fields
 from dipdup.fields import ForeignKeyField
 from dipdup.fields import ManyToManyField
 from dipdup.fields import OneToOneField
 from dipdup.models import Model
-from tortoise.signals import post_save
 
 from dex_screener.models.dex_fields import AssetAmountField
 from dex_screener.models.dex_fields import AssetPriceField
 from dex_screener.service.event.const import DexScreenerEventType
 
 if TYPE_CHECKING:
-    from tortoise import BaseDBAsyncClient
     from tortoise.fields.relational import ForeignKeyFieldInstance
     from tortoise.fields.relational import ManyToManyFieldInstance
     from tortoise.fields.relational import OneToOneFieldInstance
@@ -128,25 +125,6 @@ class AssetPoolReserve(Model):
         related_name='reserves',
     )
     reserve = fields.CharField(max_length=40, null=True)
-
-
-class CachedPools:
-    account_list: ClassVar[set[str]] = {()}
-
-
-@post_save(Pool)
-async def update_pools_list(
-    sender: type[Pool],
-    instance: Pool,
-    created: bool,
-    using_db: BaseDBAsyncClient | None,
-    update_fields: list[str],
-):
-    if not created:
-        return
-    if instance.dex_key == DexKey.OTC:
-        return
-    CachedPools.account_list.add(instance.account)
 
 
 class Pair(Model):

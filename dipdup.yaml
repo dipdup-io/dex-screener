@@ -16,7 +16,7 @@ datasources:
   node:
     kind: substrate.node
     url: https://rpc.hydradx.cloud
-    ws_url: wss://hydration-rpc.n.dwellir.com
+    ws_url: wss://rpc.hydradx.cloud
   explorer:
     kind: http
     url: https://explorer.hydradx.cloud/
@@ -83,15 +83,8 @@ indexes:
         name: Broadcast.Swapped
       - callback: hydradx.on_swap_executed
         name: Broadcast.Swapped2
-
-      - callback: hydradx.currencies.on_balance_updated
-        name: Currencies.BalanceUpdated
-      - callback: hydradx.currencies.on_deposited
-        name: Currencies.Deposited
-      - callback: hydradx.currencies.on_withdrawn
-        name: Currencies.Withdrawn
-      - callback: hydradx.currencies.on_transferred
-        name: Currencies.Transferred
+#      - callback: hydradx.on_swap_executed
+#        name: Broadcast.Swapped3
 
 
 advanced:
@@ -100,11 +93,6 @@ advanced:
     schema_modified: exception
 
 
-jobs:
-  refresh_blocks_job:
-    hook: refresh_blocks
-    interval: 30
-
-hooks:
-  refresh_blocks:
-    callback: refresh_blocks
+custom:
+  blocks_refresh_period:
+    seconds: 30

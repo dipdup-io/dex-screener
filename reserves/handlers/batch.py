@@ -92,17 +92,31 @@ async def batch(
     for handler in handlers:
         await ctx.fire_matched_handler(handler)
 
-    if not RuntimeFlag.synchronized:
-        if datetime.now(UTC) > RuntimeFlag.refresh_history_at:
-            ctx.logger.info('Processing refresh `balance_history` and `supply_history`...')
+    if not RuntimeFlag.realtime:
+        if not RuntimeFlag.synchronized and RuntimeFlag.history_refresh_condition():
+            ctx.logger.info('Processing refresh of `balance_history` and `supply_history`...')
             await ctx.execute_sql_script('on_refresh_history')
-            RuntimeFlag.refresh_history_at = (datetime.now(UTC) + RuntimeFlag.refresh_history_period).replace(
-                microsecond=0
+            next_refresh_at = RuntimeFlag.history_set_next_refresh()
+            ctx.logger.info('Next history refresh is scheduled at %s.', next_refresh_at)
+        if RuntimeFlag.synchronized:
+            ctx.logger.info(
+                'Processing final refresh of `balance_history` and `supply_history` before switch to realtime updates...'
             )
-            ctx.logger.info('Next history refresh is scheduled at %s.', RuntimeFlag.refresh_history_at)
+            await ctx.execute_sql_script('on_refresh_history')
+            RuntimeFlag.realtime = True
 
 
 class RuntimeFlag:
+    realtime: bool = False
     synchronized: bool = False
-    refresh_history_at: datetime = datetime.now(UTC)
-    refresh_history_period: timedelta = timedelta(minutes=10)
+    history_refresh_at: datetime = datetime.now(UTC)
+    history_refresh_period: timedelta = timedelta(minutes=10)
+
+    @classmethod
+    def history_refresh_condition(cls) -> bool:
+        return datetime.now(UTC) >= cls.history_refresh_at
+
+    @classmethod
+    def history_set_next_refresh(cls) -> datetime:
+        cls.history_refresh_at = datetime.now(UTC).replace(microsecond=0) + cls.history_refresh_period
+        return cls.history_refresh_at
