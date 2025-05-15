@@ -9,54 +9,6 @@ from scalecodec import ss58_decode
 RUNTIME_BALANCE_MAX_DIGITS = len(str(2**128 - 1))
 
 
-logger = logging.getLogger('dipdup.cache')
-
-
-class AccountAssetBalanceCache:
-    _storage = LRU(1000)
-
-    @classmethod
-    def _cache_value(cls, key: str, value: int):
-        cls._storage[key] = value
-
-    @classmethod
-    def _get_cached_value(cls, key: str) -> int:
-        return cls._storage[key]
-
-    @staticmethod
-    def _build_storage_key(account: str, asset_id: int) -> str:
-        return f'{account}-{asset_id}'
-
-    @classmethod
-    async def get_latest_balance(cls, account: str, asset_id: int) -> int:
-        key = cls._build_storage_key(account, asset_id)
-        if key in cls._storage:
-            logger.debug('[%d] Cache HIT: %s.', len(cls._storage), key)
-            return cls._get_cached_value(key)
-        logger.debug('[%d] Cache MISS: %s.', len(cls._storage), key)
-        latest_update = await BalanceUpdateEvent.filter(account=account, asset_id=asset_id).order_by('-id').first()
-        if latest_update is not None:
-            cls._cache_value(key, int(latest_update.balance))
-        else:
-            cls._cache_value(key, 0)
-        return cls._get_cached_value(key)
-
-    @classmethod
-    async def update_balance(cls, account: str, asset_id: int, update: int) -> int:
-        key = cls._build_storage_key(account, asset_id)
-
-        latest_balance = await cls.get_latest_balance(account, asset_id)
-
-        balance = latest_balance + update
-
-        # if balance` < 0:
-        #     raise `ValueError('Asset %d Balance value below zero for %s.', asset_id, account)
-
-        cls._cache_value(key, balance)
-
-        return balance
-
-
 class BalanceHistory(Model):
     class Meta:
         table = 'balance_history'

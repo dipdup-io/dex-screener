@@ -33,6 +33,12 @@ class DeprecatedEvent:
     level: int = 6837788
 
 
+class DeprecatedBroadcastSwapped:
+    names = ('Broadcast.Swapped',)
+    done: bool = False
+    level: int = 7342919
+
+
 async def batch(
     ctx: HandlerContext,
     handlers: Iterable[MatchedHandler],
@@ -53,6 +59,23 @@ async def batch(
             ]
         )
         DeprecatedEvent.done = True
+
+    if DeprecatedBroadcastSwapped.done or handlers[0].level < DeprecatedBroadcastSwapped.level:
+        pass
+    else:
+        ctx.config.indexes['hydradx_events'].handlers = tuple(
+            [hc for hc in ctx.config.indexes['hydradx_events'].handlers if hc.name not in DeprecatedBroadcastSwapped.names]
+        )
+        handlers = tuple(
+            [
+                mh
+                for mh in handlers
+                if mh.index.name == 'hydradx_events'
+                and isinstance(mh.config, SubstrateEventsHandlerConfig)
+                and mh.config.name not in DeprecatedBroadcastSwapped.names
+            ]
+        )
+        DeprecatedBroadcastSwapped.done = True
 
     batch_levels = []
     for handler in handlers:
