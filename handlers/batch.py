@@ -64,7 +64,11 @@ async def batch(
         pass
     else:
         ctx.config.indexes['hydradx_events'].handlers = tuple(
-            [hc for hc in ctx.config.indexes['hydradx_events'].handlers if hc.name not in DeprecatedBroadcastSwapped.names]
+            [
+                hc
+                for hc in ctx.config.indexes['hydradx_events'].handlers
+                if hc.name not in DeprecatedBroadcastSwapped.names
+            ]
         )
         handlers = tuple(
             [
