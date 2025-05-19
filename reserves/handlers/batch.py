@@ -3,6 +3,7 @@ from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 
+from dipdup.context import DipDupContext
 from dipdup.context import HandlerContext
 from dipdup.index import MatchedHandler
 from dipdup.models.substrate import SubstrateEvent
@@ -95,13 +96,19 @@ async def batch(
     if not RuntimeFlag.realtime:
         if not RuntimeFlag.synchronized and RuntimeFlag.history_refresh_condition():
             ctx.logger.info('Processing refresh of `balance_history` and `supply_history`...')
-            await ctx.execute_sql_script('on_refresh_history')
-            next_refresh_at = RuntimeFlag.history_set_next_refresh()
-            ctx.logger.info('Next history refresh is scheduled at %s.', next_refresh_at)
+            await refresh_history(ctx)
+            RuntimeFlag.history_set_next_refresh(ctx)
         if RuntimeFlag.synchronized:
             ctx.logger.info('Processing final refresh of `balance_history` and `supply_history` before switch to realtime updates...')
-            await ctx.execute_sql_script('on_refresh_history')
+            await refresh_history(ctx)
             RuntimeFlag.realtime = True
+
+
+async def refresh_history(ctx: HandlerContext):
+    refresh_start = datetime.now()
+    await ctx.execute_sql_script('on_refresh_history')
+    refresh_duration = datetime.now() - refresh_start
+    ctx.logger.info('Tables `balance_history` and `supply_history` are successfully updated in %s', refresh_duration)
 
 
 class RuntimeFlag:
@@ -115,6 +122,7 @@ class RuntimeFlag:
         return datetime.now(UTC) >= cls.history_refresh_at
 
     @classmethod
-    def history_set_next_refresh(cls) -> datetime:
+    def history_set_next_refresh(cls, ctx: DipDupContext) -> datetime:
         cls.history_refresh_at = datetime.now(UTC).replace(microsecond=0) + cls.history_refresh_period
+        ctx.logger.info('Next history refresh is scheduled at %s.', cls.history_refresh_at)
         return cls.history_refresh_at

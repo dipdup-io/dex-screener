@@ -31,8 +31,9 @@ async def on_reindex(
         initial_balances_list.append(
             BalanceUpdateEvent(
                 id=counter,
-                account=account,
+                asset_account=BalanceUpdateEvent.group_key(asset_id, account),
                 asset_id=asset_id,
+                account=account,
                 balance_update=initial_balance,
             )
         )
