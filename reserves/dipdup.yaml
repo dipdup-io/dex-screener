@@ -31,7 +31,7 @@ datasources:
   node:
     kind: substrate.node
     url: https://rpc.hydradx.cloud
-    ws_url: wss://rpc.hydradx.cloud
+    ws_url: wss://hydration-rpc.n.dwellir.com
   explorer:
     kind: http
     url: https://explorer.hydradx.cloud/
