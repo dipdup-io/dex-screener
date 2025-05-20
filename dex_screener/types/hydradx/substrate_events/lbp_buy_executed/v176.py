@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import TypedDict
+
+if TYPE_CHECKING:
+    from dex_screener.models.dex_fields import Account
 
 
 class V176(TypedDict):
@@ -10,7 +14,7 @@ class V176(TypedDict):
     Purchase executed.
     """
 
-    who: str
+    who: Account
     asset_out: int
     asset_in: int
     amount: int

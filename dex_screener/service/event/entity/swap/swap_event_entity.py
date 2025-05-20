@@ -4,8 +4,6 @@ from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from scalecodec import ss58_decode
-
 from dex_screener.models import Asset
 from dex_screener.service.event.const import DexScreenerEventType
 from dex_screener.service.event.entity.abstract_event_entity import DexScreenerEventEntity
@@ -45,9 +43,6 @@ class SwapEventEntity(DexScreenerEventEntity, ABC):
 
     async def save(self) -> DexEvent:
         from dex_screener.models import DexEvent
-
-        if not self.market_data.maker.startswith('0x'):
-            self.market_data.maker = f'0x{ss58_decode(self.market_data.maker)}'
 
         fields = {
             **self.event_data.model_dump(),

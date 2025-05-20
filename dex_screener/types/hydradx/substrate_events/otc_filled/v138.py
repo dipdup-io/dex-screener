@@ -11,6 +11,6 @@ class V138(TypedDict):
     """
 
     order_id: int
-    who: str
+    who: Account
     amount_in: int
     amount_out: int

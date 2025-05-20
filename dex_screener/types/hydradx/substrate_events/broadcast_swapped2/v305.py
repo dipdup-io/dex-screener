@@ -1,5 +1,7 @@
 from typing import TypedDict
 
+from dex_screener.models.dex_fields import Account
+
 
 class V305(TypedDict):
     """
@@ -9,8 +11,8 @@ class V305(TypedDict):
     as Swapped contained wrong input/output amounts for XYK buy trade
     """
 
-    swapper: str
-    filler: str
+    swapper: Account
+    filler: Account
     filler_type: str
     operation: str
     inputs: list[str]
