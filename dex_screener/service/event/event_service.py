@@ -36,7 +36,7 @@ class DexScreenerEventService:
                 return LBPSwapEventEntity(event)
             case 'OTC.Filled' | 'OTC.PartiallyFilled':
                 return OTCSwapEventEntity(event)
-            case 'Broadcast.Swapped' | 'Broadcast.Swapped2':
+            case 'Broadcast.Swapped' | 'Broadcast.Swapped2' | 'Broadcast.Swapped3':
                 return UnifiedTradeEventEntity(event)
 
     @classmethod

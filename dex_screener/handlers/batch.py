@@ -17,6 +17,12 @@ if TYPE_CHECKING:
 
 
 class DeprecatedEvent:
+    names: tuple[str] = NotImplemented
+    done: bool = False
+    level: int = NotImplemented
+
+
+class DexSwapEvent(DeprecatedEvent):
     names = (
         'Omnipool.BuyExecuted',
         'Omnipool.SellExecuted',
@@ -29,55 +35,53 @@ class DeprecatedEvent:
         'OTC.Filled',
         'OTC.PartiallyFilled',
     )
-    done: bool = False
     level: int = 6837788
 
 
-class DeprecatedBroadcastSwapped:
+class BroadcastSwapped(DeprecatedEvent):
     names = ('Broadcast.Swapped',)
-    done: bool = False
     level: int = 7342919
+
+
+class BroadcastSwapped2(DeprecatedEvent):
+    names = ('Broadcast.Swapped2',)
+    level: int = 7582524
+
+
+deprecations = [  # Must be sorted by `level` value
+    DexSwapEvent,
+    BroadcastSwapped,
+    BroadcastSwapped2,
+]
 
 
 async def batch(
     ctx: HandlerContext,
     handlers: Iterable[MatchedHandler],
 ) -> None:
-    if DeprecatedEvent.done or handlers[0].level < DeprecatedEvent.level:
-        pass
-    else:
+    current_level = handlers[0].level
+    for deprecated in deprecations:
+        if current_level <= deprecated.level:
+            break
+        if deprecated.done:
+            continue
+        # Sweep all `hydradx_events` Index handlers and remove deprecated ones from Index Config (no more matched handlers until restart)
         ctx.config.indexes['hydradx_events'].handlers = tuple(
-            [hc for hc in ctx.config.indexes['hydradx_events'].handlers if hc.name not in DeprecatedEvent.names]
+            [hc for hc in ctx.config.indexes['hydradx_events'].handlers if hc.name not in deprecated.names]
         )
+        # Remove already matched handlers for deprecated events (just for current level)
         handlers = tuple(
             [
                 mh
                 for mh in handlers
                 if mh.index.name == 'hydradx_events'
                 and isinstance(mh.config, SubstrateEventsHandlerConfig)
-                and mh.config.name not in DeprecatedEvent.names
+                and mh.config.name not in deprecated.names
             ]
         )
-        DeprecatedEvent.done = True
+        deprecated.done = True
 
-    if DeprecatedBroadcastSwapped.done or handlers[0].level < DeprecatedBroadcastSwapped.level:
-        pass
-    else:
-        ctx.config.indexes['hydradx_events'].handlers = tuple(
-            [hc for hc in ctx.config.indexes['hydradx_events'].handlers if hc.name not in DeprecatedBroadcastSwapped.names]
-        )
-        handlers = tuple(
-            [
-                mh
-                for mh in handlers
-                if mh.index.name == 'hydradx_events'
-                and isinstance(mh.config, SubstrateEventsHandlerConfig)
-                and mh.config.name not in DeprecatedBroadcastSwapped.names
-            ]
-        )
-        DeprecatedBroadcastSwapped.done = True
-
-    batch_levels = []
+    batch_levels: set[int] = set()
     for handler in handlers:
         if handler.level not in batch_levels:
             try:
@@ -89,16 +93,20 @@ async def batch(
                 level=handler.level,
                 timestamp=timestamp,
             )
-            batch_levels.append(handler.level)
+            batch_levels.add(handler.level)
 
-        await ctx.fire_matched_handler(handler)
+        try:
+            await ctx.fire_matched_handler(handler)
+        except BaseException as exception:
+            ctx.logger.error('Event Processing Error for: %s.', handler.args)
+            raise exception
 
     if RuntimeFlag.blocks_refresh_condition():
         ctx.logger.info('Processing refresh `dex_block`...')
         await ctx.execute_sql_script('refresh_blocks.01_drop_unused_blocks')
 
         for _ in range(10):
-            levels: list[int] = await Block.filter(timestamp__isnull=True).order_by('-level').limit(100).values_list('level', flat=True)
+            levels: list[int] = await Block.filter(timestamp__isnull=True).order_by('level').limit(100).values_list('level', flat=True)
             if len(levels) == 0:
                 break
             request_payload = {
@@ -132,7 +140,7 @@ async def batch(
 
 class RuntimeFlag:
     blocks_refresh_at: datetime = datetime.now(UTC)
-    blocks_refresh_period: timedelta = timedelta(seconds=30)
+    blocks_refresh_period: timedelta = timedelta(seconds=60)
 
     @classmethod
     def blocks_refresh_condition(cls) -> bool:
