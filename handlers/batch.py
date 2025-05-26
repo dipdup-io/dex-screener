@@ -106,7 +106,9 @@ async def batch(
         await ctx.execute_sql_script('refresh_blocks.01_drop_unused_blocks')
 
         for _ in range(10):
-            levels: list[int] = await Block.filter(timestamp__isnull=True).order_by('level').limit(100).values_list('level', flat=True)
+            levels: list[int] = (
+                await Block.filter(timestamp__isnull=True).order_by('level').limit(100).values_list('level', flat=True)
+            )
             if len(levels) == 0:
                 break
             request_payload = {

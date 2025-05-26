@@ -9,7 +9,7 @@ async def on_position_created(
     ctx: HandlerContext,
     event: SubstrateEvent[OmnipoolPositionCreatedPayload],
 ) -> None:
-    position: DexOmnipoolPosition = await DexOmnipoolPosition.create(
+    await DexOmnipoolPosition.create(
         position_id=event.payload['position_id'],
         owner=event.payload['owner'],
         asset_id=event.payload['asset'],

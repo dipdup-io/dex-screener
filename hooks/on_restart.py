@@ -38,7 +38,9 @@ async def validate_indexed_values(ctx: HookContext):
         validated_account = Account(pool_record.account)
         try:
             if is_valid_ss58_address(pool_record.dex_pool_id):
-                pool_pool_id_batch.append(('dex_pool_id', Account(pool_record.dex_pool_id), 'account', validated_account))
+                pool_pool_id_batch.append(
+                    ('dex_pool_id', Account(pool_record.dex_pool_id), 'account', validated_account)
+                )
         except IndexError:
             pass
 
