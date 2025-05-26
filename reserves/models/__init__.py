@@ -80,18 +80,32 @@ class BalanceUpdateEvent(Model):
 
     @classmethod
     async def insert(cls, event: SubstrateEvent, account: str, asset_id: int, balance_update: int):
+        from reserves.handlers.batch import EventBuffer
+        from reserves.handlers.batch import RuntimeFlag
+
         if (len(account) == 48 and account[0] == '7') or not account.startswith('0x'):
             account = f'0x{ss58_decode(account)}'
 
         event_id = (((event.data.level << 16) + event.data.index) << 1) + int(balance_update > 0)
 
-        await BalanceUpdateEvent.create(
-            id=event_id,
-            asset_account=cls.group_key(asset_id, account),
-            asset_id=asset_id,
-            account=account,
-            balance_update=balance_update,
-        )
+        if RuntimeFlag.realtime:
+            await BalanceUpdateEvent.create(
+                id=event_id,
+                asset_account=cls.group_key(asset_id, account),
+                asset_id=asset_id,
+                account=account,
+                balance_update=balance_update,
+            )
+        else:
+            record = BalanceUpdateEvent(
+                id=event_id,
+                asset_account=cls.group_key(asset_id, account),
+                asset_id=asset_id,
+                account=account,
+                balance_update=balance_update,
+            )
+
+            EventBuffer.queue.put_nowait(record)
 
     @staticmethod
     def group_key(asset_id: int, account: str) -> str:

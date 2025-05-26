@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import TypedDict
+
+if TYPE_CHECKING:
+    from dex_screener.models.dex_fields import Account
 
 
 class V115(TypedDict):
@@ -11,4 +15,4 @@ class V115(TypedDict):
     """
 
     position_id: int
-    owner: str
+    owner: Account

@@ -1,3 +1,4 @@
+from asyncio import Queue
 from copy import copy
 from datetime import UTC
 from datetime import datetime
@@ -6,6 +7,7 @@ from datetime import timedelta
 from dipdup.context import DipDupContext
 from dipdup.context import HandlerContext
 from dipdup.index import MatchedHandler
+from dipdup.models import Model
 from dipdup.models.substrate import SubstrateEvent
 
 
@@ -76,7 +78,7 @@ async def batch(
     ctx: HandlerContext,
     handlers: tuple[MatchedHandler, ...],
 ) -> None:
-    recurring_events_indexes = []
+    recurring_events_indexes: set[int] = set()
     for index in range(len(handlers) - 1):
         if index in recurring_events_indexes:
             continue
@@ -85,15 +87,18 @@ async def batch(
         if pair_index is False:
             continue
         if pair_index in (0, 1):
-            recurring_events_indexes.append(index + pair_index)
+            recurring_events_indexes.add(index + pair_index)
 
-    if recurring_events_indexes:
+    if len(recurring_events_indexes) > 0:
         handlers = (handler for index, handler in enumerate(handlers) if index not in recurring_events_indexes)
 
     for handler in handlers:
         await ctx.fire_matched_handler(handler)
 
     if not RuntimeFlag.realtime:
+        if EventBuffer.filled():
+            await EventBuffer.flush(ctx)
+
         if not RuntimeFlag.synchronized and RuntimeFlag.history_refresh_condition():
             ctx.logger.info('Processing refresh of `balance_history` and `supply_history`...')
             await refresh_history(ctx)
@@ -107,6 +112,7 @@ async def batch(
 
 
 async def refresh_history(ctx: HandlerContext):
+    await EventBuffer.flush(ctx)
     refresh_start = datetime.now()
     await ctx.execute_sql_script('on_refresh_history')
     refresh_duration = datetime.now() - refresh_start
@@ -128,3 +134,32 @@ class RuntimeFlag:
         cls.history_refresh_at = datetime.now(UTC).replace(microsecond=0) + cls.history_refresh_period
         ctx.logger.info('Next history refresh is scheduled at %s.', cls.history_refresh_at)
         return cls.history_refresh_at
+
+
+class EventBuffer:
+    buffer_limit: int = NotImplemented
+    queue: Queue[Model] = Queue()
+
+    @classmethod
+    async def flush(cls, ctx: DipDupContext):
+        ctx.logger.info('Flushing EventBuffer to DB...')
+        q = cls.queue
+        event_batch: list[Model] = []
+        while not q.empty():
+            event_batch.append(q.get_nowait())
+
+        if event_batch:
+            latest_record: Model = event_batch[-1]
+            model_class: type[Model] = type(latest_record)
+            await model_class.bulk_create(event_batch)
+            ctx.logger.info(
+                'Bulk-inserted %d Events to `%s` with latest block %d.',
+                len(event_batch),
+                model_class.Meta.table,
+            )
+        assert cls.queue.empty()
+        del event_batch
+
+    @classmethod
+    def filled(cls):
+        return cls.queue.qsize() > cls.buffer_limit

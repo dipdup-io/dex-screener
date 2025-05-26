@@ -4,14 +4,16 @@ from __future__ import annotations
 
 from typing import TypedDict
 
+from dex_screener.models.dex_fields import Account
+
 
 class V282(TypedDict):
     """
     Trade executed.
     """
 
-    swapper: str
-    filler: str
+    swapper: Account
+    filler: Account
     filler_type: str
     operation: str
     inputs: list[str]

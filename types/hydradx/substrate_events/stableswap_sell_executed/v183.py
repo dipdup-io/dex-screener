@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import TypedDict
+
+if TYPE_CHECKING:
+    from dex_screener.models.dex_fields import Account
 
 
 class V183(TypedDict):
@@ -10,7 +14,7 @@ class V183(TypedDict):
     Sell trade executed. Trade fee paid in asset leaving the pool (already subtracted from amount_out).
     """
 
-    who: str
+    who: Account
     pool_id: int
     asset_in: int
     asset_out: int

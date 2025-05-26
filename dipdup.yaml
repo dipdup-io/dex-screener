@@ -16,7 +16,7 @@ datasources:
   node:
     kind: substrate.node
     url: https://rpc.hydradx.cloud
-    ws_url: wss://rpc.hydradx.cloud
+    ws_url: wss://hydration-rpc.n.dwellir.com
   explorer:
     kind: http
     url: https://explorer.hydradx.cloud/
@@ -31,60 +31,60 @@ indexes:
       - node
 
     handlers:
-      - callback: hydradx.asset.on_asset_registered
-        name: AssetRegistry.Registered
-      - callback: hydradx.asset.on_asset_updated
-        name: AssetRegistry.Updated
-      - callback: hydradx.asset.on_metadata_set
-        name: AssetRegistry.MetadataSet
-      - callback: hydradx.asset.on_location_set
-        name: AssetRegistry.LocationSet
+      - name: AssetRegistry.Registered
+        callback: hydradx.asset.on_asset_registered
+      - name: AssetRegistry.Updated
+        callback: hydradx.asset.on_asset_updated
+      - name: AssetRegistry.MetadataSet
+        callback: hydradx.asset.on_metadata_set
+      - name: AssetRegistry.LocationSet
+        callback: hydradx.asset.on_location_set
 
-      - callback: hydradx.omnipool.on_token_added
-        name: Omnipool.TokenAdded
-      - callback: hydradx.on_swap_executed
-        name: Omnipool.BuyExecuted
-      - callback: hydradx.on_swap_executed
-        name: Omnipool.SellExecuted
-      - callback: hydradx.omnipool.on_position_created
-        name: Omnipool.PositionCreated
-      - callback: hydradx.omnipool.on_position_destroyed
-        name: Omnipool.PositionDestroyed
+      - name: Omnipool.TokenAdded
+        callback: hydradx.omnipool.on_token_added
+      - name: Omnipool.BuyExecuted
+        callback: hydradx.on_swap_executed
+      - name: Omnipool.SellExecuted
+        callback: hydradx.on_swap_executed
+      - name: Omnipool.PositionCreated
+        callback: hydradx.omnipool.on_position_created
+      - name: Omnipool.PositionDestroyed
+        callback: hydradx.omnipool.on_position_destroyed
 
-      - callback: hydradx.stableswap.on_pool_created
-        name: Stableswap.PoolCreated
-      - callback: hydradx.on_swap_executed
-        name: Stableswap.BuyExecuted
-      - callback: hydradx.on_swap_executed
-        name: Stableswap.SellExecuted
+      - name: Stableswap.PoolCreated
+        callback: hydradx.stableswap.on_pool_created
+      - name: Stableswap.BuyExecuted
+        callback: hydradx.on_swap_executed
+      - name: Stableswap.SellExecuted
+        callback: hydradx.on_swap_executed
 
-      - callback: hydradx.isolated_pool.on_pool_created
-        name: XYK.PoolCreated
-      - callback: hydradx.on_swap_executed
-        name: XYK.BuyExecuted
-      - callback: hydradx.on_swap_executed
-        name: XYK.SellExecuted
+      - name: XYK.PoolCreated
+        callback: hydradx.isolated_pool.on_pool_created
+      - name: XYK.BuyExecuted
+        callback: hydradx.on_swap_executed
+      - name: XYK.SellExecuted
+        callback: hydradx.on_swap_executed
 
-      - callback: hydradx.lbp.on_pool_created
-        name: LBP.PoolCreated
-      - callback: hydradx.on_swap_executed
-        name: LBP.BuyExecuted
-      - callback: hydradx.on_swap_executed
-        name: LBP.SellExecuted
+      - name: LBP.PoolCreated
+        callback: hydradx.lbp.on_pool_created
+      - name: LBP.BuyExecuted
+        callback: hydradx.on_swap_executed
+      - name: LBP.SellExecuted
+        callback: hydradx.on_swap_executed
 
-      - callback: hydradx.otc.on_order_placed
-        name: OTC.Placed
-      - callback: hydradx.on_swap_executed
-        name: OTC.Filled
-      - callback: hydradx.on_swap_executed
-        name: OTC.PartiallyFilled
+      - name: OTC.Placed
+        callback: hydradx.otc.on_order_placed
+      - name: OTC.Filled
+        callback: hydradx.on_swap_executed
+      - name: OTC.PartiallyFilled
+        callback: hydradx.on_swap_executed
 
-      - callback: hydradx.on_swap_executed
-        name: Broadcast.Swapped
-      - callback: hydradx.on_swap_executed
-        name: Broadcast.Swapped2
-#      - callback: hydradx.on_swap_executed
-#        name: Broadcast.Swapped3
+      - name: Broadcast.Swapped
+        callback: hydradx.on_swap_executed
+      - name: Broadcast.Swapped2
+        callback: hydradx.on_swap_executed
+      - name: Broadcast.Swapped3
+        callback: hydradx.on_swap_executed
 
 
 advanced:
@@ -94,5 +94,7 @@ advanced:
 
 
 custom:
-  blocks_refresh_period:
-    seconds: 30
+  syncing_blocks_refresh_period:
+    minutes: 1
+  realtime_blocks_refresh_period:
+    seconds: 10
