@@ -83,3 +83,5 @@ custom:
   history_refresh_period:
     seconds: 0
     minutes: 5
+  event_buffer:
+    buffer_limit: 10000
