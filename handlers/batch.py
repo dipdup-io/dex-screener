@@ -135,6 +135,9 @@ async def batch(
                 )
                 for block_data in response['data']['blocks']
             ]
+            if len(blocks) == 0:
+                ctx.logger.info('No blocks found for levels: %s.', levels)
+                break
 
             await Block.bulk_update(objects=blocks, fields=['timestamp'])
 
