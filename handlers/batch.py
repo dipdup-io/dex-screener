@@ -4,20 +4,19 @@ from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 from typing import TYPE_CHECKING
-from dipdup.exceptions import FrameworkException
+
 from dipdup.config.substrate_events import SubstrateEventsHandlerConfig
+from dipdup.exceptions import FrameworkException
 
 from dex_screener.models import Block
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
-
     from dipdup.context import HandlerContext
     from dipdup.index import MatchedHandler
 
 
 class DeprecatedEvent:
-    names: tuple[str] = NotImplemented
+    names: tuple[str, ...] = NotImplemented
     done: bool = False
     level: int = NotImplemented
 
@@ -57,7 +56,7 @@ deprecations = [  # Must be sorted by `level` value
 
 async def batch(
     ctx: HandlerContext,
-    handlers: Iterable[MatchedHandler],
+    handlers: tuple[MatchedHandler, ...],
 ) -> None:
     current_level = handlers[0].level
     for deprecated in deprecations:
@@ -66,8 +65,8 @@ async def batch(
         if deprecated.done:
             continue
         # Sweep all `hydradx_events` Index handlers and remove deprecated ones from Index Config (no more matched handlers until restart)
-        ctx.config.indexes['hydradx_events'].handlers = tuple(
-            [hc for hc in ctx.config.indexes['hydradx_events'].handlers if hc.name not in deprecated.names]
+        ctx.config.indexes['hydradx_events'].handlers = tuple(  # type: ignore[attr-defined]
+            [hc for hc in ctx.config.indexes['hydradx_events'].handlers if hc.name not in deprecated.names]  # type: ignore[attr-defined]
         )
         # Remove already matched handlers for deprecated events (just for current level)
         handlers = tuple(
@@ -85,7 +84,7 @@ async def batch(
     for handler in handlers:
         if handler.level not in batch_levels:
             try:
-                timestamp = int(handler.args[0].data.header_extra['timestamp'] // 1000)
+                timestamp = int(handler.args[0].data.header_extra['timestamp'] // 1000)  # type: ignore[index]
             except (KeyError, AttributeError, ValueError, TypeError):
                 timestamp = None
 
@@ -112,7 +111,7 @@ async def batch(
 
         for _ in range(10):
             levels: list[int] = (
-                await Block.filter(timestamp__isnull=True).order_by('level').limit(100).values_list('level', flat=True)
+                await Block.filter(timestamp__isnull=True).order_by('level').limit(100).values_list('level', flat=True)  # type: ignore[assignment]
             )
             if len(levels) == 0:
                 break

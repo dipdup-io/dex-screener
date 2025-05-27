@@ -56,7 +56,7 @@ class OmnipoolService:
     @classmethod
     async def register_pair(cls, pool: Pool, event: SubstrateEvent[OmnipoolTokenAddedPayload]):
         new_asset = await Asset.get(id=event.payload['asset_id'])
-        async for pool_asset in pool.assets:
+        async for pool_asset in pool.assets:  # type: ignore[attr-defined]
             if pool_asset.id == new_asset.id:
                 continue
             pair_id = cls.get_pair_id(new_asset.id, pool_asset.id)
@@ -79,7 +79,7 @@ class OmnipoolService:
             )
             cls.logger.info('Pair registered in pool %r: %r.', pool, pair)
 
-        await pool.assets.add(new_asset)
+        await pool.assets.add(new_asset)  # type: ignore[attr-defined]
         await AssetPoolReserve.update_or_create(
             pool=pool, asset=new_asset, defaults={'reserve': event.payload['initial_amount']}
         )

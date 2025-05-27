@@ -43,7 +43,7 @@ class Account(AbstractAccount):
     length: int = 66
     header: str = '0x'
 
-    def __new__(cls, address: str, **kwargs) -> AbstractAccount:
+    def __new__(cls, address: str, **kwargs) -> AbstractAccount:  # type: ignore[misc]
         if cls is AbstractAccount:
             raise NotImplementedError
         try:
@@ -63,7 +63,7 @@ class AccountField(fields.CharField):
     def to_python_value(self, value: str | None) -> Account | None:
         return Account(value) if value is not None else None
 
-    def to_db_value(self, value: Account | str | None, instance: type[Model] | Model) -> str | None:
+    def to_db_value(self, value: Account | str | None, instance: type[Model] | Model) -> str | None:  # type: ignore[override]
         if isinstance(value, Account):
             value = str(value)
         self.validate(value)

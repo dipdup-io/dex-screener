@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class DexScreenerEventService:
     @classmethod
     async def register_swap(cls, event: SubstrateEvent) -> DexEvent:
-        swap_event: SwapEventEntity = cls.build_swap_event_entity(event)
+        swap_event: SwapEventEntity = cls.build_swap_event_entity(event)  # type: ignore[assignment]
         await swap_event.resolve()
         return await swap_event.save()
 

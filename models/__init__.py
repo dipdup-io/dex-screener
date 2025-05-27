@@ -63,7 +63,7 @@ class Asset(Model):
     )
 
     def amount(self, amount: AnyTypeAmount) -> AssetAmount:
-        return AssetAmount(asset=self, amount=amount)
+        return AssetAmount(asset=self, amount=amount)  # type: ignore[arg-type]
 
     def from_minor(self, minor_amount: AnyTypeAmount) -> AssetAmount:
         amount = Decimal(int(minor_amount)) / 10**self.decimals
@@ -93,7 +93,7 @@ class Pool(Model):
         backward_key='pool_id',
         related_name='pools',
     )
-    lp_token: OneToOneFieldInstance[Asset] = OneToOneField(
+    lp_token: OneToOneFieldInstance[Asset] = OneToOneField(  # type: ignore[assignment]
         model_name=Asset.Meta.model,
         related_name='liquidity_pool',
         to_field='id',
@@ -176,12 +176,12 @@ class Pair(Model):
         if asset_0_minor_reserve is None:
             asset_0_reserve = None
         else:
-            asset_0_reserve = self.asset_0.from_minor(asset_0_minor_reserve)
+            asset_0_reserve = self.asset_0.from_minor(asset_0_minor_reserve)  # type: ignore[arg-type]
 
         if asset_1_minor_reserve is None:
             asset_1_reserve = None
         else:
-            asset_1_reserve = self.asset_1.from_minor(asset_1_minor_reserve)
+            asset_1_reserve = self.asset_1.from_minor(asset_1_minor_reserve)  # type: ignore[arg-type]
         return str(asset_0_reserve), str(asset_1_reserve)
 
 

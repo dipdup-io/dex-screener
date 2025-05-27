@@ -25,10 +25,12 @@ update:         ## Update dependencies
 
 format:         ## Format code with ruff
 	ruff format .
+	cd reserves; make format
 
 lint:           ## Lint code with ruff and mypy
 	ruff check --fix .
 	mypy .
+	cd reserves; make lint
 
 test: 		 ## Run tests
 	pytest tests

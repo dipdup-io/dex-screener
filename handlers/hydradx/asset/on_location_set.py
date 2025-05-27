@@ -22,7 +22,7 @@ async def on_location_set(
     event: SubstrateEvent[AssetRegistryLocationSetPayload],
 ) -> None:
     try:
-        match AssetRegistryLocation.from_event(event_payload=event.payload):
+        match AssetRegistryLocation.from_event(event_payload=event.payload):  # type: ignore[arg-type]
             case AssetRegistryLocation(
                 asset_id=int(asset_id),
                 location=NativeLocation(
@@ -40,7 +40,7 @@ async def on_location_set(
 
         ctx.logger.info('Fetched External Asset Location for asset: %s.', asset)
     except InvalidEventDataError as exception:
-        match AssetRegistryLocation.from_event(event_payload=event.payload):
+        match AssetRegistryLocation.from_event(event_payload=event.payload):  # type: ignore[arg-type]
             case AssetRegistryLocation(
                 asset_id=int(asset_id),
             ):

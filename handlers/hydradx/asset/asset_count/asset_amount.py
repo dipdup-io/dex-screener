@@ -30,8 +30,8 @@ def _prepare(amount: AnyTypeAmount, decimals: int) -> Decimal:
 class AssetAmount(Decimal):
     def __new__(cls, asset: Asset, amount: AnyTypeAmount):
         amount = _prepare(amount, asset.decimals)
-        new: Self = Decimal.__new__(AssetAmount, amount)
-        new.__init__(asset, amount)
+        new: Self = Decimal.__new__(AssetAmount, amount)  # type: ignore[assignment]
+        new.__init__(asset, amount)  # type: ignore[misc]
         return new
 
     def __init__(self, asset: Asset, amount: Decimal, *args, **kwargs):
@@ -42,28 +42,28 @@ class AssetAmount(Decimal):
 
     @property
     def minor(self: Self) -> int:
-        return self.asset.to_minor(self)
+        return self.asset.to_minor(self)  # type: ignore[arg-type]
 
-    def __add__(self: Self, other: Self) -> Self:
+    def __add__(self: Self, other: Self) -> Self:  # type: ignore[override]
         if not isinstance(other, type(self)):
             raise TypeError(f'Cannot add {self.asset} to {type(other).__name__}')
         if self.asset.id != other.asset.id:
             raise TypeError(f'Cannot add {self.asset} to {other.asset}')
         result = Decimal.__add__(self, other)
-        return AssetAmount(asset=self.asset, amount=result)
+        return AssetAmount(asset=self.asset, amount=result)  # type: ignore[return-value]
 
-    def __sub__(self: Self, other: Self) -> Self:
+    def __sub__(self: Self, other: Self) -> Self:  # type: ignore[override]
         if not isinstance(other, type(self)):
             raise TypeError(f'Cannot subtract {type(other).__name__} from {self.asset}')
         if self.asset.id != other.asset.id:
             raise TypeError(f'Cannot subtract {other.asset} from {self.asset}')
         result = Decimal.__sub__(self, other)
-        return AssetAmount(asset=self.asset, amount=result)
+        return AssetAmount(asset=self.asset, amount=result)  # type: ignore[return-value]
 
-    @overload
+    @overload  # type: ignore[override]
     def __rtruediv__(self: Self, other: AssetAmount) -> AssetPrice: ...
     @overload
-    def __rtruediv__(self: Self, other: Self) -> Decimal: ...
+    def __rtruediv__(self: Self, other: Self) -> Decimal: ...  # type: ignore[overload-cannot-match]
 
     def __rtruediv__(self, other):
         if not isinstance(other, AssetAmount):
@@ -78,12 +78,12 @@ class AssetAmount(Decimal):
 
         return Decimal(other) / Decimal(self.amount)
 
-    @overload
-    def __truediv__(self: Self, other: AssetAmount) -> AssetPrice: ...
+    @overload  # type: ignore[override]
+    def __truediv__(self: Self, other: AssetAmount) -> AssetPrice: ...  # type: ignore[overload-overlap]
     @overload
     def __truediv__(self: Self, other: AssetPrice) -> AssetAmount: ...
     @overload
-    def __truediv__(self: Self, other: Self) -> Decimal: ...
+    def __truediv__(self: Self, other: Self) -> Decimal: ...  # type: ignore[overload-cannot-match,overload-overlap]
     @overload
     def __truediv__(self: Self, other: AnyTypeDecimal) -> Self: ...
 
