@@ -12,7 +12,7 @@ help:           ## Show this help (default)
 	@grep -Fh "##" $(MAKEFILE_LIST) | grep -Fv grep -F | sed -e 's/\\$$//' | sed -e 's/##//'
 
 all:            ## Run an entire CI pipeline
-	make install format lint
+	make install format lint test
 
 ##
 
@@ -29,6 +29,9 @@ format:         ## Format code with ruff
 lint:           ## Lint code with ruff and mypy
 	ruff check --fix .
 	mypy .
+
+test: 		 ## Run tests
+	pytest tests
 
 ##
 

@@ -100,6 +100,7 @@ class Pool(Model):
         source_field='lp_token_id',
         null=True,
     )
+    lp_token_id: int
 
     def __repr__(self) -> str:
         return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'
@@ -219,6 +220,8 @@ class DexEvent(Model):
         to_field='level',
     )
     metadata = fields.JSONField(null=True)
+
+    block_id: int
 
     def __repr__(self) -> str:
         return f'<{self.event_type!s}Event[{self.name}]({self.block_id}-{self.event_index})>'
