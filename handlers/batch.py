@@ -4,7 +4,7 @@ from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 from typing import TYPE_CHECKING
-
+from dipdup.exceptions import FrameworkException
 from dipdup.config.substrate_events import SubstrateEventsHandlerConfig
 
 from dex_screener.models import Block
@@ -97,8 +97,13 @@ async def batch(
 
         try:
             await ctx.fire_matched_handler(handler)
-        except BaseException as exception:
+        except Exception as exception:
             ctx.logger.error('Event Processing Error for: %s.', handler.args)
+
+            if isinstance(exception, FrameworkException) and '` not found in `' in str(exception):
+                ctx.logger.info('Deprecated event, skipping: %s', str(exception))
+                continue
+
             raise exception
 
     if RuntimeFlag.blocks_refresh_condition():
