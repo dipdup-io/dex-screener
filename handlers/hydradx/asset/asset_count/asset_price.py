@@ -27,7 +27,7 @@ MarketPairQuoteAssetAmount = TypeVar('MarketPairQuoteAssetAmount', bound=AssetAm
 class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
     def __init__(self, price: AnyTypePrice, market_pair: MarketPair[MarketPairBaseAsset, MarketPairQuoteAsset]):
         self.pair: MarketPair = market_pair
-        if not isinstance(AnyTypePrice, Decimal):
+        if not isinstance(price, Decimal):
             price = Decimal(price)
         _, digits, exponent = price.as_tuple()
         decimals_limit = min(
