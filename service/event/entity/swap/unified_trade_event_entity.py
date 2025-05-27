@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from scalecodec import is_valid_ss58_address
+from scalecodec import is_valid_ss58_address  # type: ignore[import-untyped]
 from scalecodec import ss58_decode
 
 from dex_screener.models import DexEvent

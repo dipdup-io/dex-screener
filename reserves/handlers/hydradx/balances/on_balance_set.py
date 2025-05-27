@@ -1,6 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
-from scalecodec import ss58_decode
+from scalecodec import ss58_decode  # type: ignore[import-untyped]
 from tortoise.functions import Sum
 
 from reserves.handlers.batch import RuntimeFlag

@@ -1,5 +1,5 @@
 from dipdup.context import HookContext
-from scalecodec import ss58_decode
+from scalecodec import ss58_decode  # type: ignore[import-untyped]
 
 from reserves.models import BalanceUpdateEvent
 

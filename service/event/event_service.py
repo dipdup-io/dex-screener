@@ -38,6 +38,7 @@ class DexScreenerEventService:
                 return OTCSwapEventEntity(event)
             case 'Broadcast.Swapped' | 'Broadcast.Swapped2' | 'Broadcast.Swapped3':
                 return UnifiedTradeEventEntity(event)
+        return None
 
     @classmethod
     async def register_join_exit(cls, event): ...

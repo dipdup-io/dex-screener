@@ -16,7 +16,7 @@ ASSET_LOCATION_CLASS_LIST = [
     PendulumAssetNativeLocation,
 ]
 
-ASSET_LOCATION_CLASS_MAP: dict[int, type(AbstractAssetNativeLocation)] = {
+ASSET_LOCATION_CLASS_MAP: dict[int, type[AbstractAssetNativeLocation]] = {
     asset_location_class.parachain_id: asset_location_class for asset_location_class in ASSET_LOCATION_CLASS_LIST
 }
 

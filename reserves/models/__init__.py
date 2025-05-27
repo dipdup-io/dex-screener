@@ -1,7 +1,7 @@
 from dipdup import fields
 from dipdup.models import Model
 from dipdup.models.substrate import SubstrateEvent
-from scalecodec import ss58_decode
+from scalecodec import ss58_decode  # type: ignore[import-untyped]
 
 RUNTIME_BALANCE_MAX_DIGITS = len(str(2**128 - 1))
 

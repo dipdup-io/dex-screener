@@ -6,7 +6,7 @@ from typing import Any
 from typing import no_type_check
 
 from dipdup import fields
-from scalecodec import is_valid_ss58_address
+from scalecodec import is_valid_ss58_address  # type: ignore[import-untyped]
 from scalecodec import ss58_decode
 
 from dex_screener.handlers.hydradx.asset.asset_count import DEX_SCREENER_PRICE_MAX_DIGITS
