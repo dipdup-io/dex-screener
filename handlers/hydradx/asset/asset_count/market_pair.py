@@ -8,7 +8,6 @@ from typing import TypeVar
 if TYPE_CHECKING:
     from dex_screener.handlers.hydradx.asset.asset_count.asset_price import AssetPrice
     from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypePrice
-    from models import Asset
 
 from dex_screener.models import Asset  # type: ignore[assignment]
 

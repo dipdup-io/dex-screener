@@ -98,11 +98,6 @@ async def batch(
             await ctx.fire_matched_handler(handler)
         except Exception as exception:
             ctx.logger.error('Event Processing Error for: %s.', handler.args)
-
-            if isinstance(exception, FrameworkException) and '` not found in `' in str(exception):
-                ctx.logger.info('Deprecated event, skipping: %s', str(exception))
-                continue
-
             raise exception
 
     if RuntimeFlag.blocks_refresh_condition():
