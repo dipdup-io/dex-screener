@@ -35,7 +35,7 @@ async def on_location_set(
             case _:
                 raise InvalidEventDataError(f'Unhandled AssetNativeLocation: {event.payload}.')
 
-        asset_location = get_asset_location(int(parachain_id))
+        asset_location = get_asset_location(ctx, int(parachain_id))
         asset: Asset = await asset_location.update_asset_with_external_metadata(asset_id, interior_value, event)
 
         ctx.logger.info('Fetched External Asset Location for asset: %s.', asset)

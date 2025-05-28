@@ -11,7 +11,7 @@ from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEven
 
 class PendulumAssetNativeLocation(AbstractAssetNativeLocation):
     parachain_id: int = 2094
-    node_url: str = 'wss://rpc-pendulum.prd.pendulumchain.tech'
+    node_datasource: str = 'asset_pendulum'
 
     def _prepare_parachain_query_parameters(self, interior: Interior) -> list:
         match interior:

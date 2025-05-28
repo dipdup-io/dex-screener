@@ -1,3 +1,5 @@
+# WARNING: Do not rename datasources and indexes! Aliases are used in the code.
+
 spec_version: 3.0
 package: dex_screener
 
@@ -20,6 +22,17 @@ datasources:
   explorer:
     kind: http
     url: https://explorer.hydradx.cloud/
+
+  # NOTE: These nodes are used only for asset metadata
+  asset_assethub:
+    kind: substrate.node
+    url: https://polkadot-asset-hub-rpc.polkadot.io
+  asset_moonbeam:
+    kind: substrate.node
+    url: https://api.moonbeam.network
+  asset_pendulum:
+    kind: substrate.node
+    url: https://rpc-pendulum.prd.pendulumchain.tech
 
 indexes:
   hydradx_events:
