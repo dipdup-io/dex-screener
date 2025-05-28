@@ -45,6 +45,9 @@ ignore_missing_imports = true
 [tool.hatch.build.targets.wheel]
 packages = ["dex_screener"]
 
+[tool.uv.sources]
+dipdup = { git = "https://github.com/dipdup-io/dipdup.git", rev = "fix/missing-substrate-abis" }
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
