@@ -6,7 +6,6 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from dipdup.config.substrate_events import SubstrateEventsHandlerConfig
-from dipdup.exceptions import FrameworkException
 
 from dex_screener.models import Block
 
