@@ -29,7 +29,7 @@ datasources:
     url: https://polkadot-asset-hub-rpc.polkadot.io
   asset_moonbeam:
     kind: substrate.node
-    url: https://api.moonbeam.network
+    url: https://moonbeam.api.onfinality.io/public
   asset_pendulum:
     kind: substrate.node
     url: https://rpc-pendulum.prd.pendulumchain.tech
