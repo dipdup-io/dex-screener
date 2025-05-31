@@ -1,6 +1,8 @@
 from dipdup.context import HandlerContext
+from dipdup.models import Meta
 from dipdup.models.substrate import SubstrateEvent
 from tortoise.exceptions import DoesNotExist
+
 from dex_screener.models import DexEvent
 from dex_screener.models import DexOmnipoolPosition
 from dex_screener.models import Pair
@@ -12,7 +14,6 @@ from dex_screener.service.event.entity.join_exit.dto import JoinExitEventMarketD
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
 from dex_screener.types.hydradx.substrate_events.omnipool_position_destroyed import OmnipoolPositionDestroyedPayload
 
-from dipdup.models import Meta
 
 async def on_position_destroyed(
     ctx: HandlerContext,
@@ -28,7 +29,7 @@ async def on_position_destroyed(
             event.payload['position_id'],
         )
         await Meta.create(
-            key=f'fail_{event.name}_{event.data.block_id}-{event.data.event_index}',
+            key=f'fail_{event.name}_{event.data.index}-{event.data.extrinsic_index}',
             value=event.payload,
         )
         return
