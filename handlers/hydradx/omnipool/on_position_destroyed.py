@@ -1,7 +1,5 @@
 from dipdup.context import HandlerContext
-from dipdup.models import Meta
 from dipdup.models.substrate import SubstrateEvent
-from tortoise.exceptions import DoesNotExist
 
 from dex_screener.models import DexEvent
 from dex_screener.models import DexOmnipoolPosition
@@ -19,20 +17,9 @@ async def on_position_destroyed(
     ctx: HandlerContext,
     event: SubstrateEvent[OmnipoolPositionDestroyedPayload],
 ) -> None:
-    try:
-        position: DexOmnipoolPosition = await DexOmnipoolPosition.get(
-            position_id=event.payload['position_id'],
-        )
-    except DoesNotExist:
-        ctx.logger.warning(
-            'Position %s not found in the database, skipping `position_destroyed` event',
-            event.payload['position_id'],
-        )
-        await Meta.create(
-            key=f'fail_{event.name}_{event.data.index}-{event.data.extrinsic_index}',
-            value=event.payload,
-        )
-        return
+    position: DexOmnipoolPosition = await DexOmnipoolPosition.get(
+        position_id=event.payload['position_id'],
+    )
 
     event_data = DexScreenerEventDataDTO(
         event_index=event.data.index,

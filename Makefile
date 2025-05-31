@@ -28,7 +28,7 @@ format:         ## Format code with ruff
 	cd reserves; make format
 
 lint:           ## Lint code with ruff and mypy
-	ruff check --fix .
+	ruff check --fix --unsafe-fixes .
 	mypy .
 	cd reserves; make lint
 

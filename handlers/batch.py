@@ -30,11 +30,8 @@ async def batch(
             )
             batch_levels.add(handler.level)
 
-        try:
+        async with ctx.catch_exceptions(ctx, handler):
             await ctx.fire_matched_handler(handler)
-        except Exception as exception:
-            ctx.logger.error('Event Processing Error for: %s.', handler.args)
-            raise exception
 
     if RuntimeFlag.blocks_refresh_condition():
         ctx.logger.info('Processing refresh `dex_block`...')

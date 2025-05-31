@@ -408,7 +408,7 @@ dev = [
 [[package]]
 name = "dipdup"
 version = "8.4.0"
-source = { git = "https://github.com/dipdup-io/dipdup.git?rev=fix%2Fmissing-substrate-abis#f5a0c5166f18ec2ba8c7e647416fab96e440c96d" }
+source = { git = "https://github.com/dipdup-io/dipdup.git?rev=fix%2Fmissing-substrate-abis#132091520435ed11d975375f4d37a5703d00c098" }
 dependencies = [
     { name = "aiohttp" },
     { name = "aiolimiter" },
