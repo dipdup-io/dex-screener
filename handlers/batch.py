@@ -6,6 +6,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from dex_screener.models import Block
+from models import catch_exceptions
 
 if TYPE_CHECKING:
     from dipdup.context import HandlerContext
@@ -30,7 +31,7 @@ async def batch(
             )
             batch_levels.add(handler.level)
 
-        async with ctx.catch_exceptions(ctx, handler):
+        async with catch_exceptions(ctx, handler):
             await ctx.fire_matched_handler(handler)
 
     if RuntimeFlag.blocks_refresh_condition():

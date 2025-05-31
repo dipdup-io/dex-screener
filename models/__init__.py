@@ -38,14 +38,14 @@ EXPECTED_FAILS = ('',)
 @asynccontextmanager
 async def catch_exceptions(
     ctx: HandlerContext,
-    handler: tuple[MatchedHandler, ...],
+    handler: MatchedHandler,
 ) -> AsyncIterator[None]:
     try:
         yield
     except Exception as exception:
         event_arg = handler.args[0]
         event_id = f'{event_arg.data.index}_{event_arg.data.extrinsic_index}'
-        ctx.logger.error('%s: failed to process event `%s`, %s ', event_id, handler.config.name, exception)
+        ctx.logger.error('%s: failed to process event `%s`, %s ', event_id, handler.config.callback, exception)
         value = {
             'payload': event_arg.payload,
             'data': event_arg.data.model_dump(),
