@@ -57,11 +57,11 @@ def get_recurring_events(event_a: SubstrateEvent, event_b: SubstrateEvent) -> in
                 params = (0, payload_copy.pop('who'), payload_copy.popitem()[1])
             case 'Balances.Transfer':
                 payload_copy = copy(payload)
-                params = (0, payload_copy.pop('from'), payload_copy.pop('to'), payload_copy.popitem()[1])
+                params = (0, payload_copy.pop('from'), payload_copy.pop('to'), payload_copy.popitem()[1])  # type: ignore[assignment]
             case 'Tokens.Deposited' | 'Currencies.Deposited' | 'Tokens.Withdrawn' | 'Currencies.Withdrawn':
                 params = (payload['currency_id'], payload['who'], payload['amount'])
             case 'Tokens.Transfer' | 'Currencies.Transferred':
-                params = (payload['currency_id'], payload['from'], payload['to'], payload['amount'])
+                params = (payload['currency_id'], payload['from'], payload['to'], payload['amount'])  # type: ignore[assignment]
             case _:
                 return False
         params_map = {key: params} | params_map
@@ -90,7 +90,7 @@ async def batch(
             recurring_events_indexes.add(index + pair_index)
 
     if len(recurring_events_indexes) > 0:
-        handlers = (handler for index, handler in enumerate(handlers) if index not in recurring_events_indexes)
+        handlers = (handler for index, handler in enumerate(handlers) if index not in recurring_events_indexes)  # type: ignore[assignment]
 
     for handler in handlers:
         await ctx.fire_matched_handler(handler)
@@ -155,7 +155,7 @@ class EventBuffer:
             ctx.logger.info(
                 'Bulk-inserted %d Events to `%s` with latest block %d.',
                 len(event_batch),
-                model_class.Meta.table,
+                model_class.Meta.table,  # type: ignore[attr-defined]
             )
         assert cls.queue.empty()
         del event_batch

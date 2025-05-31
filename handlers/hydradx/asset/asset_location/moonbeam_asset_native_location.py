@@ -11,7 +11,7 @@ from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEven
 
 class MoonbeamAssetNativeLocation(AbstractAssetNativeLocation):
     parachain_id: int = 2004
-    node_url: str = 'wss://wss.api.moonbeam.network/'
+    node_datasource: str = 'asset_moonbeam'
 
     def _prepare_parachain_query_parameters(self, interior: Interior) -> list:
         match interior:

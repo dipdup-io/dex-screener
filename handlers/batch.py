@@ -5,87 +5,23 @@ from datetime import datetime
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from dipdup.config.substrate_events import SubstrateEventsHandlerConfig
-
 from dex_screener.models import Block
+from models import catch_exceptions
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
-
     from dipdup.context import HandlerContext
     from dipdup.index import MatchedHandler
 
 
-class DeprecatedEvent:
-    names: tuple[str] = NotImplemented
-    done: bool = False
-    level: int = NotImplemented
-
-
-class DexSwapEvent(DeprecatedEvent):
-    names = (
-        'Omnipool.BuyExecuted',
-        'Omnipool.SellExecuted',
-        'Stableswap.BuyExecuted',
-        'Stableswap.SellExecuted',
-        'XYK.BuyExecuted',
-        'XYK.SellExecuted',
-        'LBP.BuyExecuted',
-        'LBP.SellExecuted',
-        'OTC.Filled',
-        'OTC.PartiallyFilled',
-    )
-    level: int = 6837788
-
-
-class BroadcastSwapped(DeprecatedEvent):
-    names = ('Broadcast.Swapped',)
-    level: int = 7342919
-
-
-class BroadcastSwapped2(DeprecatedEvent):
-    names = ('Broadcast.Swapped2',)
-    level: int = 7582524
-
-
-deprecations = [  # Must be sorted by `level` value
-    DexSwapEvent,
-    BroadcastSwapped,
-    BroadcastSwapped2,
-]
-
-
 async def batch(
     ctx: HandlerContext,
-    handlers: Iterable[MatchedHandler],
+    handlers: tuple[MatchedHandler, ...],
 ) -> None:
-    current_level = handlers[0].level
-    for deprecated in deprecations:
-        if current_level <= deprecated.level:
-            break
-        if deprecated.done:
-            continue
-        # Sweep all `hydradx_events` Index handlers and remove deprecated ones from Index Config (no more matched handlers until restart)
-        ctx.config.indexes['hydradx_events'].handlers = tuple(
-            [hc for hc in ctx.config.indexes['hydradx_events'].handlers if hc.name not in deprecated.names]
-        )
-        # Remove already matched handlers for deprecated events (just for current level)
-        handlers = tuple(
-            [
-                mh
-                for mh in handlers
-                if mh.index.name == 'hydradx_events'
-                and isinstance(mh.config, SubstrateEventsHandlerConfig)
-                and mh.config.name not in deprecated.names
-            ]
-        )
-        deprecated.done = True
-
     batch_levels: set[int] = set()
     for handler in handlers:
         if handler.level not in batch_levels:
             try:
-                timestamp = int(handler.args[0].data.header_extra['timestamp'] // 1000)
+                timestamp = int(handler.args[0].data.header_extra['timestamp'] // 1000)  # type: ignore[index]
             except (KeyError, AttributeError, ValueError, TypeError):
                 timestamp = None
 
@@ -95,11 +31,8 @@ async def batch(
             )
             batch_levels.add(handler.level)
 
-        try:
+        async with catch_exceptions(ctx, handler):
             await ctx.fire_matched_handler(handler)
-        except BaseException as exception:
-            ctx.logger.error('Event Processing Error for: %s.', handler.args)
-            raise exception
 
     if RuntimeFlag.blocks_refresh_condition():
         ctx.logger.info('Processing refresh `dex_block`...')
@@ -107,7 +40,7 @@ async def batch(
 
         for _ in range(10):
             levels: list[int] = (
-                await Block.filter(timestamp__isnull=True).order_by('level').limit(100).values_list('level', flat=True)
+                await Block.filter(timestamp__isnull=True).order_by('level').limit(100).values_list('level', flat=True)  # type: ignore[assignment]
             )
             if len(levels) == 0:
                 break
@@ -131,6 +64,9 @@ async def batch(
                 )
                 for block_data in response['data']['blocks']
             ]
+            if len(blocks) == 0:
+                ctx.logger.info('No blocks found for levels: %s.', levels)
+                break
 
             await Block.bulk_update(objects=blocks, fields=['timestamp'])
 

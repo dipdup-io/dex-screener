@@ -34,9 +34,9 @@ class LBPSwapEventEntity(SwapEventEntity):
             asset_0_id=min(asset_a_id, asset_b_id),
             asset_1_id=max(asset_a_id, asset_b_id),
         ).first()
-        asset_0_reserve, asset_1_reserve = await pair.get_reserves()
+        asset_0_reserve, asset_1_reserve = await pair.get_reserves()  # type: ignore[union-attr]
         return SwapEventPoolDataDTO(
-            pair_id=pair.id,
+            pair_id=pair.id,  # type: ignore[union-attr]
             asset_0_reserve=asset_0_reserve,
             asset_1_reserve=asset_1_reserve,
         )

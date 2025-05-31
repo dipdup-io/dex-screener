@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from dipdup.context import HookContext
-from scalecodec import is_valid_ss58_address
+from scalecodec import is_valid_ss58_address  # type: ignore[import-untyped]
 
 from dex_screener.handlers.batch import RuntimeFlag
 from dex_screener.models import Pair
@@ -23,7 +23,6 @@ async def on_restart(
 async def validate_indexed_values(ctx: HookContext):
     pool_account_batch = []
     async for pool_record in Pool.all():
-        pool_record: Pool
         validated_account = Account(pool_record.account)
         if str(pool_record.pk) != str(validated_account):
             pool_account_batch.append(('account', validated_account, 'account', pool_record.account))
@@ -34,7 +33,6 @@ async def validate_indexed_values(ctx: HookContext):
 
     pool_pool_id_batch = []
     async for pool_record in Pool.all():
-        pool_record: Pool
         validated_account = Account(pool_record.account)
         try:
             if is_valid_ss58_address(pool_record.dex_pool_id):
@@ -50,8 +48,6 @@ async def validate_indexed_values(ctx: HookContext):
 
     pair_id_batch = []
     async for pair_record in Pair.all():
-        pair_record: Pair
-
         try:
             if is_valid_ss58_address(pair_record.id):
                 pair_id_batch.append(('id', Account(pair_record.id), 'id', pair_record.id))

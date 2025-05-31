@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class DexScreenerEventService:
     @classmethod
     async def register_swap(cls, event: SubstrateEvent) -> DexEvent:
-        swap_event: SwapEventEntity = cls.build_swap_event_entity(event)
+        swap_event: SwapEventEntity = cls.build_swap_event_entity(event)  # type: ignore[assignment]
         await swap_event.resolve()
         return await swap_event.save()
 
@@ -38,6 +38,7 @@ class DexScreenerEventService:
                 return OTCSwapEventEntity(event)
             case 'Broadcast.Swapped' | 'Broadcast.Swapped2' | 'Broadcast.Swapped3':
                 return UnifiedTradeEventEntity(event)
+        return None
 
     @classmethod
     async def register_join_exit(cls, event): ...

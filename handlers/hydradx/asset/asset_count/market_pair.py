@@ -8,9 +8,8 @@ from typing import TypeVar
 if TYPE_CHECKING:
     from dex_screener.handlers.hydradx.asset.asset_count.asset_price import AssetPrice
     from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypePrice
-    from models import Asset
 
-from dex_screener.models import Asset
+from dex_screener.models import Asset  # type: ignore[assignment]
 
 MarketPairBaseAsset = TypeVar('MarketPairBaseAsset', bound=Asset)
 MarketPairQuoteAsset = TypeVar('MarketPairQuoteAsset', bound=Asset)
@@ -34,9 +33,9 @@ class MarketPair(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
     def from_minor(self, price_minor: AnyTypePrice) -> AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset]:
         from dex_screener.handlers.hydradx.asset.asset_count.asset_price import AssetPrice
 
-        return AssetPrice(Decimal(price_minor) / Decimal(10**self.decimals), self)
+        return AssetPrice(Decimal(price_minor) / Decimal(10**self.decimals), self)  # type: ignore[arg-type]
 
-    def __eq__(self, other: MarketPair) -> bool:
+    def __eq__(self, other: MarketPair) -> bool:  # type: ignore[override]
         if not isinstance(other, MarketPair):
             raise TypeError('Can only compare MarketPair with MarketPair')
         return self.base.id == other.base.id and self.quote.id == other.quote.id

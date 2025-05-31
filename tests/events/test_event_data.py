@@ -1,8 +1,8 @@
 import pytest
 from dipdup.models.substrate import SubstrateEvent
 
-from service.event.dto import DexScreenerEventDataDTO
-from service.event.event_service import DexScreenerEventService
+from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
+from dex_screener.service.event.event_service import DexScreenerEventService
 
 
 @pytest.mark.parametrize(

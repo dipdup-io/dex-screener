@@ -9,7 +9,7 @@ async def on_reindex(
     await ctx.execute_sql_script('on_reindex')
 
     assets = []
-    client = ctx.get_substrate_datasource('node')._interface
+    client = ctx.get_substrate_datasource('node')._interface  # type: ignore[union-attr]
     asset_map = await client.query_map('AssetRegistry', 'Assets')
     async for k, v in asset_map:
         name = v.value.get('name', None)

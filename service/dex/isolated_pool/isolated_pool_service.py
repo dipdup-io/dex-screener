@@ -56,5 +56,5 @@ class IsolatedPoolService:
         )
         cls.logger.info('Pair registered in pool %r: %r.', pool, pair)
 
-        await pool.assets.add(asset_a, asset_b)
+        await pool.assets.add(asset_a, asset_b)  # type: ignore[attr-defined]
         cls.logger.info('Pair Assets added to pool %r: %s, %s.', pool, asset_a, asset_b)

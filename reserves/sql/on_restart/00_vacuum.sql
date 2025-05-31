@@ -1,4 +1,4 @@
-VACUUM ANALYSE balance_update_event, balance_history, supply_history;
+-- VACUUM ANALYSE balance_update_event, balance_history, supply_history;
 
 WITH lse AS (
     SELECT id >> 17 AS last_level
