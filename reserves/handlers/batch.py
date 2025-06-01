@@ -156,6 +156,7 @@ class EventBuffer:
                 'Bulk-inserted %d Events to `%s` with latest block %d.',
                 len(event_batch),
                 model_class.Meta.table,  # type: ignore[attr-defined]
+                latest_record.level,  # type: ignore[attr-defined]
             )
         assert cls.queue.empty()
         del event_batch
