@@ -43,7 +43,7 @@ async def catch_exceptions(
     try:
         yield
     except Exception as exception:
-        event_arg = handler.args[0]
+        event_arg = handler.args[0]  # type: ignore[index]
         event_id = f'{event_arg.data.level}-{event_arg.data.index}'
         ctx.logger.error('%s: failed to process event `%s`, %s ', event_id, handler.config.callback, exception)
         value = {

@@ -105,7 +105,7 @@ class BalanceUpdateEvent(Model):
                 balance_update=balance_update,
             )
 
-            EventBuffer.queue.put_nowait(record)
+            EventBuffer.queue.put_nowait(record)  # type: ignore[arg-type]
 
     @staticmethod
     def group_key(asset_id: int, account: str) -> str:

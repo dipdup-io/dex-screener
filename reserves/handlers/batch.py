@@ -7,8 +7,9 @@ from datetime import timedelta
 from dipdup.context import DipDupContext
 from dipdup.context import HandlerContext
 from dipdup.index import MatchedHandler
-from dipdup.models import Model
 from dipdup.models.substrate import SubstrateEvent
+
+from reserves.models import BalanceUpdateEvent
 
 
 def get_recurring_events(event_a: SubstrateEvent, event_b: SubstrateEvent) -> int | bool:
@@ -138,25 +139,25 @@ class RuntimeFlag:
 
 class EventBuffer:
     buffer_limit: int = NotImplemented
-    queue: Queue[Model] = Queue()
+    queue: Queue[BalanceUpdateEvent] = Queue()
 
     @classmethod
     async def flush(cls, ctx: DipDupContext):
         ctx.logger.info('Flushing EventBuffer to DB...')
         q = cls.queue
-        event_batch: list[Model] = []
+        event_batch: list[BalanceUpdateEvent] = []
         while not q.empty():
             event_batch.append(q.get_nowait())
 
         if event_batch:
-            latest_record: Model = event_batch[-1]
-            model_class: type[Model] = type(latest_record)
+            latest_record: BalanceUpdateEvent = event_batch[-1]
+            model_class: type[BalanceUpdateEvent] = type(latest_record)
             await model_class.bulk_create(event_batch)
             ctx.logger.info(
-                'Bulk-inserted %d Events to `%s` with latest block %d.',
+                'Bulk-inserted %d Events to `%s` with latest id %s.',
                 len(event_batch),
                 model_class.Meta.table,  # type: ignore[attr-defined]
-                latest_record.level,  # type: ignore[attr-defined]
+                latest_record.id,
             )
         assert cls.queue.empty()
         del event_batch

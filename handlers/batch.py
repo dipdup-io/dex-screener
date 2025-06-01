@@ -6,7 +6,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from dex_screener.models import Block
-from models import catch_exceptions
+from dex_screener.models import catch_exceptions
 
 if TYPE_CHECKING:
     from dipdup.context import HandlerContext
