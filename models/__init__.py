@@ -42,7 +42,7 @@ async def catch_exceptions(
 ) -> AsyncIterator[None]:
     try:
         yield
-    except Exception as exception:
+    except BaseException as exception:
         event_arg = handler.args[0]  # type: ignore[index]
         event_id = f'{event_arg.data.level}-{event_arg.data.index}'
         ctx.logger.error('%s: failed to process event `%s`, %s ', event_id, handler.config.callback, exception)
@@ -54,8 +54,8 @@ async def catch_exceptions(
             key=f'fail_{event_id}_{handler.config.callback}',
             value=value,
         )
-        # if event_id not in EXPECTED_FAILS:
-        #     raise exception
+        if event_id not in EXPECTED_FAILS:
+            raise exception
 
 
 class Block(Model):
