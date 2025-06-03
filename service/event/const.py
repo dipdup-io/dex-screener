@@ -2,6 +2,6 @@ from enum import StrEnum
 
 
 class DexScreenerEventType(StrEnum):
-    Swap = 'Swap'
-    Join = 'Join'
-    Exit = 'Exit'
+    Swap = 'swap'
+    Join = 'join'
+    Exit = 'exit'
