@@ -17,7 +17,7 @@ from dex_screener.handlers.hydradx.asset.asset_type.hydration_external_asset imp
 
 class AbstractAssetNativeLocation(ABC):
     parachain_id: int = NotImplemented
-    node_url: str = NotImplemented
+    node_datasource: str = NotImplemented
 
     def __init__(self, client: SubstrateInterface):
         self._client: SubstrateInterface = client

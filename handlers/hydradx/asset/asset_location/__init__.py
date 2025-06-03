@@ -1,4 +1,5 @@
-from aiosubstrate import SubstrateInterface
+from dipdup.context import DipDupContext
+from dipdup.datasources.substrate_node import SubstrateNodeDatasource
 
 from dex_screener.handlers.hydradx.asset.asset_location.abstract_asset_native_location import (
     AbstractAssetNativeLocation,
@@ -16,20 +17,22 @@ ASSET_LOCATION_CLASS_LIST = [
     PendulumAssetNativeLocation,
 ]
 
-ASSET_LOCATION_CLASS_MAP: dict[int, type(AbstractAssetNativeLocation)] = {
-    asset_location_class.parachain_id: asset_location_class for asset_location_class in ASSET_LOCATION_CLASS_LIST
+ASSET_LOCATION_CLASS_MAP: dict[int, type[AbstractAssetNativeLocation]] = {
+    asset_location_class.parachain_id: asset_location_class  # type: ignore[type-abstract]
+    for asset_location_class in ASSET_LOCATION_CLASS_LIST  # type: ignore[type-abstract]
 }
 
 ASSET_LOCATION_MAP: dict[int, AbstractAssetNativeLocation] = {}
 
 
-def get_asset_location(parachain_id: int):
+def get_asset_location(ctx: DipDupContext, parachain_id: int):
     if parachain_id not in ASSET_LOCATION_CLASS_MAP:
         raise InvalidEventDataError(f'Unsupported `parachain_id`: {parachain_id}.')
     if parachain_id not in ASSET_LOCATION_MAP:
         asset_location_class = ASSET_LOCATION_CLASS_MAP[parachain_id]
-        parachain_client = SubstrateInterface(asset_location_class.node_url)
-        asset_location = asset_location_class(client=parachain_client)
+        parachain_datasource = ctx.datasources[asset_location_class.node_datasource]
+        assert isinstance(parachain_datasource, SubstrateNodeDatasource)
+        asset_location = asset_location_class(client=parachain_datasource._interface)
         ASSET_LOCATION_MAP[parachain_id] = asset_location
     else:
         asset_location = ASSET_LOCATION_MAP[parachain_id]

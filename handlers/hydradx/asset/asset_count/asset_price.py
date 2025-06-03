@@ -27,11 +27,11 @@ MarketPairQuoteAssetAmount = TypeVar('MarketPairQuoteAssetAmount', bound=AssetAm
 class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
     def __init__(self, price: AnyTypePrice, market_pair: MarketPair[MarketPairBaseAsset, MarketPairQuoteAsset]):
         self.pair: MarketPair = market_pair
-        if not isinstance(AnyTypePrice, Decimal):
+        if not isinstance(price, Decimal):
             price = Decimal(price)
         _, digits, exponent = price.as_tuple()
         decimals_limit = min(
-            (DEX_SCREENER_PRICE_MAX_DIGITS - (len(digits) + exponent)),
+            (DEX_SCREENER_PRICE_MAX_DIGITS - (len(digits) + exponent)),  # type: ignore[operator]
             DEX_SCREENER_PRICE_MAX_DECIMALS,
         )
         self.price: Decimal = price.quantize(Decimal(f'1e{-decimals_limit}'))
@@ -39,7 +39,7 @@ class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
     @overload
     def __rtruediv__(self: Self, other: AnyTypeDecimal) -> AssetPrice[MarketPairQuoteAsset, MarketPairBaseAsset]: ...
     @overload
-    def __rtruediv__(self: Self, other: MarketPairQuoteAssetAmount) -> MarketPairBaseAssetAmount: ...
+    def __rtruediv__(self: Self, other: MarketPairQuoteAssetAmount) -> MarketPairBaseAssetAmount: ...  # type: ignore[overload-cannot-match,type-var,misc]
     def __rtruediv__(self, other):
         if isinstance(other, AssetAmount):
             if other.asset.id != self.pair.quote.id:
@@ -60,7 +60,7 @@ class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
         if other.pair != self.pair:
             raise TypeError(f'Cannot add {self.pair} to {other.pair}')
         result = self.price + other.price
-        return AssetPrice(result, self.pair)
+        return AssetPrice(result, self.pair)  # type: ignore[return-value]
 
     def __sub__(self: Self, other: Self) -> Self:
         if not isinstance(other, type(self)):
@@ -69,12 +69,12 @@ class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
         if other.pair != self.pair:
             raise TypeError(f'Cannot subtract {other.pair} from {self.pair}')
         result = self.price - other.price
-        return AssetPrice(result, self.pair)
+        return AssetPrice(result, self.pair)  # type: ignore[return-value]
 
     @overload
-    def __mul__(
+    def __mul__(  # type: ignore[overload-overlap]
         self: AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset], other: MarketPairBaseAssetAmount
-    ) -> MarketPairQuoteAssetAmount: ...
+    ) -> MarketPairQuoteAssetAmount: ...  # type: ignore[type-var,misc]
     @overload
     def __mul__(
         self: AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset], other: AnyTypeDecimal
@@ -95,10 +95,10 @@ class AssetPrice(Generic[MarketPairBaseAsset, MarketPairQuoteAsset]):
     def __truediv__(self: Self, other: AnyTypeDecimal) -> Self:
         if isinstance(other, AnyTypeDecimal):
             result = self.price / Decimal(other)
-            return AssetPrice(result, self.pair)
+            return AssetPrice(result, self.pair)  # type: ignore[return-value]
         raise TypeError('Unsupported operand type')
 
-    def __eq__(self, other: AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset]) -> bool:
+    def __eq__(self, other: AssetPrice[MarketPairBaseAsset, MarketPairQuoteAsset]) -> bool:  # type: ignore[override]
         if not isinstance(other, AssetPrice):
             raise TypeError('Can only compare AssetPrice with AssetPrice')
         return self.pair == other.pair and self.price.normalize() == other.price.normalize()

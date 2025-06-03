@@ -12,7 +12,7 @@ from dex_screener.models import Asset
 
 
 class AbstractHydrationAsset(ABC):
-    asset_type: str = ...
+    asset_type: str = NotImplemented
 
     @classmethod
     @abstractmethod
@@ -74,7 +74,7 @@ class BaseHydrationAsset(AbstractHydrationAsset):
 
         return await cls.update_asset(
             asset_id=asset_id,
-            updated_fields=updated_fields,
+            updated_fields=updated_fields,  # type: ignore[arg-type]
             event=event,
         )
 
@@ -88,7 +88,7 @@ class BaseHydrationAsset(AbstractHydrationAsset):
             fields = {}
 
         if asset_id in PRE_RESOLVED_TOKENS_METADATA:
-            fields.update(PRE_RESOLVED_TOKENS_METADATA.pop(asset_id))
+            fields.update(PRE_RESOLVED_TOKENS_METADATA.pop(asset_id))  # type: ignore[arg-type]
 
         return await cls.update_asset(
             asset_id=asset_id,

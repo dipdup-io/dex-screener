@@ -36,6 +36,7 @@ datasources:
     kind: http
     url: https://explorer.hydradx.cloud/
 
+
 indexes:
   hydradx_events:
     kind: substrate.events

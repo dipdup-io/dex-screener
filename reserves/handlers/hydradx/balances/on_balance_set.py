@@ -1,6 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
-from scalecodec import ss58_decode
+from scalecodec import ss58_decode  # type: ignore[import-untyped]
 from tortoise.functions import Sum
 
 from reserves.handlers.batch import RuntimeFlag
@@ -22,7 +22,7 @@ async def on_balance_set(
     asset_id = 0
 
     latest_balance: int = (
-        await BalanceUpdateEvent.filter(
+        await BalanceUpdateEvent.filter(  # type: ignore[assignment]
             asset_id=asset_id,
             account=account,
         )

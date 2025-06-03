@@ -48,7 +48,7 @@ class HydrationTokenAsset(BaseHydrationAsset):
                 'assetId': int(asset_id),
                 **event_items,
             }:
-                fields = {}
+                fields: dict[str, str | int] = {}
                 for key, value in event_items.items():
                     match key, value:
                         case 'assetName', str(asset_name_hex):

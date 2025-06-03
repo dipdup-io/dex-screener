@@ -27,7 +27,7 @@ class AccountKey20(ScalarInteriorElement, str):
 
 
 class GeneralKey(ScalarInteriorElement, str):
-    def __new__(cls, data: str, length: int | None = None, *args, **kwarg) -> type[Self]:
+    def __new__(cls, data: str, length: int | None = None, *args, **kwarg) -> Self:
         if length is None:
             return str.__new__(cls, data)
         key: str = data[: 2 + length * 2]
@@ -40,14 +40,14 @@ class Here:
 
 
 class Interior(tuple):
-    def __new__(cls, interior_data: tuple | str, *args, **kwargs) -> type[Self]:
-        value = interior_data
+    def __new__(cls, interior_data: tuple | str, *args, **kwargs) -> Self:
+        value: tuple | str | Here = interior_data
         if isinstance(interior_data, tuple):
             value = tuple(cls.convert(element) for element in interior_data)
         elif interior_data == 'Here':
             value = Here()
         if not isinstance(value, Iterable):
-            value = [value]
+            value = (value,)
         return tuple.__new__(cls, value)
 
     @staticmethod
@@ -60,7 +60,7 @@ class Interior(tuple):
             case {'GeneralKey': str(key_hex_prefixed)}:
                 return GeneralKey(key_hex_prefixed)
             case {'GeneralIndex': str(index) | int(index)}:
-                return GeneralIndex(int(index))
+                return GeneralIndex(int(index))  # type: ignore[call-overload]
             case {'AccountKey20': str(key_hex_prefixed)}:
                 return AccountKey20(key_hex_prefixed)
             case {'PalletInstance': int(pallet_id)}:
@@ -92,7 +92,7 @@ class AssetRegistryLocation:
             self.location = NativeLocation(**self.location)
 
     @classmethod
-    def from_event(cls, event_payload: dict | tuple) -> type[Self]:
+    def from_event(cls, event_payload: dict | tuple) -> Self:
         payload = deepcopy(event_payload)
         if isinstance(payload, tuple):
             payload = {

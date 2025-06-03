@@ -1,5 +1,5 @@
 from dipdup.context import HookContext
-from scalecodec import ss58_decode
+from scalecodec import ss58_decode  # type: ignore[import-untyped]
 
 from reserves.models import BalanceUpdateEvent
 
@@ -9,7 +9,7 @@ async def on_reindex(
 ) -> None:
     await ctx.execute_sql_script('on_reindex')
 
-    client = ctx.get_substrate_datasource('node')._interface
+    client = ctx.get_substrate_datasource('node')._interface  # type: ignore[union-attr]
 
     block_hash = await client.get_block_hash(0)
     account_map = await client.query_map('System', 'Account', block_hash=block_hash, page_size=1000)

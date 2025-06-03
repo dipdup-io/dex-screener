@@ -26,19 +26,19 @@ async def on_balance_updated(
             for amount_key in ['deposit', 'amount']:
                 if amount_key in event.payload:
                     break
-            balance_update = event.payload[amount_key]
+            balance_update = event.payload[amount_key]  # type: ignore[literal-required]
         case 'Balances.Minted':
             account = event.payload['who']
-            balance_update = event.payload['amount']
+            balance_update = event.payload['amount']  # type: ignore[typeddict-item]
         case 'Balances.Withdraw':
             account = event.payload['who']
             for amount_key in ['value', 'amount']:
                 if amount_key in event.payload:
                     break
-            balance_update = -event.payload[amount_key]
+            balance_update = -event.payload[amount_key]  # type: ignore[literal-required]
         case 'Balances.Burned':
             account = event.payload['who']
-            balance_update = -event.payload['amount']
+            balance_update = -event.payload['amount']  # type: ignore[typeddict-item]
         case _:
             raise ValueError(event)
 

@@ -2,10 +2,10 @@ from enum import StrEnum
 
 
 class HydrationAssetType(StrEnum):
-    Token: str = 'Token'
-    External: str = 'External'
-    StableSwap: str = 'StableSwap'
-    Bond: str = 'Bond'
-    PoolShare: str = 'PoolShare'
-    XYK: str = 'XYK'
-    ERC20: str = 'Erc20'
+    Token = 'Token'
+    External = 'External'
+    StableSwap = 'StableSwap'
+    Bond = 'Bond'
+    PoolShare = 'PoolShare'
+    XYK = 'XYK'
+    ERC20 = 'Erc20'

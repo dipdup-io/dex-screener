@@ -11,7 +11,7 @@ from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEven
 
 class AssetHubAssetNativeLocation(AbstractAssetNativeLocation):
     parachain_id: int = 1000
-    node_url: str = 'wss://polkadot-asset-hub-rpc.polkadot.io'
+    node_datasource: str = 'asset_assethub'
 
     def _prepare_parachain_query_parameters(self, interior: Interior) -> list:
         match interior:

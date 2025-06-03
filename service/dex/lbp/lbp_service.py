@@ -38,8 +38,8 @@ class LBPService:
             cls.logger.warning('Pair already exists: %s.', pair_id)
             return
 
-        asset_a = await Asset.get(id=event.payload['data']['assets'][0])
-        asset_b = await Asset.get(id=event.payload['data']['assets'][1])
+        asset_a = await Asset.get(id=event.payload['data']['assets'][0])  # type: ignore[index]
+        asset_b = await Asset.get(id=event.payload['data']['assets'][1])  # type: ignore[index]
         event_info = DexScreenerEventInfoDTO.from_event(event)
 
         pair = await Pair.create(
@@ -50,9 +50,9 @@ class LBPService:
             pool=pool,
             created_at_block_id=event_info.block_id,
             created_at_tx_id=event_info.tx_index,
-            fee_bps=event.payload['data']['fee'][1],
+            fee_bps=event.payload['data']['fee'][1],  # type: ignore[index]
         )
         cls.logger.info('Pair registered in pool %r: %r.', pool, pair)
 
-        await pool.assets.add(asset_a, asset_b)
+        await pool.assets.add(asset_a, asset_b)  # type: ignore[attr-defined]
         cls.logger.info('Pair Assets added to pool %r: %s, %s.', pool, asset_a, asset_b)

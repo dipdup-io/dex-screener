@@ -10,7 +10,7 @@
                     "queries": [
                         {
                             "name": "LatestBlock",
-                            "query": "query LatestBlock { block: ds_latest_block_by_pk(id: true) { BlockNumber: block_number BlockTimestamp: block_timestamp }}"
+                            "query": "query LatestBlock { block: ds_latest_block_by_pk(id: true) { blockNumber: block_number blockTimestamp: block_timestamp }}"
                         }
                     ]
                 }

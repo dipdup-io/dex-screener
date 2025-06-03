@@ -63,6 +63,6 @@ class OTCService:
         cls.logger.info('Pair registered in pool %r: %r.', order, pair)
 
         await pair.fetch_related('asset_0', 'asset_1')
-        await order.assets.add(pair.asset_0, pair.asset_1)
+        await order.assets.add(pair.asset_0, pair.asset_1)  # type: ignore[attr-defined]
 
         return order

@@ -31,7 +31,7 @@ class SwapEventEntity(DexScreenerEventEntity, ABC):
         try:
             self.market_data = await self.resolve_market_data()
         except ValueError as exception:
-            raise InvalidSwapEventMarketDataError from exception
+            raise InvalidSwapEventMarketDataError('Invalid Swap Event Market Data.') from exception
 
     @abstractmethod
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:

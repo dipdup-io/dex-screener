@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -14,16 +15,47 @@ from dex_screener.models.dex_fields import AssetPriceField
 from dex_screener.service.event.const import DexScreenerEventType
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
+
+    from dipdup.context import HandlerContext
+    from dipdup.index import MatchedHandler
     from tortoise.fields.relational import ForeignKeyFieldInstance
     from tortoise.fields.relational import ManyToManyFieldInstance
     from tortoise.fields.relational import OneToOneFieldInstance
 
     from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypeAmount
 
+from dipdup.models import Meta
+
 from dex_screener.handlers.hydradx.asset.asset_count.asset_amount import AssetAmount
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 from dex_screener.models.dex_fields import AccountField as AccountField
 from dex_screener.models.enum import DexKey as DexKey
+
+EXPECTED_FAILS = ('',)
+
+
+@asynccontextmanager
+async def catch_exceptions(
+    ctx: HandlerContext,
+    handler: MatchedHandler,
+) -> AsyncIterator[None]:
+    try:
+        yield
+    except BaseException as exception:
+        event_arg = handler.args[0]  # type: ignore[index]
+        event_id = f'{event_arg.data.level}-{event_arg.data.index}'
+        ctx.logger.error('%s: failed to process event `%s`, %s ', event_id, handler.config.callback, exception)
+        value = {
+            'payload': str(event_arg.payload),
+            'data': str(event_arg.data.__dict__),
+        }
+        await Meta.create(
+            key=f'fail_{event_id}_{handler.config.callback}',
+            value=value,
+        )
+        if event_id not in EXPECTED_FAILS:
+            raise exception
 
 
 class Block(Model):
@@ -63,7 +95,7 @@ class Asset(Model):
     )
 
     def amount(self, amount: AnyTypeAmount) -> AssetAmount:
-        return AssetAmount(asset=self, amount=amount)
+        return AssetAmount(asset=self, amount=amount)  # type: ignore[arg-type]
 
     def from_minor(self, minor_amount: AnyTypeAmount) -> AssetAmount:
         amount = Decimal(int(minor_amount)) / 10**self.decimals
@@ -93,13 +125,14 @@ class Pool(Model):
         backward_key='pool_id',
         related_name='pools',
     )
-    lp_token: OneToOneFieldInstance[Asset] = OneToOneField(
+    lp_token: OneToOneFieldInstance[Asset] = OneToOneField(  # type: ignore[assignment]
         model_name=Asset.Meta.model,
         related_name='liquidity_pool',
         to_field='id',
         source_field='lp_token_id',
         null=True,
     )
+    lp_token_id: int
 
     def __repr__(self) -> str:
         return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'
@@ -175,12 +208,12 @@ class Pair(Model):
         if asset_0_minor_reserve is None:
             asset_0_reserve = None
         else:
-            asset_0_reserve = self.asset_0.from_minor(asset_0_minor_reserve)
+            asset_0_reserve = self.asset_0.from_minor(asset_0_minor_reserve)  # type: ignore[arg-type]
 
         if asset_1_minor_reserve is None:
             asset_1_reserve = None
         else:
-            asset_1_reserve = self.asset_1.from_minor(asset_1_minor_reserve)
+            asset_1_reserve = self.asset_1.from_minor(asset_1_minor_reserve)  # type: ignore[arg-type]
         return str(asset_0_reserve), str(asset_1_reserve)
 
 
@@ -219,6 +252,8 @@ class DexEvent(Model):
         to_field='level',
     )
     metadata = fields.JSONField(null=True)
+
+    block_id: int
 
     def __repr__(self) -> str:
         return f'<{self.event_type!s}Event[{self.name}]({self.block_id}-{self.event_index})>'

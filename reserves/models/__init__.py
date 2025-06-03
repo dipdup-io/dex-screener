@@ -1,7 +1,7 @@
 from dipdup import fields
 from dipdup.models import Model
 from dipdup.models.substrate import SubstrateEvent
-from scalecodec import ss58_decode
+from scalecodec import ss58_decode  # type: ignore[import-untyped]
 
 RUNTIME_BALANCE_MAX_DIGITS = len(str(2**128 - 1))
 
@@ -32,7 +32,7 @@ class BalanceHistory(Model):
         balance_update_record = await BalanceUpdateEvent.filter(asset_account=group_key).order_by('-id').first()
         balance_update = 0 if balance_update_record is None else balance_update_record.balance_update
         await cls.create(
-            id=balance_update_record.id,
+            id=balance_update_record.id,  # type: ignore[union-attr]
             asset_account=group_key,
             asset_id=asset_id,
             account=account,
@@ -57,9 +57,9 @@ class SupplyHistory(Model):
         balance_update_record = await BalanceUpdateEvent.filter(asset_id=asset_id).order_by('-id').first()
 
         await cls.create(
-            id=balance_update_record.id,
+            id=balance_update_record.id,  # type: ignore[union-attr]
             asset_id=asset_id,
-            supply=supply + balance_update_record.balance_update,
+            supply=supply + balance_update_record.balance_update,  # type: ignore[union-attr]
         )
 
 
@@ -105,7 +105,7 @@ class BalanceUpdateEvent(Model):
                 balance_update=balance_update,
             )
 
-            EventBuffer.queue.put_nowait(record)
+            EventBuffer.queue.put_nowait(record)  # type: ignore[arg-type]
 
     @staticmethod
     def group_key(asset_id: int, account: str) -> str:
