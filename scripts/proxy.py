@@ -36,9 +36,28 @@ app = FastAPI(lifespan=lifespan)
 base_route = APIRouter(prefix=os.getenv("HTTP_SERVER_URL_PATH", "/api/rest"))
 
 def remove_none_fields(data: Any) -> Any:
-    # TODO: remove reserves field when empty
-    # TODO: remove fields amount0 and amount1 for swap event type
-    # TODO: assetin and assetout 2 fields out of four should be presented (remove asset0In, asset0Out, asset1In, asset1Out if None)
+    # NOTE: remove reserves field when empty
+    # NOTE: remove fields amount0 and amount1 for swap event type
+    # NOTE: assetin and assetout 2 fields out of four should be presented (remove asset0In, asset0Out, asset1In, asset1Out if None)
+    for item in data['events']:
+        if item.get('eventType') == 'swap':
+            item.pop('amount0', None)
+            item.pop('amount1', None)
+        if item.get('asset0In') is None:
+            item.pop('asset0In', None)
+        if item.get('asset0Out') is None:
+            item.pop('asset0Out', None)
+        if item.get('asset1In') is None:
+            item.pop('asset1In', None)
+        if item.get('asset1Out') is None:
+            item.pop('asset1Out', None)
+        if (reserves := item.get('reserves')) is not None:
+            if reserves.get('asset0') is None or reserves.get('asset0') == 'None':
+                reserves.pop('asset0', None)
+            if reserves.get('asset1') is None or reserves.get('asset1') == 'None':
+                reserves.pop('asset1', None)
+            if len(reserves) == 0:
+                item.pop('reserves', None)
     return data
 
 def clean_json(data: Any) -> Any:
@@ -70,17 +89,19 @@ async def forward_request(request: Request, transform: Callable[[bytes], bytes] 
     if transform:
         # Read JSON content
         content = await response.aread()
+        data = transform(content)
+        response.headers['Content-Length'] = str(len(data)) if data else '0'
         return StreamingResponse(
-            transform(content),
+            (data, ),
             status_code=response.status_code,
-            headers=dict(response.headers),
+            headers=response.headers,
             background=BackgroundTask(response.aclose)
         )
 
     return StreamingResponse(
         response.aiter_raw(),
         status_code=response.status_code,
-        headers=dict(response.headers),
+        headers=response.headers,
         background=BackgroundTask(response.aclose)
     )
 
@@ -91,11 +112,11 @@ async def forward_latest_block(request: Request):
 
 @base_route.get("/asset")
 async def forward_asset(request: Request):
-    return await forward_request(request, clean_json)
+    return await forward_request(request)
 
 @base_route.get("/pair")
 async def forward_pair(request: Request):
-    return await forward_request(request, clean_json)
+    return await forward_request(request)
 
 @base_route.get("/events")
 async def forward_events(request: Request):
