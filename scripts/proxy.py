@@ -39,7 +39,7 @@ def remove_none_fields(data: Any) -> Any:
     # NOTE: remove reserves field when empty
     # NOTE: remove fields amount0 and amount1 for swap event type
     # NOTE: assetin and assetout 2 fields out of four should be presented (remove asset0In, asset0Out, asset1In, asset1Out if None)
-    for item in data['events']:
+    for item in data.get('events', None):
         if item.get('eventType') == 'swap':
             item.pop('amount0', None)
             item.pop('amount1', None)
