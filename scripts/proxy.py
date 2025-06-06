@@ -5,9 +5,9 @@ from collections.abc import Callable
 from contextlib import asynccontextmanager
 from typing import Any
 
-from dipdup.utils import json_dumps
 import httpx
 import orjson
+from dipdup.utils import json_dumps
 from fastapi import APIRouter
 from fastapi import FastAPI
 from fastapi import Request
@@ -28,13 +28,15 @@ Environment variables:
 async def lifespan(app: FastAPI):
     """Manage HTTP client lifecycle"""
     # TODO: add http client to state(async with yeild {client: cl}), add env variables with client host and port
-    client_host = os.getenv("HTTP_CLIENT_HOST", "hasura")
-    client_port = os.getenv("HTTP_CLIENT_PORT", "8080")
+    client_host = os.getenv('HTTP_CLIENT_HOST', 'hasura')
+    client_port = os.getenv('HTTP_CLIENT_PORT', '8080')
     async with httpx.AsyncClient(base_url=f'http://{client_host}:{client_port}') as client:
         yield {'client': client}
 
+
 app = FastAPI(lifespan=lifespan)
-base_route = APIRouter(prefix=os.getenv("HTTP_SERVER_URL_PATH", "/api/rest"))
+base_route = APIRouter(prefix=os.getenv('HTTP_SERVER_URL_PATH', '/api/rest'))
+
 
 def remove_none_fields(data: Any) -> Any:
     # NOTE: remove reserves field when empty
@@ -61,13 +63,14 @@ def remove_none_fields(data: Any) -> Any:
                 item.pop('reserves', None)
     return data
 
+
 def clean_json(data: Any) -> Any:
     try:
         json_data = orjson.loads(data)
         cleaned_data = remove_none_fields(json_data)
         return json_dumps(cleaned_data, None)
     except orjson.JSONDecodeError as e:
-        print("Failed to decode JSON content: ", e)
+        print('Failed to decode JSON content: ', e)
         return data
 
 
@@ -82,9 +85,9 @@ async def forward_request(request: Request, transform: Callable[[bytes], bytes] 
         headers=request.headers.raw,
         params=request.query_params,
         # params included in the URL
-        content=request.stream()
+        content=request.stream(),
     )
-    print(f"Forwarding request to {forwarded_request.url}")
+    print(f'Forwarding request to {forwarded_request.url}')
     response = await client.send(forwarded_request, stream=True)
 
     if transform:
@@ -93,42 +96,42 @@ async def forward_request(request: Request, transform: Callable[[bytes], bytes] 
         data = transform(content)
         response.headers['Content-Length'] = str(len(data)) if data else '0'
         return Response(
-            data,
-            status_code=response.status_code,
-            headers=response.headers,
-            background=BackgroundTask(response.aclose)
+            data, status_code=response.status_code, headers=response.headers, background=BackgroundTask(response.aclose)
         )
 
     return Response(
         await response.aread(),
         status_code=response.status_code,
         headers=response.headers,
-        background=BackgroundTask(response.aclose)
+        background=BackgroundTask(response.aclose),
     )
 
 
-@base_route.get("/latest-block")
+@base_route.get('/latest-block')
 async def forward_latest_block(request: Request):
     return await forward_request(request)
 
-@base_route.get("/asset")
+
+@base_route.get('/asset')
 async def forward_asset(request: Request):
     return await forward_request(request)
 
-@base_route.get("/pair")
+
+@base_route.get('/pair')
 async def forward_pair(request: Request):
     return await forward_request(request)
 
-@base_route.get("/events")
+
+@base_route.get('/events')
 async def forward_events(request: Request):
     return await forward_request(request, clean_json)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import uvicorn
 
     app.include_router(base_route)
 
-    server_host = os.getenv("HTTP_SERVER_HOST", "0.0.0.0")
-    server_port = int(os.getenv("HTTP_SERVER_PORT", 8000))
+    server_host = os.getenv('HTTP_SERVER_HOST', '0.0.0.0')
+    server_port = int(os.getenv('HTTP_SERVER_PORT', 8000))
     uvicorn.run(app, host=server_host, port=server_port)
