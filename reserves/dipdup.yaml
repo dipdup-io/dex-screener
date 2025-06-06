@@ -30,8 +30,8 @@ datasources:
     url: https://hydration.api.subscan.io/api
   node:
     kind: substrate.node
-    url: https://rpc.hydradx.cloud
-    ws_url: wss://hydration-rpc.n.dwellir.com
+    url: ${NODE_URL:-https://hydration-rpc.n.dwellir.com}
+    ws_url: ${NODE_WS_URL:-wss://hydration-rpc.n.dwellir.com}
   explorer:
     kind: http
     url: https://explorer.hydradx.cloud/
