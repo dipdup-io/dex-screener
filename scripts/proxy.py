@@ -42,7 +42,11 @@ def remove_none_fields(data: Any) -> Any:
     # NOTE: remove reserves field when empty
     # NOTE: remove fields amount0 and amount1 for swap event type
     # NOTE: assetin and assetout 2 fields out of four should be presented (remove asset0In, asset0Out, asset1In, asset1Out if None)
-    for item in data.get('events', None):
+    events = data.get('events', [])
+    if not events:
+        return data
+    
+    for item in events:
         if item.get('eventType') == 'swap':
             item.pop('amount0', None)
             item.pop('amount1', None)
@@ -71,6 +75,9 @@ def clean_json(data: Any) -> Any:
         return json_dumps(cleaned_data, None)
     except orjson.JSONDecodeError as e:
         print('Failed to decode JSON content: ', e)
+        return data
+    except Exception as e:
+        print('Error processing data: ', e)
         return data
 
 
