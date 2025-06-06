@@ -5,6 +5,7 @@ from collections.abc import Callable
 from contextlib import asynccontextmanager
 from typing import Any
 
+from dipdup.utils import json_dumps
 import httpx
 import orjson
 from fastapi import APIRouter
@@ -64,10 +65,10 @@ def clean_json(data: Any) -> Any:
     try:
         json_data = orjson.loads(data)
         cleaned_data = remove_none_fields(json_data)
-        return orjson.dumps(cleaned_data)
-    except orjson.JSONDecodeError:
-        print("Failed to decode JSON content")
-        pass
+        return json_dumps(cleaned_data, None)
+    except orjson.JSONDecodeError as e:
+        print("Failed to decode JSON content: ", e)
+        return data
 
 
 async def forward_request(request: Request, transform: Callable[[bytes], bytes] | None = None) -> Response:
