@@ -10,7 +10,7 @@ import orjson
 from fastapi import APIRouter
 from fastapi import FastAPI
 from fastapi import Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response
 from starlette.background import BackgroundTask
 
 """
@@ -70,7 +70,7 @@ def clean_json(data: Any) -> Any:
         pass
 
 
-async def forward_request(request: Request, transform: Callable[[bytes], bytes] | None = None) -> StreamingResponse:
+async def forward_request(request: Request, transform: Callable[[bytes], bytes] | None = None) -> Response:
     # Forward request with exact headers and body
     client: httpx.AsyncClient = request.state.client
     url = httpx.URL(path=request.url.path)
@@ -91,15 +91,15 @@ async def forward_request(request: Request, transform: Callable[[bytes], bytes] 
         content = await response.aread()
         data = transform(content)
         response.headers['Content-Length'] = str(len(data)) if data else '0'
-        return StreamingResponse(
-            (data, ),
+        return Response(
+            data,
             status_code=response.status_code,
             headers=response.headers,
             background=BackgroundTask(response.aclose)
         )
 
-    return StreamingResponse(
-        response.aiter_raw(),
+    return Response(
+        await response.aread(),
         status_code=response.status_code,
         headers=response.headers,
         background=BackgroundTask(response.aclose)
