@@ -45,7 +45,7 @@ def remove_none_fields(data: Any) -> Any:
     events = data.get('events', [])
     if not events:
         return data
-    
+
     for item in events:
         if item.get('eventType') == 'swap':
             item.pop('amount0', None)
@@ -97,19 +97,22 @@ async def forward_request(request: Request, transform: Callable[[bytes], bytes] 
     print(f'Forwarding request to {forwarded_request.url}')
     response = await client.send(forwarded_request, stream=True)
 
+    headers = response.headers.copy()
+    headers.pop('Content-Encoding', None)
+
     if transform:
         # Read JSON content
         content = await response.aread()
         data = transform(content)
-        response.headers['Content-Length'] = str(len(data)) if data else '0'
-        return Response(
-            data, status_code=response.status_code, headers=response.headers, background=BackgroundTask(response.aclose)
-        )
+
+        headers['Content-Length'] = str(len(data)) if data else '0'
+    else:
+        data = await response.aread()
 
     return Response(
-        await response.aread(),
+        data,
         status_code=response.status_code,
-        headers=response.headers,
+        headers=headers,
         background=BackgroundTask(response.aclose),
     )
 
