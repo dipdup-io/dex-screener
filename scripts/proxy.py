@@ -12,7 +12,6 @@ from fastapi import APIRouter
 from fastapi import FastAPI
 from fastapi import Request
 from fastapi.responses import Response
-from starlette.background import BackgroundTask
 
 """
 Environment variables:
@@ -27,11 +26,12 @@ Environment variables:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage HTTP client lifecycle"""
-    # TODO: add http client to state(async with yeild {client: cl}), add env variables with client host and port
     client_host = os.getenv('HTTP_CLIENT_HOST', 'hasura')
     client_port = os.getenv('HTTP_CLIENT_PORT', '8080')
+
     async with httpx.AsyncClient(base_url=f'http://{client_host}:{client_port}') as client:
-        yield {'client': client}
+        app.state.client = client
+        yield
 
 
 app = FastAPI(lifespan=lifespan)
@@ -68,7 +68,8 @@ def remove_none_fields(data: Any) -> Any:
     return data
 
 
-def clean_json(data: Any) -> Any:
+def clean_json(data: bytes) -> bytes:
+    """Clean JSON data by removing None fields and returning bytes"""
     try:
         json_data = orjson.loads(data)
         cleaned_data = remove_none_fields(json_data)
@@ -83,7 +84,7 @@ def clean_json(data: Any) -> Any:
 
 async def forward_request(request: Request, transform: Callable[[bytes], bytes] | None = None) -> Response:
     # Forward request with exact headers and body
-    client: httpx.AsyncClient = request.state.client
+    client: httpx.AsyncClient = app.state.client
     url = httpx.URL(path=request.url.path)
     # header filtering, if we will need it: headers = [(k, v) for k, v in request.headers.raw if k != b'host']
     forwarded_request = client.build_request(
@@ -95,7 +96,7 @@ async def forward_request(request: Request, transform: Callable[[bytes], bytes] 
         content=request.stream(),
     )
     print(f'Forwarding request to {forwarded_request.url}')
-    response = await client.send(forwarded_request, stream=True)
+    response = await client.send(forwarded_request)
 
     headers = response.headers.copy()
     headers.pop('Content-Encoding', None)
@@ -113,7 +114,6 @@ async def forward_request(request: Request, transform: Callable[[bytes], bytes] 
         data,
         status_code=response.status_code,
         headers=headers,
-        background=BackgroundTask(response.aclose),
     )
 
 
