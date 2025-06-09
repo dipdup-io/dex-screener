@@ -11,6 +11,7 @@ readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "dipdup>=8,<9",
+    "fastapi>=0.115.12",
 ]
 
 [dependency-groups]
@@ -44,6 +45,9 @@ ignore_missing_imports = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["dex_screener"]
+
+[tool.uv.sources]
+dipdup = { git = "https://github.com/dipdup-io/dipdup.git", rev = "fix/substrate-head" }
 
 [build-system]
 requires = ["hatchling"]
