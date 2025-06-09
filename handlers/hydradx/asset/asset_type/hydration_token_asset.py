@@ -18,7 +18,7 @@ class HydrationTokenAsset(BaseHydrationAsset):
         except DipDupEventDataCollectPayloadUnhandledError as exception:
             validate_framework_exception(exception)
 
-        asset_id, fields = cls._match_event_args(event.data.args)
+        asset_id, fields = cls._match_event_payload(event.payload)
 
         return await cls.create_asset(
             asset_id=asset_id,
@@ -33,7 +33,7 @@ class HydrationTokenAsset(BaseHydrationAsset):
         except DipDupEventDataCollectPayloadUnhandledError as exception:
             validate_framework_exception(exception)
 
-        asset_id, fields = cls._match_event_args(event.data.args)
+        asset_id, fields = cls._match_event_payload(event.payload)
 
         return await cls.update_asset(
             asset_id=asset_id,
@@ -42,16 +42,16 @@ class HydrationTokenAsset(BaseHydrationAsset):
         )
 
     @classmethod
-    def _match_event_args(cls, args) -> tuple[int, dict[str, int | str]]:
-        match args:
+    def _match_event_payload(cls, payload) -> tuple[int, dict[str, int | str]]:
+        match payload:
             case {
-                'assetId': int(asset_id),
+                'asset_id': int(asset_id),
                 **event_items,
             }:
                 fields: dict[str, str | int] = {}
                 for key, value in event_items.items():
                     match key, value:
-                        case 'assetName', str(asset_name_hex):
+                        case 'asset_name', str(asset_name_hex):
                             asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
                             fields.update({'name': asset_name})
                         case 'symbol', str(asset_symbol_hex):
@@ -59,12 +59,12 @@ class HydrationTokenAsset(BaseHydrationAsset):
                             fields.update({'symbol': asset_symbol})
                         case 'decimals', int(asset_decimals):
                             fields.update({'decimals': asset_decimals})
-                        case 'assetType' | 'existentialDeposit' | 'isSufficient', _:
+                        case 'asset_type' | 'existential_deposit' | 'is_sufficient', _:
                             pass
                         case _:
                             raise InvalidEventDataError(f'Unhandled Event Data: {event_items}.')
 
             case _:
-                raise InvalidEventDataError(f'Unhandled Event Data: {args}.')
+                raise InvalidEventDataError(f'Unhandled Event Data: {payload}.')
 
         return asset_id, fields

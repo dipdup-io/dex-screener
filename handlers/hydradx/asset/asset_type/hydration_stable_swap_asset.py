@@ -18,17 +18,17 @@ class HydrationStableSwapAsset(BaseHydrationAsset):
         except DipDupEventDataCollectPayloadUnhandledError as exception:
             validate_framework_exception(exception)
 
-        match event.data.args:
+        match event.payload:
             case {
-                'assetId': int(asset_id),
-                'assetName': str(asset_name_hex),
+                'asset_id': int(asset_id),
+                'asset_name': str(asset_name_hex),
                 'symbol': str(asset_symbol_hex),
                 'decimals': int(asset_decimals),
             }:
                 asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
                 asset_symbol = bytes.fromhex(asset_symbol_hex.removeprefix('0x')).decode()
             case _:
-                raise InvalidEventDataError(f'Unhandled Event Data: {event.data.args}.')
+                raise InvalidEventDataError(f'Unhandled Event Data: {event.data}.')
 
         return await cls.create_asset(
             asset_id=asset_id,
