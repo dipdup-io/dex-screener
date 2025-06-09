@@ -11,8 +11,8 @@ class HydrationExternalAsset(BaseHydrationAsset):
 
     @classmethod
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
-        match event.data.args:
-            case {'assetId': int(asset_id)}:
+        match event.payload:
+            case {'asset_id': int(asset_id)}:
                 pass
             case _:
                 raise InvalidEventDataError('Unhandled Event Data.')
