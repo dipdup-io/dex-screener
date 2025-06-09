@@ -63,7 +63,7 @@ def remove_none_fields(data: Any) -> Any:
                 reserves.pop('asset0', None)
             if reserves.get('asset1') is None or reserves.get('asset1') == 'None':
                 reserves.pop('asset1', None)
-            if len(reserves) == 0:
+            if len(reserves) < 2:
                 item.pop('reserves', None)
     return data
 
