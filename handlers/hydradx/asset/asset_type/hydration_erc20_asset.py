@@ -11,10 +11,10 @@ class HydrationERC20Asset(BaseHydrationAsset):
 
     @classmethod
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
-        match event.data.args:
+        match event.payload:
             case {
-                'assetId': int(asset_id),
-                'assetName': str(asset_name_hex),
+                'asset_id': int(asset_id),
+                'asset_name': str(asset_name_hex),
                 'symbol': str(asset_symbol_hex),
                 'decimals': int(asset_decimals),
             }:

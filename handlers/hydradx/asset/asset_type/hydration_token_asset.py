@@ -1,11 +1,14 @@
+import logging
+
 from dipdup.models.substrate import SubstrateEvent
 
 from dex_screener.handlers.hydradx.asset.asset_type import DipDupEventDataCollectPayloadUnhandledError
-from dex_screener.handlers.hydradx.asset.asset_type import validate_framework_exception
 from dex_screener.handlers.hydradx.asset.asset_type.abstract_hydration_asset import BaseHydrationAsset
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.models import Asset
+
+_logger = logging.getLogger(__name__)
 
 
 class HydrationTokenAsset(BaseHydrationAsset):
@@ -16,9 +19,13 @@ class HydrationTokenAsset(BaseHydrationAsset):
         try:
             return await super(cls, cls).handle_register_asset(event)
         except DipDupEventDataCollectPayloadUnhandledError as exception:
-            validate_framework_exception(exception)
+            _logger.warning(
+                'Unhandled DipDup Event Data: %s. Event: %s',
+                exception,
+                event,
+            )
 
-        asset_id, fields = cls._match_event_args(event.data.args)
+        asset_id, fields = cls._match_event_payload(event.payload)
 
         return await cls.create_asset(
             asset_id=asset_id,
@@ -31,9 +38,13 @@ class HydrationTokenAsset(BaseHydrationAsset):
         try:
             return await super().handle_update_asset(event)
         except DipDupEventDataCollectPayloadUnhandledError as exception:
-            validate_framework_exception(exception)
+            _logger.warning(
+                'Unhandled DipDup Event Data: %s. Event: %s',
+                exception,
+                event,
+            )
 
-        asset_id, fields = cls._match_event_args(event.data.args)
+        asset_id, fields = cls._match_event_payload(event.payload)
 
         return await cls.update_asset(
             asset_id=asset_id,
@@ -42,16 +53,16 @@ class HydrationTokenAsset(BaseHydrationAsset):
         )
 
     @classmethod
-    def _match_event_args(cls, args) -> tuple[int, dict[str, int | str]]:
-        match args:
+    def _match_event_payload(cls, payload) -> tuple[int, dict[str, int | str]]:
+        match payload:
             case {
-                'assetId': int(asset_id),
+                'asset_id': int(asset_id),
                 **event_items,
             }:
                 fields: dict[str, str | int] = {}
                 for key, value in event_items.items():
                     match key, value:
-                        case 'assetName', str(asset_name_hex):
+                        case 'asset_name', str(asset_name_hex):
                             asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
                             fields.update({'name': asset_name})
                         case 'symbol', str(asset_symbol_hex):
@@ -59,12 +70,12 @@ class HydrationTokenAsset(BaseHydrationAsset):
                             fields.update({'symbol': asset_symbol})
                         case 'decimals', int(asset_decimals):
                             fields.update({'decimals': asset_decimals})
-                        case 'assetType' | 'existentialDeposit' | 'isSufficient', _:
+                        case 'asset_type' | 'existential_deposit' | 'is_sufficient', _:
                             pass
                         case _:
                             raise InvalidEventDataError(f'Unhandled Event Data: {event_items}.')
 
             case _:
-                raise InvalidEventDataError(f'Unhandled Event Data: {args}.')
+                raise InvalidEventDataError(f'Unhandled Event Data: {payload}.')
 
         return asset_id, fields
