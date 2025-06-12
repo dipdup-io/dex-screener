@@ -1,11 +1,14 @@
+import logging
+
 from dipdup.models.substrate import SubstrateEvent
 
 from dex_screener.handlers.hydradx.asset.asset_type import DipDupEventDataCollectPayloadUnhandledError
-from dex_screener.handlers.hydradx.asset.asset_type import validate_framework_exception
 from dex_screener.handlers.hydradx.asset.asset_type.abstract_hydration_asset import BaseHydrationAsset
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.models import Asset
+
+_logger = logging.getLogger(__name__)
 
 
 class HydrationStableSwapAsset(BaseHydrationAsset):
@@ -16,7 +19,11 @@ class HydrationStableSwapAsset(BaseHydrationAsset):
         try:
             return await super(cls, cls).handle_register_asset(event)
         except DipDupEventDataCollectPayloadUnhandledError as exception:
-            validate_framework_exception(exception)
+            _logger.warning(
+                'Unhandled DipDup Event Data: %s. Event: %s',
+                exception,
+                event,
+            )
 
         match event.payload:
             case {
