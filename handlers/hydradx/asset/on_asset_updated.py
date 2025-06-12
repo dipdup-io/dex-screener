@@ -12,9 +12,9 @@ def get_asset_type(
     event: SubstrateEvent[AssetRegistryUpdatedPayload],
 ) -> type[AbstractHydrationAsset]:
     match event.payload:
-        case {'asset_type': {'__kind': str(asset_type)}}:
+        case {'asset_type': str(asset_type)}:
             pass
-        case {'type': {'__kind': str(asset_type)}}:
+        case {'type': str(asset_type)}:
             pass
         case _:
             raise InvalidEventDataError(f'Unhandled Event Payload: {event.payload}.')
