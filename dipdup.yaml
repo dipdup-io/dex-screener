@@ -6,7 +6,6 @@ package: dex_screener
 runtimes:
   hydradx:
     kind: substrate
-    type_registry: statemint
 
 datasources:
   subsquid:
@@ -99,15 +98,11 @@ indexes:
       - name: Broadcast.Swapped3
         callback: hydradx.on_swap_executed
 
-
-advanced:
-  reindex:
-    config_modified: ignore
-    schema_modified: exception
-
-
 custom:
+  # NOTE: See `hooks`
   syncing_blocks_refresh_period:
     minutes: 1
   realtime_blocks_refresh_period:
     seconds: 10
+  # NOTE: See `cli.py`
+  proxy: {}

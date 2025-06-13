@@ -156,7 +156,7 @@ class EventBuffer:
             ctx.logger.info(
                 'Bulk-inserted %d Events to `%s` with latest id %s.',
                 len(event_batch),
-                model_class.Meta.table,  # type: ignore[attr-defined]
+                model_class.Meta.table,
                 latest_record.id,
             )
         assert cls.queue.empty()

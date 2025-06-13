@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from dex_screener.handlers.hydradx.asset.asset_count.asset_price import AssetPrice
     from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypePrice
 
-from dex_screener.models import Asset  # type: ignore[assignment]
+from dex_screener.models import Asset
 
 MarketPairBaseAsset = TypeVar('MarketPairBaseAsset', bound=Asset)
 MarketPairQuoteAsset = TypeVar('MarketPairQuoteAsset', bound=Asset)

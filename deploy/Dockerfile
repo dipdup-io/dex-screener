@@ -9,3 +9,5 @@ RUN pip install .
 
 COPY --chown=dipdup . dex_screener
 WORKDIR /home/dipdup/dex_screener
+
+ENTRYPOINT ["python", "-m", "dex_screener"]
