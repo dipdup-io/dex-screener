@@ -412,7 +412,7 @@ dev = [
 [[package]]
 name = "dipdup"
 version = "8.4.1"
-source = { git = "https://github.com/dipdup-io/dipdup.git?rev=fix%2Fsubstrate-head#daa694fea6ffb61b940fb8372ffc33ad9c1dc2d3" }
+source = { git = "https://github.com/dipdup-io/dipdup.git?rev=fix%2Fsubstrate-head#651c9150d4ec12a1dfd2f9f4e20628adcd0e3de4" }
 dependencies = [
     { name = "aiohttp" },
     { name = "aiolimiter" },
