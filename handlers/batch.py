@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 from dipdup.config.substrate_events import SubstrateEventsHandlerConfig
 
 from dex_screener.models import Block
-from dex_screener.models import catch_exceptions
 
 if TYPE_CHECKING:
     from dipdup.context import HandlerContext
@@ -94,8 +93,7 @@ async def batch(
             )
             batch_levels.add(handler.level)
 
-        async with catch_exceptions(ctx, handler):
-            await ctx.fire_matched_handler(handler)
+        await ctx.fire_matched_handler(handler)
 
     if RuntimeFlag.blocks_refresh_condition():
         ctx.logger.info('Processing refresh `dex_block`...')

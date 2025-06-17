@@ -47,7 +47,7 @@ ignore_missing_imports = true
 packages = ["dex_screener"]
 
 [tool.uv.sources]
-dipdup = { git = "https://github.com/dipdup-io/dipdup.git", rev = "fix/substrate-head" }
+dipdup = { git = "https://github.com/dipdup-io/dipdup.git", rev = "next" }
 
 [build-system]
 requires = ["hatchling"]

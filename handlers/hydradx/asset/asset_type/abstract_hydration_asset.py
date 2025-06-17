@@ -5,7 +5,6 @@ from abc import abstractmethod
 from typing import Any
 
 from dipdup.models.substrate import SubstrateEvent
-from dipdup.models.substrate import SubstrateEventData
 
 from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.models import Asset
