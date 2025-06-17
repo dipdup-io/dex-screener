@@ -114,7 +114,10 @@ async def forward_request(
 ) -> Response:
     # Forward request with exact headers and body
     client: httpx.AsyncClient = request.app.state.client
-    url = httpx.URL(path=request.url.path)
+    url = httpx.URL(
+        host=client.base_url.host,
+        path=request.url.path,
+    )
     # header filtering, if we will need it: headers = [(k, v) for k, v in request.headers.raw if k != b'host']
     forwarded_request = client.build_request(
         method=request.method,
