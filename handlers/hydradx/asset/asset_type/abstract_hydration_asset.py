@@ -117,7 +117,10 @@ class HexNamedHydrationAsset(BaseHydrationAsset):
                     'asset_name': str(asset_name),
                 }
             ):
-                asset_name_hex_prefixed = '0x' + asset_name.encode().hex()
+                if asset_name.startswith('0x'):
+                    asset_name_hex_prefixed = asset_name
+                else:
+                    asset_name_hex_prefixed = '0x' + asset_name.encode().hex()
                 pass
 
             case _:
