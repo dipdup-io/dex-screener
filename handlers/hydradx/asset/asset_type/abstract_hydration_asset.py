@@ -112,15 +112,6 @@ class HexNamedHydrationAsset(BaseHydrationAsset):
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
         match event:
             case SubstrateEvent(
-                data=SubstrateEventData(
-                    args={
-                        'assetId': int(asset_id),
-                        'assetName': str(asset_name_hex_prefixed),
-                    }
-                )
-            ):
-                pass
-            case SubstrateEvent(
                 payload={
                     'asset_id': int(asset_id),
                     'asset_name': str(asset_name),

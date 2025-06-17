@@ -62,11 +62,9 @@ class HydrationTokenAsset(BaseHydrationAsset):
                 fields: dict[str, str | int] = {}
                 for key, value in event_items.items():
                     match key, value:
-                        case 'asset_name', str(asset_name_hex):
-                            asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
+                        case 'asset_name', str(asset_name):
                             fields.update({'name': asset_name})
-                        case 'symbol', str(asset_symbol_hex):
-                            asset_symbol = bytes.fromhex(asset_symbol_hex.removeprefix('0x')).decode()
+                        case 'symbol', str(asset_symbol):
                             fields.update({'symbol': asset_symbol})
                         case 'decimals', int(asset_decimals):
                             fields.update({'decimals': asset_decimals})
