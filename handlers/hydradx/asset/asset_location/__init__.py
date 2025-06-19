@@ -19,7 +19,7 @@ ASSET_LOCATION_CLASS_LIST = [
 
 ASSET_LOCATION_CLASS_MAP: dict[int, type[AbstractAssetNativeLocation]] = {
     asset_location_class.parachain_id: asset_location_class  # type: ignore[type-abstract]
-    for asset_location_class in ASSET_LOCATION_CLASS_LIST  # type: ignore[type-abstract]
+    for asset_location_class in ASSET_LOCATION_CLASS_LIST
 }
 
 ASSET_LOCATION_MAP: dict[int, AbstractAssetNativeLocation] = {}

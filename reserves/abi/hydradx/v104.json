@@ -1,0 +1,3369 @@
+[
+  {
+    "name": "System",
+    "prefix": "System",
+    "storage": [
+      {
+        "name": "Account",
+        "modifier": "Default",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Blake2_128Concat"
+            ],
+            "key_vec": [
+              "AccountId"
+            ],
+            "value": "frame_system:AccountInfo",
+            "keys_id": 0,
+            "value_id": 3
+          }
+        },
+        "fallback": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "docs": [
+          " The full account information for a particular account ID."
+        ]
+      },
+      {
+        "name": "ExtrinsicCount",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Total extrinsics count for the current block."
+        ]
+      },
+      {
+        "name": "BlockWeight",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "frame_support:weights:PerDispatchClass@7",
+          "PlainTypeValue": 7
+        },
+        "fallback": "0x000000000000000000000000000000000000000000000000",
+        "docs": [
+          " The current weight for the block."
+        ]
+      },
+      {
+        "name": "AllExtrinsicsLen",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Total length (in bytes) for all extrinsics put together, for the current block."
+        ]
+      },
+      {
+        "name": "BlockHash",
+        "modifier": "Default",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Twox64Concat"
+            ],
+            "key_vec": [
+              "U32"
+            ],
+            "value": "H256",
+            "keys_id": 4,
+            "value_id": 9
+          }
+        },
+        "fallback": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "docs": [
+          " Map of block numbers to block hashes."
+        ]
+      },
+      {
+        "name": "ExtrinsicData",
+        "modifier": "Default",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Twox64Concat"
+            ],
+            "key_vec": [
+              "U32"
+            ],
+            "value": "Vec<U8>",
+            "keys_id": 4,
+            "value_id": 10
+          }
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Extrinsics data for the current block (maps an extrinsic's index to its data)."
+        ]
+      },
+      {
+        "name": "Number",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00000000",
+        "docs": [
+          " The current block number being processed. Set by `execute_block`."
+        ]
+      },
+      {
+        "name": "ParentHash",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "H256",
+          "PlainTypeValue": 9
+        },
+        "fallback": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "docs": [
+          " Hash of the previous block."
+        ]
+      },
+      {
+        "name": "Digest",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<sp_runtime:generic:digest:DigestItem>",
+          "PlainTypeValue": 11
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Digest of the current block, also part of the block header."
+        ]
+      },
+      {
+        "name": "Events",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<frame_system:EventRecord>",
+          "PlainTypeValue": 15
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Events deposited for the current block.",
+          "",
+          " NOTE: This storage item is explicitly unbounded since it is never intended to be read",
+          " from within the runtime."
+        ]
+      },
+      {
+        "name": "EventCount",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00000000",
+        "docs": [
+          " The number of events in the `Events<T>` list."
+        ]
+      },
+      {
+        "name": "EventTopics",
+        "modifier": "Default",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Blake2_128Concat"
+            ],
+            "key_vec": [
+              "H256"
+            ],
+            "value": "Vec<Tuple:U32U32>",
+            "keys_id": 9,
+            "value_id": 40
+          }
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Mapping between a topic (represented by T::Hash) and a vector of indexes",
+          " of events in the `<Events<T>>` list.",
+          "",
+          " All topic vectors have deterministic storage locations depending on the topic. This",
+          " allows light-clients to leverage the changes trie storage tracking mechanism and",
+          " in case of changes fetch the list of events of interest.",
+          "",
+          " The value has the type `(T::BlockNumber, EventIndex)` because if we used only just",
+          " the `EventIndex` then in case if the topic has the same contents on the next block",
+          " no notification will be triggered thus the event might be lost."
+        ]
+      },
+      {
+        "name": "LastRuntimeUpgrade",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "frame_system:LastRuntimeUpgradeInfo",
+          "PlainTypeValue": 42
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Stores the `spec_version` and `spec_name` of when the last runtime upgrade happened."
+        ]
+      },
+      {
+        "name": "UpgradedToU32RefCount",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Bool",
+          "PlainTypeValue": 45
+        },
+        "fallback": "0x00",
+        "docs": [
+          " True if we have upgraded so that `type RefCount` is `u32`. False (default) if not."
+        ]
+      },
+      {
+        "name": "UpgradedToTripleRefCount",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Bool",
+          "PlainTypeValue": 45
+        },
+        "fallback": "0x00",
+        "docs": [
+          " True if we have upgraded so that AccountInfo contains three types of `RefCount`. False",
+          " (default) if not."
+        ]
+      },
+      {
+        "name": "ExecutionPhase",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "frame_system:Phase",
+          "PlainTypeValue": 38
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The execution phase of the block."
+        ]
+      }
+    ],
+    "calls": [
+      {
+        "lookup": "0000",
+        "name": "fill_block",
+        "docs": [
+          "A dispatch that will fill the block weight up to the given ratio."
+        ],
+        "args": [
+          {
+            "name": "ratio",
+            "type": "U32",
+            "type_name": "Perbill"
+          }
+        ]
+      },
+      {
+        "lookup": "0001",
+        "name": "remark",
+        "docs": [
+          "Make some on-chain remark.",
+          "",
+          "# <weight>",
+          "- `O(1)`",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "remark",
+            "type": "Vec<U8>",
+            "type_name": "Bytes"
+          }
+        ]
+      },
+      {
+        "lookup": "0002",
+        "name": "set_heap_pages",
+        "docs": [
+          "Set the number of pages in the WebAssembly environment's heap."
+        ],
+        "args": [
+          {
+            "name": "pages",
+            "type": "U64",
+            "type_name": "u64"
+          }
+        ]
+      },
+      {
+        "lookup": "0003",
+        "name": "set_code",
+        "docs": [
+          "Set the new runtime code.",
+          "",
+          "# <weight>",
+          "- `O(C + S)` where `C` length of `code` and `S` complexity of `can_set_code`",
+          "- 1 call to `can_set_code`: `O(S)` (calls `sp_io::misc::runtime_version` which is",
+          "  expensive).",
+          "- 1 storage write (codec `O(C)`).",
+          "- 1 digest item.",
+          "- 1 event.",
+          "The weight of this function is dependent on the runtime, but generally this is very",
+          "expensive. We will treat this as a full block.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "code",
+            "type": "Vec<U8>",
+            "type_name": "Bytes"
+          }
+        ]
+      },
+      {
+        "lookup": "0004",
+        "name": "set_code_without_checks",
+        "docs": [
+          "Set the new runtime code without doing any checks of the given `code`.",
+          "",
+          "# <weight>",
+          "- `O(C)` where `C` length of `code`",
+          "- 1 storage write (codec `O(C)`).",
+          "- 1 digest item.",
+          "- 1 event.",
+          "The weight of this function is dependent on the runtime. We will treat this as a full",
+          "block. # </weight>"
+        ],
+        "args": [
+          {
+            "name": "code",
+            "type": "Vec<U8>",
+            "type_name": "Bytes"
+          }
+        ]
+      },
+      {
+        "lookup": "0005",
+        "name": "set_storage",
+        "docs": [
+          "Set some items of storage."
+        ],
+        "args": [
+          {
+            "name": "items",
+            "type": "Vec<Tuple:Vec<U8>Vec<U8>>",
+            "type_name": "Vec<KeyValue>"
+          }
+        ]
+      },
+      {
+        "lookup": "0006",
+        "name": "kill_storage",
+        "docs": [
+          "Kill some items from storage."
+        ],
+        "args": [
+          {
+            "name": "keys",
+            "type": "Vec<Vec<U8>>",
+            "type_name": "Vec<Key>"
+          }
+        ]
+      },
+      {
+        "lookup": "0007",
+        "name": "kill_prefix",
+        "docs": [
+          "Kill all storage items with a key that starts with the given prefix.",
+          "",
+          "**NOTE:** We rely on the Root origin to provide us the number of subkeys under",
+          "the prefix we are removing to accurately calculate the weight of this function."
+        ],
+        "args": [
+          {
+            "name": "prefix",
+            "type": "Vec<U8>",
+            "type_name": "Key"
+          },
+          {
+            "name": "subkeys",
+            "type": "U32",
+            "type_name": "u32"
+          }
+        ]
+      },
+      {
+        "lookup": "0008",
+        "name": "remark_with_event",
+        "docs": [
+          "Make some on-chain remark and emit event.",
+          "",
+          "# <weight>",
+          "- `O(b)` where b is the length of the remark.",
+          "- 1 event.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "remark",
+            "type": "Vec<U8>",
+            "type_name": "Bytes"
+          }
+        ]
+      }
+    ],
+    "calls_value": {
+      "type": 46
+    },
+    "events": [
+      {
+        "lookup": "0000",
+        "name": "ExtrinsicSuccess",
+        "docs": [
+          "An extrinsic completed successfully."
+        ],
+        "args": [
+          "frame_support:weights:DispatchInfo"
+        ],
+        "args_name": [
+          "dispatch_info"
+        ],
+        "args_type_name": [
+          "DispatchInfo"
+        ]
+      },
+      {
+        "lookup": "0001",
+        "name": "ExtrinsicFailed",
+        "docs": [
+          "An extrinsic failed."
+        ],
+        "args": [
+          "sp_runtime:DispatchError",
+          "frame_support:weights:DispatchInfo"
+        ],
+        "args_name": [
+          "dispatch_error",
+          "dispatch_info"
+        ],
+        "args_type_name": [
+          "DispatchError",
+          "DispatchInfo"
+        ]
+      },
+      {
+        "lookup": "0002",
+        "name": "CodeUpdated",
+        "docs": [
+          "`:code` was updated."
+        ],
+        "args": null
+      },
+      {
+        "lookup": "0003",
+        "name": "NewAccount",
+        "docs": [
+          "A new account was created."
+        ],
+        "args": [
+          "AccountId"
+        ],
+        "args_name": [
+          "account"
+        ],
+        "args_type_name": [
+          "AccountId"
+        ]
+      },
+      {
+        "lookup": "0004",
+        "name": "KilledAccount",
+        "docs": [
+          "An account was reaped."
+        ],
+        "args": [
+          "AccountId"
+        ],
+        "args_name": [
+          "account"
+        ],
+        "args_type_name": [
+          "AccountId"
+        ]
+      },
+      {
+        "lookup": "0005",
+        "name": "Remarked",
+        "docs": [
+          "On on-chain remark happened."
+        ],
+        "args": [
+          "AccountId",
+          "H256"
+        ],
+        "args_name": [
+          "sender",
+          "hash"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "Hash"
+        ]
+      }
+    ],
+    "events_value": {
+      "type": 18
+    },
+    "constants": [
+      {
+        "name": "BlockWeights",
+        "type": "frame_system:limits:BlockWeights",
+        "type_value": 51,
+        "constants_value": "00f2052a010000000088526a74000000405973070000000001c0af3b5f540000000100e6bd4f57000000010000000000000000405973070000000001c051d07971000000010088526a740000000100a2941a1d0000004059730700000000000000",
+        "docs": [
+          " Block & extrinsics weights: base values and limits."
+        ]
+      },
+      {
+        "name": "BlockLength",
+        "type": "frame_support:weights:PerDispatchClass@56",
+        "type_value": 55,
+        "constants_value": "00003c000000500000005000",
+        "docs": [
+          " The maximum length of a block (in bytes)."
+        ]
+      },
+      {
+        "name": "BlockHashCount",
+        "type": "U32",
+        "type_value": 4,
+        "constants_value": "fa000000",
+        "docs": [
+          " Maximum number of block number to block hash mappings to keep (oldest pruned first)."
+        ]
+      },
+      {
+        "name": "DbWeight",
+        "type": "frame_support:weights:RuntimeDbWeight",
+        "type_value": 57,
+        "constants_value": "40787d010000000000e1f50500000000",
+        "docs": [
+          " The weight of runtime database operations the runtime can invoke."
+        ]
+      },
+      {
+        "name": "Version",
+        "type": "sp_version:RuntimeVersion",
+        "type_value": 58,
+        "constants_value": "1c687964726164781c6879647261647801000000680000000000000028df6acb689907609b0400000037e397fc7c91f5e40100000040fe3ad401f8959a05000000d2bc9897eed08f1503000000f78b278be53f454c02000000ab3c0572291feb8b01000000dd718d5cc53262d401000000ea93e3f16f3d696202000000bc9d89904f5b923f0100000037c8bb1350a9a2a8010000000100000000",
+        "docs": [
+          " Get the chain's current version."
+        ]
+      },
+      {
+        "name": "SS58Prefix",
+        "type": "U16",
+        "type_value": 63,
+        "constants_value": "3f00",
+        "docs": [
+          " The designated SS85 prefix of this chain.",
+          "",
+          " This replaces the \"ss58Format\" property declared in the chain spec. Reason is",
+          " that the runtime should know about the prefix in order to make use of it as",
+          " an identifier of the chain."
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "name": "InvalidSpecName",
+        "doc": [
+          "The name of specification does not match between the current runtime",
+          "and the new runtime."
+        ]
+      },
+      {
+        "name": "SpecVersionNeedsToIncrease",
+        "doc": [
+          "The specification version is not allowed to decrease between the current runtime",
+          "and the new runtime."
+        ]
+      },
+      {
+        "name": "FailedToExtractRuntimeVersion",
+        "doc": [
+          "Failed to extract the runtime version from the new runtime.",
+          "",
+          "Either calling `Core_version` or decoding `RuntimeVersion` failed."
+        ]
+      },
+      {
+        "name": "NonDefaultComposite",
+        "doc": [
+          "Suicide called when the account has non-default composite data."
+        ]
+      },
+      {
+        "name": "NonZeroRefCount",
+        "doc": [
+          "There is a non-zero reference count preventing the account from being purged."
+        ]
+      },
+      {
+        "name": "CallFiltered",
+        "doc": [
+          "The origin filter prevent the call to be dispatched."
+        ]
+      }
+    ],
+    "errors_value": {
+      "type": 64
+    },
+    "index": 0
+  },
+  {
+    "name": "Timestamp",
+    "prefix": "Timestamp",
+    "storage": [
+      {
+        "name": "Now",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U64",
+          "PlainTypeValue": 8
+        },
+        "fallback": "0x0000000000000000",
+        "docs": [
+          " Current time for the current block."
+        ]
+      },
+      {
+        "name": "DidUpdate",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Bool",
+          "PlainTypeValue": 45
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Did the timestamp get updated in this block?"
+        ]
+      }
+    ],
+    "calls": [
+      {
+        "lookup": "0100",
+        "name": "set",
+        "docs": [
+          "Set the current time.",
+          "",
+          "This call should be invoked exactly once per block. It will panic at the finalization",
+          "phase, if this call hasn't been invoked by that time.",
+          "",
+          "The timestamp should be greater than the previous one by the amount specified by",
+          "`MinimumPeriod`.",
+          "",
+          "The dispatch origin for this call must be `Inherent`.",
+          "",
+          "# <weight>",
+          "- `O(1)` (Note that implementations of `OnTimestampSet` must also be `O(1)`)",
+          "- 1 storage read and 1 storage mutation (codec `O(1)`). (because of `DidUpdate::take` in",
+          "  `on_finalize`)",
+          "- 1 event handler `on_timestamp_set`. Must be `O(1)`.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "now",
+            "type": "compact<U64>",
+            "type_name": "Moment"
+          }
+        ]
+      }
+    ],
+    "calls_value": {
+      "type": 65
+    },
+    "constants": [
+      {
+        "name": "MinimumPeriod",
+        "type": "U64",
+        "type_value": 8,
+        "constants_value": "7017000000000000",
+        "docs": [
+          " The minimum period between blocks. Beware that this is different to the *expected*",
+          " period that the block production apparatus provides. Your chosen consensus system will",
+          " generally work with this to determine a sensible block time. e.g. For Aura, it will be",
+          " double this period on default settings."
+        ]
+      }
+    ],
+    "errors": null,
+    "errors_value": null,
+    "index": 1
+  },
+  {
+    "name": "Balances",
+    "prefix": "Balances",
+    "storage": [
+      {
+        "name": "TotalIssuance",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U128",
+          "PlainTypeValue": 6
+        },
+        "fallback": "0x00000000000000000000000000000000",
+        "docs": [
+          " The total units issued in the system."
+        ]
+      },
+      {
+        "name": "Account",
+        "modifier": "Default",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Blake2_128Concat"
+            ],
+            "key_vec": [
+              "AccountId"
+            ],
+            "value": "pallet_balances:AccountData",
+            "keys_id": 0,
+            "value_id": 5
+          }
+        },
+        "fallback": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "docs": [
+          " The balance of an account.",
+          "",
+          " NOTE: This is only used in the case that this pallet is used to store balances."
+        ]
+      },
+      {
+        "name": "Locks",
+        "modifier": "Default",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Blake2_128Concat"
+            ],
+            "key_vec": [
+              "AccountId"
+            ],
+            "value": "Vec<pallet_balances:BalanceLock>",
+            "keys_id": 0,
+            "value_id": 67
+          }
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Any liquidity locks on some account balances.",
+          " NOTE: Should only be accessed when setting, changing and freeing a lock."
+        ]
+      },
+      {
+        "name": "Reserves",
+        "modifier": "Default",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Blake2_128Concat"
+            ],
+            "key_vec": [
+              "AccountId"
+            ],
+            "value": "Vec<pallet_balances:ReserveData>",
+            "keys_id": 0,
+            "value_id": 71
+          }
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Named reserves on some account balances."
+        ]
+      },
+      {
+        "name": "StorageVersion",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "pallet_balances:Releases",
+          "PlainTypeValue": 74
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Storage version of the pallet.",
+          "",
+          " This is set to v2.0.0 for new networks."
+        ]
+      }
+    ],
+    "calls": [
+      {
+        "lookup": "0200",
+        "name": "transfer",
+        "docs": [
+          "Transfer some liquid free balance to another account.",
+          "",
+          "`transfer` will set the `FreeBalance` of the sender and receiver.",
+          "If the sender's account is below the existential deposit as a result",
+          "of the transfer, the account will be reaped.",
+          "",
+          "The dispatch origin for this call must be `Signed` by the transactor.",
+          "",
+          "# <weight>",
+          "- Dependent on arguments but not critical, given proper implementations for input config",
+          "  types. See related functions below.",
+          "- It contains a limited number of reads and writes internally and no complex",
+          "  computation.",
+          "",
+          "Related functions:",
+          "",
+          "  - `ensure_can_withdraw` is always called internally but has a bounded complexity.",
+          "  - Transferring balances to accounts that did not exist before will cause",
+          "    `T::OnNewAccount::on_new_account` to be called.",
+          "  - Removing enough funds from an account will trigger `T::DustRemoval::on_unbalanced`.",
+          "  - `transfer_keep_alive` works the same way as `transfer`, but has an additional check",
+          "    that the transfer will not kill the origin account.",
+          "---------------------------------",
+          "- Origin account is already in memory, so no DB operations for them.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "dest",
+            "type": "AccountId",
+            "type_name": "Address"
+          },
+          {
+            "name": "value",
+            "type": "compact<U128>",
+            "type_name": "Balance"
+          }
+        ]
+      },
+      {
+        "lookup": "0201",
+        "name": "set_balance",
+        "docs": [
+          "Set the balances of a given account.",
+          "",
+          "This will alter `FreeBalance` and `ReservedBalance` in storage. it will",
+          "also alter the total issuance of the system (`TotalIssuance`) appropriately.",
+          "If the new free or reserved balance is below the existential deposit,",
+          "it will reset the account nonce (`frame_system::AccountNonce`).",
+          "",
+          "The dispatch origin for this call is `root`."
+        ],
+        "args": [
+          {
+            "name": "who",
+            "type": "AccountId",
+            "type_name": "Address"
+          },
+          {
+            "name": "new_free",
+            "type": "compact<U128>",
+            "type_name": "Balance"
+          },
+          {
+            "name": "new_reserved",
+            "type": "compact<U128>",
+            "type_name": "Balance"
+          }
+        ]
+      },
+      {
+        "lookup": "0202",
+        "name": "force_transfer",
+        "docs": [
+          "Exactly as `transfer`, except the origin must be root and the source account may be",
+          "specified.",
+          "# <weight>",
+          "- Same as transfer, but additional read and write because the source account is not",
+          "  assumed to be in the overlay.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "source",
+            "type": "AccountId",
+            "type_name": "Address"
+          },
+          {
+            "name": "dest",
+            "type": "AccountId",
+            "type_name": "Address"
+          },
+          {
+            "name": "value",
+            "type": "compact<U128>",
+            "type_name": "Balance"
+          }
+        ]
+      },
+      {
+        "lookup": "0203",
+        "name": "transfer_keep_alive",
+        "docs": [
+          "Same as the [`transfer`] call, but with a check that the transfer will not kill the",
+          "origin account.",
+          "",
+          "99% of the time you want [`transfer`] instead.",
+          "",
+          "[`transfer`]: struct.Pallet.html#method.transfer"
+        ],
+        "args": [
+          {
+            "name": "dest",
+            "type": "AccountId",
+            "type_name": "Address"
+          },
+          {
+            "name": "value",
+            "type": "compact<U128>",
+            "type_name": "Balance"
+          }
+        ]
+      },
+      {
+        "lookup": "0204",
+        "name": "transfer_all",
+        "docs": [
+          "Transfer the entire transferable balance from the caller account.",
+          "",
+          "NOTE: This function only attempts to transfer _transferable_ balances. This means that",
+          "any locked, reserved, or existential deposits (when `keep_alive` is `true`), will not be",
+          "transferred by this function. To ensure that this function results in a killed account,",
+          "you might need to prepare the account by removing any reference counters, storage",
+          "deposits, etc...",
+          "",
+          "The dispatch origin of this call must be Signed.",
+          "",
+          "- `dest`: The recipient of the transfer.",
+          "- `keep_alive`: A boolean to determine if the `transfer_all` operation should send all",
+          "  of the funds the account has, causing the sender account to be killed (false), or",
+          "  transfer everything except at least the existential deposit, which will guarantee to",
+          "  keep the sender account alive (true). # <weight>",
+          "- O(1). Just like transfer, but reading the user's transferable balance first.",
+          "  #</weight>"
+        ],
+        "args": [
+          {
+            "name": "dest",
+            "type": "AccountId",
+            "type_name": "Address"
+          },
+          {
+            "name": "keep_alive",
+            "type": "Bool",
+            "type_name": "bool"
+          }
+        ]
+      },
+      {
+        "lookup": "0205",
+        "name": "force_unreserve",
+        "docs": [
+          "Unreserve some balance from a user by force.",
+          "",
+          "Can only be called by ROOT."
+        ],
+        "args": [
+          {
+            "name": "who",
+            "type": "AccountId",
+            "type_name": "Address"
+          },
+          {
+            "name": "amount",
+            "type": "U128",
+            "type_name": "Balance"
+          }
+        ]
+      }
+    ],
+    "calls_value": {
+      "type": 75
+    },
+    "events": [
+      {
+        "lookup": "0200",
+        "name": "Endowed",
+        "docs": [
+          "An account was created with some free balance."
+        ],
+        "args": [
+          "AccountId",
+          "U128"
+        ],
+        "args_name": [
+          "account",
+          "free_balance"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "Balance"
+        ]
+      },
+      {
+        "lookup": "0201",
+        "name": "DustLost",
+        "docs": [
+          "An account was removed whose balance was non-zero but below ExistentialDeposit,",
+          "resulting in an outright loss."
+        ],
+        "args": [
+          "AccountId",
+          "U128"
+        ],
+        "args_name": [
+          "account",
+          "amount"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "Balance"
+        ]
+      },
+      {
+        "lookup": "0202",
+        "name": "Transfer",
+        "docs": [
+          "Transfer succeeded."
+        ],
+        "args": [
+          "AccountId",
+          "AccountId",
+          "U128"
+        ],
+        "args_name": [
+          "from",
+          "to",
+          "amount"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "AccountId",
+          "Balance"
+        ]
+      },
+      {
+        "lookup": "0203",
+        "name": "BalanceSet",
+        "docs": [
+          "A balance was set by root."
+        ],
+        "args": [
+          "AccountId",
+          "U128",
+          "U128"
+        ],
+        "args_name": [
+          "who",
+          "free",
+          "reserved"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "Balance",
+          "Balance"
+        ]
+      },
+      {
+        "lookup": "0204",
+        "name": "Reserved",
+        "docs": [
+          "Some balance was reserved (moved from free to reserved)."
+        ],
+        "args": [
+          "AccountId",
+          "U128"
+        ],
+        "args_name": [
+          "who",
+          "amount"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "Balance"
+        ]
+      },
+      {
+        "lookup": "0205",
+        "name": "Unreserved",
+        "docs": [
+          "Some balance was unreserved (moved from reserved to free)."
+        ],
+        "args": [
+          "AccountId",
+          "U128"
+        ],
+        "args_name": [
+          "who",
+          "amount"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "Balance"
+        ]
+      },
+      {
+        "lookup": "0206",
+        "name": "ReserveRepatriated",
+        "docs": [
+          "Some balance was moved from the reserve of the first account to the second account.",
+          "Final argument indicates the destination balance type."
+        ],
+        "args": [
+          "AccountId",
+          "AccountId",
+          "U128",
+          "frame_support:traits:tokens:misc:BalanceStatus"
+        ],
+        "args_name": [
+          "from",
+          "to",
+          "amount",
+          "destination_status"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "AccountId",
+          "Balance",
+          "Status"
+        ]
+      },
+      {
+        "lookup": "0207",
+        "name": "Deposit",
+        "docs": [
+          "Some amount was deposited (e.g. for transaction fees)."
+        ],
+        "args": [
+          "AccountId",
+          "U128"
+        ],
+        "args_name": [
+          "who",
+          "amount"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "Balance"
+        ]
+      },
+      {
+        "lookup": "0208",
+        "name": "Withdraw",
+        "docs": [
+          "Some amount was withdrawn from the account (e.g. for transaction fees)."
+        ],
+        "args": [
+          "AccountId",
+          "U128"
+        ],
+        "args_name": [
+          "who",
+          "amount"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "Balance"
+        ]
+      },
+      {
+        "lookup": "0209",
+        "name": "Slashed",
+        "docs": [
+          "Some amount was removed from the account (e.g. for misbehavior)."
+        ],
+        "args": [
+          "AccountId",
+          "U128"
+        ],
+        "args_name": [
+          "who",
+          "amount"
+        ],
+        "args_type_name": [
+          "AccountId",
+          "Balance"
+        ]
+      }
+    ],
+    "events_value": {
+      "type": 25
+    },
+    "constants": [
+      {
+        "name": "ExistentialDeposit",
+        "type": "U128",
+        "type_value": 6,
+        "constants_value": "0010a5d4e80000000000000000000000",
+        "docs": [
+          " The minimum amount required to keep an account open."
+        ]
+      },
+      {
+        "name": "MaxLocks",
+        "type": "U32",
+        "type_value": 4,
+        "constants_value": "32000000",
+        "docs": [
+          " The maximum number of locks that should exist on an account.",
+          " Not strictly enforced, but used for weight estimation."
+        ]
+      },
+      {
+        "name": "MaxReserves",
+        "type": "U32",
+        "type_value": 4,
+        "constants_value": "32000000",
+        "docs": [
+          " The maximum number of named reserves that can exist on an account."
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "name": "VestingBalance",
+        "doc": [
+          "Vesting balance too high to send value"
+        ]
+      },
+      {
+        "name": "LiquidityRestrictions",
+        "doc": [
+          "Account liquidity restrictions prevent withdrawal"
+        ]
+      },
+      {
+        "name": "InsufficientBalance",
+        "doc": [
+          "Balance too low to send value"
+        ]
+      },
+      {
+        "name": "ExistentialDeposit",
+        "doc": [
+          "Value too low to create account due to existential deposit"
+        ]
+      },
+      {
+        "name": "KeepAlive",
+        "doc": [
+          "Transfer/payment would kill account"
+        ]
+      },
+      {
+        "name": "ExistingVestingSchedule",
+        "doc": [
+          "A vesting schedule already exists for this account"
+        ]
+      },
+      {
+        "name": "DeadAccount",
+        "doc": [
+          "Beneficiary account must pre-exist"
+        ]
+      },
+      {
+        "name": "TooManyReserves",
+        "doc": [
+          "Number of named reserves exceed MaxReserves"
+        ]
+      }
+    ],
+    "errors_value": {
+      "type": 77
+    },
+    "index": 2
+  },
+  {
+    "name": "TransactionPayment",
+    "prefix": "TransactionPayment",
+    "storage": [
+      {
+        "name": "NextFeeMultiplier",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U128",
+          "PlainTypeValue": 78
+        },
+        "fallback": "0x000064a7b3b6e00d0000000000000000",
+        "docs": null
+      },
+      {
+        "name": "StorageVersion",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "pallet_transaction_payment:Releases",
+          "PlainTypeValue": 79
+        },
+        "fallback": "0x00",
+        "docs": null
+      }
+    ],
+    "constants": [
+      {
+        "name": "TransactionByteFee",
+        "type": "U128",
+        "type_value": 6,
+        "constants_value": "00e40b54020000000000000000000000",
+        "docs": [
+          " The fee to be paid for making a transaction; the per-byte portion."
+        ]
+      },
+      {
+        "name": "OperationalFeeMultiplier",
+        "type": "U8",
+        "type_value": 2,
+        "constants_value": "00",
+        "docs": [
+          " A fee mulitplier for `Operational` extrinsics to compute \"virtual tip\" to boost their",
+          " `priority`",
+          "",
+          " This value is multipled by the `final_fee` to obtain a \"virtual tip\" that is later",
+          " added to a tip component in regular `priority` calculations.",
+          " It means that a `Normal` transaction can front-run a similarly-sized `Operational`",
+          " extrinsic (with no tip), by including a tip value greater than the virtual tip.",
+          "",
+          " ```rust,ignore",
+          " // For `Normal`",
+          " let priority = priority_calc(tip);",
+          "",
+          " // For `Operational`",
+          " let virtual_tip = (inclusion_fee + tip) * OperationalFeeMultiplier;",
+          " let priority = priority_calc(tip + virtual_tip);",
+          " ```",
+          "",
+          " Note that since we use `final_fee` the multiplier applies also to the regular `tip`",
+          " sent with the transaction. So, not only does the transaction get a priority bump based",
+          " on the `inclusion_fee`, but we also amplify the impact of tips applied to `Operational`",
+          " transactions."
+        ]
+      },
+      {
+        "name": "WeightToFee",
+        "type": "Vec<frame_support:weights:WeightToFeeCoefficient>",
+        "type_value": 80,
+        "constants_value": "0420030000000000000000000000000000000000000001",
+        "docs": [
+          " The polynomial that is applied in order to derive fee from weight."
+        ]
+      }
+    ],
+    "errors": null,
+    "errors_value": null,
+    "index": 3
+  },
+  {
+    "name": "Treasury",
+    "prefix": "Treasury",
+    "storage": [
+      {
+        "name": "ProposalCount",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00000000",
+        "docs": [
+          " Number of proposals that have been made."
+        ]
+      },
+      {
+        "name": "Proposals",
+        "modifier": "Optional",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Twox64Concat"
+            ],
+            "key_vec": [
+              "U32"
+            ],
+            "value": "pallet_treasury:Proposal",
+            "keys_id": 4,
+            "value_id": 82
+          }
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Proposals that have been made."
+        ]
+      },
+      {
+        "name": "Approvals",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<U32>",
+          "PlainTypeValue": 83
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Proposal indices that have been approved but not yet awarded."
+        ]
+      }
+    ],
+    "calls": [
+      {
+        "lookup": "0400",
+        "name": "propose_spend",
+        "docs": [
+          "Put forward a suggestion for spending. A deposit proportional to the value",
+          "is reserved and slashed if the proposal is rejected. It is returned once the",
+          "proposal is awarded.",
+          "",
+          "# <weight>",
+          "- Complexity: O(1)",
+          "- DbReads: `ProposalCount`, `origin account`",
+          "- DbWrites: `ProposalCount`, `Proposals`, `origin account`",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "value",
+            "type": "compact<U128>",
+            "type_name": "BalanceOf"
+          },
+          {
+            "name": "beneficiary",
+            "type": "AccountId",
+            "type_name": "Address"
+          }
+        ]
+      },
+      {
+        "lookup": "0401",
+        "name": "reject_proposal",
+        "docs": [
+          "Reject a proposed spend. The original deposit will be slashed.",
+          "",
+          "May only be called from `T::RejectOrigin`.",
+          "",
+          "# <weight>",
+          "- Complexity: O(1)",
+          "- DbReads: `Proposals`, `rejected proposer account`",
+          "- DbWrites: `Proposals`, `rejected proposer account`",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "proposal_id",
+            "type": "compact<U32>",
+            "type_name": "ProposalIndex"
+          }
+        ]
+      },
+      {
+        "lookup": "0402",
+        "name": "approve_proposal",
+        "docs": [
+          "Approve a proposal. At a later time, the proposal will be allocated to the beneficiary",
+          "and the original deposit will be returned.",
+          "",
+          "May only be called from `T::ApproveOrigin`.",
+          "",
+          "# <weight>",
+          "- Complexity: O(1).",
+          "- DbReads: `Proposals`, `Approvals`",
+          "- DbWrite: `Approvals`",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "proposal_id",
+            "type": "compact<U32>",
+            "type_name": "ProposalIndex"
+          }
+        ]
+      }
+    ],
+    "calls_value": {
+      "type": 85
+    },
+    "events": [
+      {
+        "lookup": "0400",
+        "name": "Proposed",
+        "docs": [
+          "New proposal."
+        ],
+        "args": [
+          "U32"
+        ],
+        "args_name": [
+          "proposal_index"
+        ],
+        "args_type_name": [
+          "ProposalIndex"
+        ]
+      },
+      {
+        "lookup": "0401",
+        "name": "Spending",
+        "docs": [
+          "We have ended a spend period and will now allocate funds."
+        ],
+        "args": [
+          "U128"
+        ],
+        "args_name": [
+          "budget_remaining"
+        ],
+        "args_type_name": [
+          "BalanceOf"
+        ]
+      },
+      {
+        "lookup": "0402",
+        "name": "Awarded",
+        "docs": [
+          "Some funds have been allocated."
+        ],
+        "args": [
+          "U32",
+          "U128",
+          "AccountId"
+        ],
+        "args_name": [
+          "proposal_index",
+          "award",
+          "account"
+        ],
+        "args_type_name": [
+          "ProposalIndex",
+          "BalanceOf",
+          "AccountId"
+        ]
+      },
+      {
+        "lookup": "0403",
+        "name": "Rejected",
+        "docs": [
+          "A proposal was rejected; funds were slashed."
+        ],
+        "args": [
+          "U32",
+          "U128"
+        ],
+        "args_name": [
+          "proposal_index",
+          "slashed"
+        ],
+        "args_type_name": [
+          "ProposalIndex",
+          "BalanceOf"
+        ]
+      },
+      {
+        "lookup": "0404",
+        "name": "Burnt",
+        "docs": [
+          "Some of our funds have been burnt."
+        ],
+        "args": [
+          "U128"
+        ],
+        "args_name": [
+          "burnt_funds"
+        ],
+        "args_type_name": [
+          "BalanceOf"
+        ]
+      },
+      {
+        "lookup": "0405",
+        "name": "Rollover",
+        "docs": [
+          "Spending has finished; this is the amount that rolls over until next spend."
+        ],
+        "args": [
+          "U128"
+        ],
+        "args_name": [
+          "rollover_balance"
+        ],
+        "args_type_name": [
+          "BalanceOf"
+        ]
+      },
+      {
+        "lookup": "0406",
+        "name": "Deposit",
+        "docs": [
+          "Some funds have been deposited."
+        ],
+        "args": [
+          "U128"
+        ],
+        "args_name": [
+          "value"
+        ],
+        "args_type_name": [
+          "BalanceOf"
+        ]
+      }
+    ],
+    "events_value": {
+      "type": 27
+    },
+    "constants": [
+      {
+        "name": "ProposalBond",
+        "type": "U32",
+        "type_value": 86,
+        "constants_value": "50c30000",
+        "docs": [
+          " Fraction of a proposal's value that should be bonded in order to place the proposal.",
+          " An accepted proposal gets these back. A rejected proposal does not."
+        ]
+      },
+      {
+        "name": "ProposalBondMinimum",
+        "type": "U128",
+        "type_value": 6,
+        "constants_value": "0080c6a47e8d03000000000000000000",
+        "docs": [
+          " Minimum amount of funds that should be placed in a deposit for making a proposal."
+        ]
+      },
+      {
+        "name": "ProposalBondMaximum",
+        "type": "option<U128>",
+        "type_value": 87,
+        "constants_value": "010080e03779c311000000000000000000",
+        "docs": [
+          " Maximum amount of funds that should be placed in a deposit for making a proposal."
+        ]
+      },
+      {
+        "name": "SpendPeriod",
+        "type": "U32",
+        "type_value": 4,
+        "constants_value": "60540000",
+        "docs": [
+          " Period between successive spends."
+        ]
+      },
+      {
+        "name": "Burn",
+        "type": "U32",
+        "type_value": 86,
+        "constants_value": "00000000",
+        "docs": [
+          " Percentage of spare funds (if any) that are burnt per spend period."
+        ]
+      },
+      {
+        "name": "PalletId",
+        "type": "[U8; 8]",
+        "type_value": 88,
+        "constants_value": "70792f7472737279",
+        "docs": [
+          " The treasury's pallet id, used for deriving its sovereign account ID."
+        ]
+      },
+      {
+        "name": "MaxApprovals",
+        "type": "U32",
+        "type_value": 4,
+        "constants_value": "64000000",
+        "docs": [
+          " The maximum number of approvals that can wait in the spending queue."
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "name": "InsufficientProposersBalance",
+        "doc": [
+          "Proposer's balance is too low."
+        ]
+      },
+      {
+        "name": "InvalidIndex",
+        "doc": [
+          "No proposal or bounty at that index."
+        ]
+      },
+      {
+        "name": "TooManyApprovals",
+        "doc": [
+          "Too many approvals in the queue."
+        ]
+      }
+    ],
+    "errors_value": {
+      "type": 89
+    },
+    "index": 4
+  },
+  {
+    "name": "Utility",
+    "prefix": "",
+    "storage": null,
+    "calls": [
+      {
+        "lookup": "0600",
+        "name": "batch",
+        "docs": [
+          "Send a batch of dispatch calls.",
+          "",
+          "May be called from any origin.",
+          "",
+          "- `calls`: The calls to be dispatched from the same origin. The number of call must not",
+          "  exceed the constant: `batched_calls_limit` (available in constant metadata).",
+          "",
+          "If origin is root then call are dispatch without checking origin filter. (This includes",
+          "bypassing `frame_system::Config::BaseCallFilter`).",
+          "",
+          "# <weight>",
+          "- Complexity: O(C) where C is the number of calls to be batched.",
+          "# </weight>",
+          "",
+          "This will return `Ok` in all circumstances. To determine the success of the batch, an",
+          "event is deposited. If a call failed and the batch was interrupted, then the",
+          "`BatchInterrupted` event is deposited, along with the number of successful calls made",
+          "and the error of the failed call. If all were successful, then the `BatchCompleted`",
+          "event is deposited."
+        ],
+        "args": [
+          {
+            "name": "calls",
+            "type": "Vec<Call>",
+            "type_name": "Vec<<T as Config>::Call>"
+          }
+        ]
+      },
+      {
+        "lookup": "0601",
+        "name": "as_derivative",
+        "docs": [
+          "Send a call through an indexed pseudonym of the sender.",
+          "",
+          "Filter from origin are passed along. The call will be dispatched with an origin which",
+          "use the same filter as the origin of this call.",
+          "",
+          "NOTE: If you need to ensure that any account-based filtering is not honored (i.e.",
+          "because you expect `proxy` to have been used prior in the call stack and you do not want",
+          "the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`",
+          "in the Multisig pallet instead.",
+          "",
+          "NOTE: Prior to version *12, this was called `as_limited_sub`.",
+          "",
+          "The dispatch origin for this call must be _Signed_."
+        ],
+        "args": [
+          {
+            "name": "index",
+            "type": "U16",
+            "type_name": "u16"
+          },
+          {
+            "name": "call",
+            "type": "Call",
+            "type_name": "Box<<T as Config>::Call>"
+          }
+        ]
+      },
+      {
+        "lookup": "0602",
+        "name": "batch_all",
+        "docs": [
+          "Send a batch of dispatch calls and atomically execute them.",
+          "The whole transaction will rollback and fail if any of the calls failed.",
+          "",
+          "May be called from any origin.",
+          "",
+          "- `calls`: The calls to be dispatched from the same origin. The number of call must not",
+          "  exceed the constant: `batched_calls_limit` (available in constant metadata).",
+          "",
+          "If origin is root then call are dispatch without checking origin filter. (This includes",
+          "bypassing `frame_system::Config::BaseCallFilter`).",
+          "",
+          "# <weight>",
+          "- Complexity: O(C) where C is the number of calls to be batched.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "calls",
+            "type": "Vec<Call>",
+            "type_name": "Vec<<T as Config>::Call>"
+          }
+        ]
+      },
+      {
+        "lookup": "0603",
+        "name": "dispatch_as",
+        "docs": [
+          "Dispatches a function call with a provided origin.",
+          "",
+          "The dispatch origin for this call must be _Root_.",
+          "",
+          "# <weight>",
+          "- O(1).",
+          "- Limited storage reads.",
+          "- One DB write (event).",
+          "- Weight of derivative `call` execution + T::WeightInfo::dispatch_as().",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "as_origin",
+            "type": "hydradx_runtime:OriginCaller",
+            "type_name": "Box<PalletsOrigin>"
+          },
+          {
+            "name": "call",
+            "type": "Call",
+            "type_name": "Box<<T as Config>::Call>"
+          }
+        ]
+      }
+    ],
+    "calls_value": {
+      "type": 90
+    },
+    "events": [
+      {
+        "lookup": "0600",
+        "name": "BatchInterrupted",
+        "docs": [
+          "Batch of dispatches did not complete fully. Index of first failing dispatch given, as",
+          "well as the error."
+        ],
+        "args": [
+          "U32",
+          "sp_runtime:DispatchError"
+        ],
+        "args_name": [
+          "index",
+          "error"
+        ],
+        "args_type_name": [
+          "u32",
+          "DispatchError"
+        ]
+      },
+      {
+        "lookup": "0601",
+        "name": "BatchCompleted",
+        "docs": [
+          "Batch of dispatches completed fully with no error."
+        ],
+        "args": null
+      },
+      {
+        "lookup": "0602",
+        "name": "ItemCompleted",
+        "docs": [
+          "A single item within a Batch of dispatches has completed with no error."
+        ],
+        "args": null
+      },
+      {
+        "lookup": "0603",
+        "name": "DispatchedAs",
+        "docs": [
+          "A call was dispatched."
+        ],
+        "args": [
+          "Result<NULL,sp_runtime:DispatchError>"
+        ],
+        "args_name": [
+          "result"
+        ],
+        "args_type_name": [
+          "DispatchResult"
+        ]
+      }
+    ],
+    "events_value": {
+      "type": 28
+    },
+    "constants": [
+      {
+        "name": "batched_calls_limit",
+        "type": "U32",
+        "type_value": 4,
+        "constants_value": "aa2a0000",
+        "docs": [
+          " The limit on the number of batched calls."
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "name": "TooManyCalls",
+        "doc": [
+          "Too many calls batched."
+        ]
+      }
+    ],
+    "errors_value": {
+      "type": 119
+    },
+    "index": 6
+  },
+  {
+    "name": "ParachainSystem",
+    "prefix": "ParachainSystem",
+    "storage": [
+      {
+        "name": "PendingValidationCode",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<U8>",
+          "PlainTypeValue": 10
+        },
+        "fallback": "0x00",
+        "docs": [
+          " In case of a scheduled upgrade, this storage field contains the validation code to be applied.",
+          "",
+          " As soon as the relay chain gives us the go-ahead signal, we will overwrite the [`:code`][well_known_keys::CODE]",
+          " which will result the next block process with the new validation code. This concludes the upgrade process.",
+          "",
+          " [well_known_keys::CODE]: sp_core::storage::well_known_keys::CODE"
+        ]
+      },
+      {
+        "name": "NewValidationCode",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<U8>",
+          "PlainTypeValue": 10
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Validation code that is set by the parachain and is to be communicated to collator and",
+          " consequently the relay-chain.",
+          "",
+          " This will be cleared in `on_initialize` of each new block if no other pallet already set",
+          " the value."
+        ]
+      },
+      {
+        "name": "ValidationData",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "polkadot_primitives:v1:PersistedValidationData",
+          "PlainTypeValue": 95
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The [`PersistedValidationData`] set for this block.",
+          " This value is expected to be set only once per block and it's never stored",
+          " in the trie."
+        ]
+      },
+      {
+        "name": "DidSetValidationCode",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Bool",
+          "PlainTypeValue": 45
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Were the validation data set to notify the relay chain?"
+        ]
+      },
+      {
+        "name": "UpgradeRestrictionSignal",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "option<polkadot_primitives:v1:UpgradeRestriction>",
+          "PlainTypeValue": 120
+        },
+        "fallback": "0x00",
+        "docs": [
+          " An option which indicates if the relay-chain restricts signalling a validation code upgrade.",
+          " In other words, if this is `Some` and [`NewValidationCode`] is `Some` then the produced",
+          " candidate will be invalid.",
+          "",
+          " This storage item is a mirror of the corresponding value for the current parachain from the",
+          " relay-chain. This value is ephemeral which means it doesn't hit the storage. This value is",
+          " set after the inherent."
+        ]
+      },
+      {
+        "name": "RelevantMessagingState",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "cumulus_pallet_parachain_system:relay_state_snapshot:MessagingStateSnapshot",
+          "PlainTypeValue": 122
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The snapshot of some state related to messaging relevant to the current parachain as per",
+          " the relay parent.",
+          "",
+          " This field is meant to be updated each block with the validation data inherent. Therefore,",
+          " before processing of the inherent, e.g. in `on_initialize` this data may be stale.",
+          "",
+          " This data is also absent from the genesis."
+        ]
+      },
+      {
+        "name": "HostConfiguration",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "polkadot_primitives:v1:AbridgedHostConfiguration",
+          "PlainTypeValue": 127
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The parachain host configuration that was obtained from the relay parent.",
+          "",
+          " This field is meant to be updated each block with the validation data inherent. Therefore,",
+          " before processing of the inherent, e.g. in `on_initialize` this data may be stale.",
+          "",
+          " This data is also absent from the genesis."
+        ]
+      },
+      {
+        "name": "LastDmqMqcHead",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "H256",
+          "PlainTypeValue": 128
+        },
+        "fallback": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "docs": [
+          " The last downward message queue chain head we have observed.",
+          "",
+          " This value is loaded before and saved after processing inbound downward messages carried",
+          " by the system inherent."
+        ]
+      },
+      {
+        "name": "LastHrmpMqcHeads",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<Tuple:U32H256>",
+          "PlainTypeValue": 129
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The message queue chain heads we have observed per each channel incoming channel.",
+          "",
+          " This value is loaded before and saved after processing inbound downward messages carried",
+          " by the system inherent."
+        ]
+      },
+      {
+        "name": "ProcessedDownwardMessages",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00000000",
+        "docs": [
+          " Number of downward messages processed in a block.",
+          "",
+          " This will be cleared in `on_initialize` of each new block."
+        ]
+      },
+      {
+        "name": "HrmpWatermark",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00000000",
+        "docs": [
+          " HRMP watermark that was set in a block.",
+          "",
+          " This will be cleared in `on_initialize` of each new block."
+        ]
+      },
+      {
+        "name": "HrmpOutboundMessages",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<polkadot_core_primitives:OutboundHrmpMessage>",
+          "PlainTypeValue": 132
+        },
+        "fallback": "0x00",
+        "docs": [
+          " HRMP messages that were sent in a block.",
+          "",
+          " This will be cleared in `on_initialize` of each new block."
+        ]
+      },
+      {
+        "name": "UpwardMessages",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<Vec<U8>>",
+          "PlainTypeValue": 50
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Upward messages that were sent in a block.",
+          "",
+          " This will be cleared in `on_initialize` of each new block."
+        ]
+      },
+      {
+        "name": "PendingUpwardMessages",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<Vec<U8>>",
+          "PlainTypeValue": 50
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Upward messages that are still pending and not yet send to the relay chain."
+        ]
+      },
+      {
+        "name": "AnnouncedHrmpMessagesPerCandidate",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00000000",
+        "docs": [
+          " The number of HRMP messages we observed in `on_initialize` and thus used that number for",
+          " announcing the weight of `on_initialize` and `on_finalize`."
+        ]
+      },
+      {
+        "name": "ReservedXcmpWeightOverride",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U64",
+          "PlainTypeValue": 8
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The weight we reserve at the beginning of the block for processing XCMP messages. This",
+          " overrides the amount set in the Config trait."
+        ]
+      },
+      {
+        "name": "ReservedDmpWeightOverride",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U64",
+          "PlainTypeValue": 8
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The weight we reserve at the beginning of the block for processing DMP messages. This",
+          " overrides the amount set in the Config trait."
+        ]
+      },
+      {
+        "name": "AuthorizedUpgrade",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "H256",
+          "PlainTypeValue": 9
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The next authorized upgrade, if there is one."
+        ]
+      },
+      {
+        "name": "CustomValidationHeadData",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<U8>",
+          "PlainTypeValue": 10
+        },
+        "fallback": "0x00",
+        "docs": [
+          " A custom head data that should be returned as result of `validate_block`.",
+          "",
+          " See [`Pallet::set_custom_validation_head_data`] for more information."
+        ]
+      }
+    ],
+    "calls": [
+      {
+        "lookup": "0700",
+        "name": "set_validation_data",
+        "docs": [
+          "Set the current validation data.",
+          "",
+          "This should be invoked exactly once per block. It will panic at the finalization",
+          "phase if the call was not invoked.",
+          "",
+          "The dispatch origin for this call must be `Inherent`",
+          "",
+          "As a side effect, this function upgrades the current validation function",
+          "if the appropriate time has come."
+        ],
+        "args": [
+          {
+            "name": "data",
+            "type": "cumulus_primitives_parachain_inherent:ParachainInherentData",
+            "type_name": "ParachainInherentData"
+          }
+        ]
+      },
+      {
+        "lookup": "0701",
+        "name": "sudo_send_upward_message",
+        "docs": null,
+        "args": [
+          {
+            "name": "message",
+            "type": "Vec<U8>",
+            "type_name": "UpwardMessage"
+          }
+        ]
+      },
+      {
+        "lookup": "0702",
+        "name": "authorize_upgrade",
+        "docs": null,
+        "args": [
+          {
+            "name": "code_hash",
+            "type": "H256",
+            "type_name": "Hash"
+          }
+        ]
+      },
+      {
+        "lookup": "0703",
+        "name": "enact_authorized_upgrade",
+        "docs": null,
+        "args": [
+          {
+            "name": "code",
+            "type": "Vec<U8>",
+            "type_name": "Bytes"
+          }
+        ]
+      }
+    ],
+    "calls_value": {
+      "type": 93
+    },
+    "events": [
+      {
+        "lookup": "0700",
+        "name": "ValidationFunctionStored",
+        "docs": [
+          "The validation function has been scheduled to apply."
+        ],
+        "args": null
+      },
+      {
+        "lookup": "0701",
+        "name": "ValidationFunctionApplied",
+        "docs": [
+          "The validation function was applied as of the contained relay chain block number."
+        ],
+        "args": [
+          "U32"
+        ],
+        "args_name": [
+          ""
+        ],
+        "args_type_name": [
+          "RelayChainBlockNumber"
+        ]
+      },
+      {
+        "lookup": "0702",
+        "name": "ValidationFunctionDiscarded",
+        "docs": [
+          "The relay-chain aborted the upgrade process."
+        ],
+        "args": null
+      },
+      {
+        "lookup": "0703",
+        "name": "UpgradeAuthorized",
+        "docs": [
+          "An upgrade has been authorized."
+        ],
+        "args": [
+          "H256"
+        ],
+        "args_name": [
+          ""
+        ],
+        "args_type_name": [
+          "Hash"
+        ]
+      },
+      {
+        "lookup": "0704",
+        "name": "DownwardMessagesReceived",
+        "docs": [
+          "Some downward messages have been received and will be processed.",
+          "\\[ count \\]"
+        ],
+        "args": [
+          "U32"
+        ],
+        "args_name": [
+          ""
+        ],
+        "args_type_name": [
+          "u32"
+        ]
+      },
+      {
+        "lookup": "0705",
+        "name": "DownwardMessagesProcessed",
+        "docs": [
+          "Downward messages were processed using the given weight.",
+          "\\[ weight_used, result_mqc_head \\]"
+        ],
+        "args": [
+          "U64",
+          "H256"
+        ],
+        "args_name": [
+          "",
+          ""
+        ],
+        "args_type_name": [
+          "Weight",
+          "relay_chain::Hash"
+        ]
+      }
+    ],
+    "events_value": {
+      "type": 31
+    },
+    "errors": [
+      {
+        "name": "OverlappingUpgrades",
+        "doc": [
+          "Attempt to upgrade validation function while existing upgrade pending"
+        ]
+      },
+      {
+        "name": "ProhibitedByPolkadot",
+        "doc": [
+          "Polkadot currently prohibits this parachain from upgrading its validation function"
+        ]
+      },
+      {
+        "name": "TooBig",
+        "doc": [
+          "The supplied validation function has compiled into a blob larger than Polkadot is",
+          "willing to run"
+        ]
+      },
+      {
+        "name": "ValidationDataNotAvailable",
+        "doc": [
+          "The inherent which supplies the validation data did not run this block"
+        ]
+      },
+      {
+        "name": "HostConfigurationNotAvailable",
+        "doc": [
+          "The inherent which supplies the host configuration did not run this block"
+        ]
+      },
+      {
+        "name": "NotScheduled",
+        "doc": [
+          "No validation function upgrade is currently scheduled."
+        ]
+      },
+      {
+        "name": "NothingAuthorized",
+        "doc": [
+          "No code upgrade has been authorized."
+        ]
+      },
+      {
+        "name": "Unauthorized",
+        "doc": [
+          "The given code upgrade has not been authorized."
+        ]
+      }
+    ],
+    "errors_value": {
+      "type": 134
+    },
+    "index": 7
+  },
+  {
+    "name": "ParachainInfo",
+    "prefix": "ParachainInfo",
+    "storage": [
+      {
+        "name": "ParachainId",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 101
+        },
+        "fallback": "0x64000000",
+        "docs": null
+      }
+    ],
+    "errors": null,
+    "errors_value": null,
+    "index": 8
+  },
+  {
+    "name": "Authorship",
+    "prefix": "Authorship",
+    "storage": [
+      {
+        "name": "Uncles",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<pallet_authorship:UncleEntryItem>",
+          "PlainTypeValue": 135
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Uncles"
+        ]
+      },
+      {
+        "name": "Author",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "AccountId",
+          "PlainTypeValue": 0
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Author of current block."
+        ]
+      },
+      {
+        "name": "DidSetUncles",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Bool",
+          "PlainTypeValue": 45
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Whether uncles were already set in this block."
+        ]
+      }
+    ],
+    "calls": [
+      {
+        "lookup": "0900",
+        "name": "set_uncles",
+        "docs": [
+          "Provide a set of uncles."
+        ],
+        "args": [
+          {
+            "name": "new_uncles",
+            "type": "Vec<sp_runtime:generic:header:Header>",
+            "type_name": "Vec<Header>"
+          }
+        ]
+      }
+    ],
+    "calls_value": {
+      "type": 106
+    },
+    "constants": [
+      {
+        "name": "UncleGenerations",
+        "type": "U32",
+        "type_value": 4,
+        "constants_value": "00000000",
+        "docs": [
+          " The number of blocks back we should accept uncles.",
+          " This means that we will deal with uncle-parents that are",
+          " `UncleGenerations + 1` before `now`."
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "name": "InvalidUncleParent",
+        "doc": [
+          "The uncle parent not in the chain."
+        ]
+      },
+      {
+        "name": "UnclesAlreadySet",
+        "doc": [
+          "Uncles already set in the block."
+        ]
+      },
+      {
+        "name": "TooManyUncles",
+        "doc": [
+          "Too many uncles."
+        ]
+      },
+      {
+        "name": "GenesisUncle",
+        "doc": [
+          "The uncle is genesis."
+        ]
+      },
+      {
+        "name": "TooHighUncle",
+        "doc": [
+          "The uncle is too high in chain."
+        ]
+      },
+      {
+        "name": "UncleAlreadyIncluded",
+        "doc": [
+          "The uncle is already included."
+        ]
+      },
+      {
+        "name": "OldUncle",
+        "doc": [
+          "The uncle isn't recent enough to be included."
+        ]
+      }
+    ],
+    "errors_value": {
+      "type": 137
+    },
+    "index": 9
+  },
+  {
+    "name": "CollatorSelection",
+    "prefix": "CollatorSelection",
+    "storage": [
+      {
+        "name": "Invulnerables",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<AccountId>",
+          "PlainTypeValue": 33
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The invulnerable, fixed collators."
+        ]
+      },
+      {
+        "name": "Candidates",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<pallet_collator_selection:pallet:CandidateInfo>",
+          "PlainTypeValue": 138
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The (community, limited) collation candidates."
+        ]
+      },
+      {
+        "name": "LastAuthoredBlock",
+        "modifier": "Default",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Twox64Concat"
+            ],
+            "key_vec": [
+              "AccountId"
+            ],
+            "value": "U32",
+            "keys_id": 0,
+            "value_id": 4
+          }
+        },
+        "fallback": "0x00000000",
+        "docs": [
+          " Last block authored by collator."
+        ]
+      },
+      {
+        "name": "DesiredCandidates",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00000000",
+        "docs": [
+          " Desired number of candidates.",
+          "",
+          " This should ideally always be less than [`Config::MaxCandidates`] for weights to be correct."
+        ]
+      },
+      {
+        "name": "CandidacyBond",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U128",
+          "PlainTypeValue": 6
+        },
+        "fallback": "0x00000000000000000000000000000000",
+        "docs": [
+          " Fixed amount to deposit to become a collator.",
+          "",
+          " When a collator calls `leave_intent` they immediately receive the deposit back."
+        ]
+      }
+    ],
+    "calls": [
+      {
+        "lookup": "0a00",
+        "name": "set_invulnerables",
+        "docs": [
+          "Set the list of invulnerable (fixed) collators."
+        ],
+        "args": [
+          {
+            "name": "new",
+            "type": "Vec<AccountId>",
+            "type_name": "Vec<AccountId>"
+          }
+        ]
+      },
+      {
+        "lookup": "0a01",
+        "name": "set_desired_candidates",
+        "docs": [
+          "Set the ideal number of collators (not including the invulnerables).",
+          "If lowering this number, then the number of running collators could be higher than this figure.",
+          "Aside from that edge case, there should be no other way to have more collators than the desired number."
+        ],
+        "args": [
+          {
+            "name": "max",
+            "type": "U32",
+            "type_name": "u32"
+          }
+        ]
+      },
+      {
+        "lookup": "0a02",
+        "name": "set_candidacy_bond",
+        "docs": [
+          "Set the candidacy bond amount."
+        ],
+        "args": [
+          {
+            "name": "bond",
+            "type": "U128",
+            "type_name": "BalanceOf"
+          }
+        ]
+      },
+      {
+        "lookup": "0a03",
+        "name": "register_as_candidate",
+        "docs": [
+          "Register this account as a collator candidate. The account must (a) already have",
+          "registered session keys and (b) be able to reserve the `CandidacyBond`.",
+          "",
+          "This call is not available to `Invulnerable` collators."
+        ],
+        "args": null
+      },
+      {
+        "lookup": "0a04",
+        "name": "leave_intent",
+        "docs": [
+          "Deregister `origin` as a collator candidate. Note that the collator can only leave on",
+          "session change. The `CandidacyBond` will be unreserved immediately.",
+          "",
+          "This call will fail if the total number of candidates would drop below `MinCandidates`.",
+          "",
+          "This call is not available to `Invulnerable` collators."
+        ],
+        "args": null
+      }
+    ],
+    "calls_value": {
+      "type": 110
+    },
+    "events": [
+      {
+        "lookup": "0a00",
+        "name": "NewInvulnerables",
+        "docs": null,
+        "args": [
+          "Vec<AccountId>"
+        ],
+        "args_name": [
+          ""
+        ],
+        "args_type_name": [
+          "Vec<AccountId>"
+        ]
+      },
+      {
+        "lookup": "0a01",
+        "name": "NewDesiredCandidates",
+        "docs": null,
+        "args": [
+          "U32"
+        ],
+        "args_name": [
+          ""
+        ],
+        "args_type_name": [
+          "u32"
+        ]
+      },
+      {
+        "lookup": "0a02",
+        "name": "NewCandidacyBond",
+        "docs": null,
+        "args": [
+          "U128"
+        ],
+        "args_name": [
+          ""
+        ],
+        "args_type_name": [
+          "BalanceOf"
+        ]
+      },
+      {
+        "lookup": "0a03",
+        "name": "CandidateAdded",
+        "docs": null,
+        "args": [
+          "AccountId",
+          "U128"
+        ],
+        "args_name": [
+          "",
+          ""
+        ],
+        "args_type_name": [
+          "AccountId",
+          "BalanceOf"
+        ]
+      },
+      {
+        "lookup": "0a04",
+        "name": "CandidateRemoved",
+        "docs": null,
+        "args": [
+          "AccountId"
+        ],
+        "args_name": [
+          ""
+        ],
+        "args_type_name": [
+          "AccountId"
+        ]
+      }
+    ],
+    "events_value": {
+      "type": 32
+    },
+    "errors": [
+      {
+        "name": "TooManyCandidates",
+        "doc": [
+          "Too many candidates"
+        ]
+      },
+      {
+        "name": "TooFewCandidates",
+        "doc": [
+          "Too few candidates"
+        ]
+      },
+      {
+        "name": "Unknown",
+        "doc": [
+          "Unknown error"
+        ]
+      },
+      {
+        "name": "Permission",
+        "doc": [
+          "Permission issue"
+        ]
+      },
+      {
+        "name": "AlreadyCandidate",
+        "doc": [
+          "User is already a candidate"
+        ]
+      },
+      {
+        "name": "NotCandidate",
+        "doc": [
+          "User is not a candidate"
+        ]
+      },
+      {
+        "name": "AlreadyInvulnerable",
+        "doc": [
+          "User is already an Invulnerable"
+        ]
+      },
+      {
+        "name": "NoAssociatedValidatorId",
+        "doc": [
+          "Account has no associated validator ID"
+        ]
+      },
+      {
+        "name": "ValidatorNotRegistered",
+        "doc": [
+          "Validator ID is not yet registered"
+        ]
+      }
+    ],
+    "errors_value": {
+      "type": 140
+    },
+    "index": 10
+  },
+  {
+    "name": "Session",
+    "prefix": "Session",
+    "storage": [
+      {
+        "name": "Validators",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<AccountId>",
+          "PlainTypeValue": 33
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The current set of validators."
+        ]
+      },
+      {
+        "name": "CurrentIndex",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "U32",
+          "PlainTypeValue": 4
+        },
+        "fallback": "0x00000000",
+        "docs": [
+          " Current index of the session."
+        ]
+      },
+      {
+        "name": "QueuedChanged",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Bool",
+          "PlainTypeValue": 45
+        },
+        "fallback": "0x00",
+        "docs": [
+          " True if the underlying economic identities or weighting behind the validators",
+          " has changed in the queued validator set."
+        ]
+      },
+      {
+        "name": "QueuedKeys",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<Tuple:AccountId[U8; 32]>",
+          "PlainTypeValue": 141
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The queued keys for the next session. When the next session begins, these keys",
+          " will be used to determine the validator's session keys."
+        ]
+      },
+      {
+        "name": "DisabledValidators",
+        "modifier": "Default",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "Vec<U32>",
+          "PlainTypeValue": 84
+        },
+        "fallback": "0x00",
+        "docs": [
+          " Indices of disabled validators.",
+          "",
+          " The vec is always kept sorted so that we can find whether a given validator is",
+          " disabled using binary search. It gets cleared when `on_session_ending` returns",
+          " a new set of identities."
+        ]
+      },
+      {
+        "name": "NextKeys",
+        "modifier": "Optional",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Twox64Concat"
+            ],
+            "key_vec": [
+              "AccountId"
+            ],
+            "value": "[U8; 32]",
+            "keys_id": 0,
+            "value_id": 112
+          }
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The next session keys for a validator."
+        ]
+      },
+      {
+        "name": "KeyOwner",
+        "modifier": "Optional",
+        "type": {
+          "origin": "Map",
+          "n_map_type": {
+            "hashers": [
+              "Twox64Concat"
+            ],
+            "key_vec": [
+              "Tuple:[U8; 4]Vec<U8>"
+            ],
+            "value": "AccountId",
+            "keys_id": 143,
+            "value_id": 0
+          }
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The owner of a key. The key is the `KeyTypeId` + the encoded key."
+        ]
+      }
+    ],
+    "calls": [
+      {
+        "lookup": "0b00",
+        "name": "set_keys",
+        "docs": [
+          "Sets the session key(s) of the function caller to `keys`.",
+          "Allows an account to set its session key prior to becoming a validator.",
+          "This doesn't take effect until the next session.",
+          "",
+          "The dispatch origin of this function must be signed.",
+          "",
+          "# <weight>",
+          "- Complexity: `O(1)`. Actual cost depends on the number of length of",
+          "  `T::Keys::key_ids()` which is fixed.",
+          "- DbReads: `origin account`, `T::ValidatorIdOf`, `NextKeys`",
+          "- DbWrites: `origin account`, `NextKeys`",
+          "- DbReads per key id: `KeyOwner`",
+          "- DbWrites per key id: `KeyOwner`",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "keys",
+            "type": "[U8; 32]",
+            "type_name": "Keys"
+          },
+          {
+            "name": "proof",
+            "type": "Vec<U8>",
+            "type_name": "Bytes"
+          }
+        ]
+      },
+      {
+        "lookup": "0b01",
+        "name": "purge_keys",
+        "docs": [
+          "Removes any session key(s) of the function caller.",
+          "",
+          "This doesn't take effect until the next session.",
+          "",
+          "The dispatch origin of this function must be Signed and the account must be either be",
+          "convertible to a validator ID using the chain's typical addressing system (this usually",
+          "means being a controller account) or directly convertible into a validator ID (which",
+          "usually means being a stash account).",
+          "",
+          "# <weight>",
+          "- Complexity: `O(1)` in number of key types. Actual cost depends on the number of length",
+          "  of `T::Keys::key_ids()` which is fixed.",
+          "- DbReads: `T::ValidatorIdOf`, `NextKeys`, `origin account`",
+          "- DbWrites: `NextKeys`, `origin account`",
+          "- DbWrites per key id: `KeyOwner`",
+          "# </weight>"
+        ],
+        "args": null
+      }
+    ],
+    "calls_value": {
+      "type": 111
+    },
+    "events": [
+      {
+        "lookup": "0b00",
+        "name": "NewSession",
+        "docs": [
+          "New session has happened. Note that the argument is the session index, not the",
+          "block number as the type might suggest."
+        ],
+        "args": [
+          "U32"
+        ],
+        "args_name": [
+          "session_index"
+        ],
+        "args_type_name": [
+          "SessionIndex"
+        ]
+      }
+    ],
+    "events_value": {
+      "type": 34
+    },
+    "errors": [
+      {
+        "name": "InvalidProof",
+        "doc": [
+          "Invalid ownership proof."
+        ]
+      },
+      {
+        "name": "NoAssociatedValidatorId",
+        "doc": [
+          "No associated validator ID for account."
+        ]
+      },
+      {
+        "name": "DuplicatedKey",
+        "doc": [
+          "Registered duplicate key."
+        ]
+      },
+      {
+        "name": "NoKeys",
+        "doc": [
+          "No keys are associated with this account."
+        ]
+      },
+      {
+        "name": "NoAccount",
+        "doc": [
+          "Key setting account is not live, so it's impossible to associate keys."
+        ]
+      }
+    ],
+    "errors_value": {
+      "type": 145
+    },
+    "index": 11
+  },
+  {
+    "name": "Aura",
+    "prefix": "",
+    "storage": null,
+    "errors": null,
+    "errors_value": null,
+    "index": 12
+  },
+  {
+    "name": "AuraExt",
+    "prefix": "",
+    "storage": null,
+    "errors": null,
+    "errors_value": null,
+    "index": 13
+  },
+  {
+    "name": "RelayChainInfo",
+    "prefix": "",
+    "storage": null,
+    "events": [
+      {
+        "lookup": "6400",
+        "name": "CurrentBlockNumbers",
+        "docs": [
+          "Current block numbers",
+          "[ Parachain block number, Relaychain Block number ]"
+        ],
+        "args": [
+          "U32",
+          "U32"
+        ],
+        "args_name": [
+          "",
+          ""
+        ],
+        "args_type_name": [
+          "BlockNumber",
+          "BlockNumber"
+        ]
+      }
+    ],
+    "events_value": {
+      "type": 35
+    },
+    "errors": null,
+    "errors_value": {
+      "type": 146
+    },
+    "index": 100
+  },
+  {
+    "name": "Sudo",
+    "prefix": "Sudo",
+    "storage": [
+      {
+        "name": "Key",
+        "modifier": "Optional",
+        "type": {
+          "origin": "PlainType",
+          "plain_type": "AccountId",
+          "PlainTypeValue": 0
+        },
+        "fallback": "0x00",
+        "docs": [
+          " The `AccountId` of the sudo key."
+        ]
+      }
+    ],
+    "calls": [
+      {
+        "lookup": "ff00",
+        "name": "sudo",
+        "docs": [
+          "Authenticates the sudo key and dispatches a function call with `Root` origin.",
+          "",
+          "The dispatch origin for this call must be _Signed_.",
+          "",
+          "# <weight>",
+          "- O(1).",
+          "- Limited storage reads.",
+          "- One DB write (event).",
+          "- Weight of derivative `call` execution + 10,000.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "call",
+            "type": "Call",
+            "type_name": "Box<<T as Config>::Call>"
+          }
+        ]
+      },
+      {
+        "lookup": "ff01",
+        "name": "sudo_unchecked_weight",
+        "docs": [
+          "Authenticates the sudo key and dispatches a function call with `Root` origin.",
+          "This function does not check the weight of the call, and instead allows the",
+          "Sudo user to specify the weight of the call.",
+          "",
+          "The dispatch origin for this call must be _Signed_.",
+          "",
+          "# <weight>",
+          "- O(1).",
+          "- The weight of this call is defined by the caller.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "call",
+            "type": "Call",
+            "type_name": "Box<<T as Config>::Call>"
+          },
+          {
+            "name": "weight",
+            "type": "U64",
+            "type_name": "Weight"
+          }
+        ]
+      },
+      {
+        "lookup": "ff02",
+        "name": "set_key",
+        "docs": [
+          "Authenticates the current sudo key and sets the given AccountId (`new`) as the new sudo",
+          "key.",
+          "",
+          "The dispatch origin for this call must be _Signed_.",
+          "",
+          "# <weight>",
+          "- O(1).",
+          "- Limited storage reads.",
+          "- One DB change.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "new",
+            "type": "AccountId",
+            "type_name": "Address"
+          }
+        ]
+      },
+      {
+        "lookup": "ff03",
+        "name": "sudo_as",
+        "docs": [
+          "Authenticates the sudo key and dispatches a function call with `Signed` origin from",
+          "a given account.",
+          "",
+          "The dispatch origin for this call must be _Signed_.",
+          "",
+          "# <weight>",
+          "- O(1).",
+          "- Limited storage reads.",
+          "- One DB write (event).",
+          "- Weight of derivative `call` execution + 10,000.",
+          "# </weight>"
+        ],
+        "args": [
+          {
+            "name": "who",
+            "type": "AccountId",
+            "type_name": "Address"
+          },
+          {
+            "name": "call",
+            "type": "Call",
+            "type_name": "Box<<T as Config>::Call>"
+          }
+        ]
+      }
+    ],
+    "calls_value": {
+      "type": 115
+    },
+    "events": [
+      {
+        "lookup": "ff00",
+        "name": "Sudid",
+        "docs": [
+          "A sudo just took place. \\[result\\]"
+        ],
+        "args": [
+          "Result<NULL,sp_runtime:DispatchError>"
+        ],
+        "args_name": [
+          "sudo_result"
+        ],
+        "args_type_name": [
+          "DispatchResult"
+        ]
+      },
+      {
+        "lookup": "ff01",
+        "name": "KeyChanged",
+        "docs": [
+          "The \\[sudoer\\] just switched identity; the old key is supplied if one existed."
+        ],
+        "args": [
+          "option<AccountId>"
+        ],
+        "args_name": [
+          "old_sudoer"
+        ],
+        "args_type_name": [
+          "Option<AccountId>"
+        ]
+      },
+      {
+        "lookup": "ff02",
+        "name": "SudoAsDone",
+        "docs": [
+          "A sudo just took place. \\[result\\]"
+        ],
+        "args": [
+          "Result<NULL,sp_runtime:DispatchError>"
+        ],
+        "args_name": [
+          "sudo_result"
+        ],
+        "args_type_name": [
+          "DispatchResult"
+        ]
+      }
+    ],
+    "events_value": {
+      "type": 36
+    },
+    "errors": [
+      {
+        "name": "RequireSudo",
+        "doc": [
+          "Sender must be the Sudo account"
+        ]
+      }
+    ],
+    "errors_value": {
+      "type": 147
+    },
+    "index": 255
+  }
+]

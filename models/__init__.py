@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -15,47 +14,17 @@ from dex_screener.models.dex_fields import AssetPriceField
 from dex_screener.service.event.const import DexScreenerEventType
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
-
-    from dipdup.context import HandlerContext
-    from dipdup.index import MatchedHandler
     from tortoise.fields.relational import ForeignKeyFieldInstance
     from tortoise.fields.relational import ManyToManyFieldInstance
     from tortoise.fields.relational import OneToOneFieldInstance
 
     from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypeAmount
 
-from dipdup.models import Meta
 
 from dex_screener.handlers.hydradx.asset.asset_count.asset_amount import AssetAmount
 from dex_screener.handlers.hydradx.asset.asset_type.enum import HydrationAssetType
 from dex_screener.models.dex_fields import AccountField as AccountField
 from dex_screener.models.enum import DexKey as DexKey
-
-EXPECTED_FAILS = ('',)
-
-
-@asynccontextmanager
-async def catch_exceptions(
-    ctx: HandlerContext,
-    handler: MatchedHandler,
-) -> AsyncIterator[None]:
-    try:
-        yield
-    except BaseException as exception:
-        event_arg = handler.args[0]  # type: ignore[index]
-        event_id = f'{event_arg.data.level}-{event_arg.data.index}'
-        ctx.logger.error('%s: failed to process event `%s`, %s ', event_id, handler.config.callback, exception)
-        value = {
-            'payload': str(event_arg.payload),
-            'data': str(event_arg.data.__dict__),
-        }
-        await Meta.create(
-            key=f'fail_{event_id}_{handler.config.callback}',
-            value=value,
-        )
-        if event_id not in EXPECTED_FAILS:
-            raise exception
 
 
 class Block(Model):

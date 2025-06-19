@@ -5,7 +5,6 @@ from abc import abstractmethod
 from typing import Any
 
 from dipdup.models.substrate import SubstrateEvent
-from dipdup.models.substrate import SubstrateEventData
 
 from dex_screener.handlers.hydradx.asset.asset_type.exception import InvalidEventDataError
 from dex_screener.models import Asset
@@ -112,21 +111,15 @@ class HexNamedHydrationAsset(BaseHydrationAsset):
     async def handle_register_asset(cls, event: SubstrateEvent) -> Asset:
         match event:
             case SubstrateEvent(
-                data=SubstrateEventData(
-                    args={
-                        'assetId': int(asset_id),
-                        'assetName': str(asset_name_hex_prefixed),
-                    }
-                )
-            ):
-                pass
-            case SubstrateEvent(
                 payload={
                     'asset_id': int(asset_id),
                     'asset_name': str(asset_name),
                 }
             ):
-                asset_name_hex_prefixed = '0x' + asset_name.encode().hex()
+                if asset_name.startswith('0x'):
+                    asset_name_hex_prefixed = asset_name
+                else:
+                    asset_name_hex_prefixed = '0x' + asset_name.encode().hex()
                 pass
 
             case _:

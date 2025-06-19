@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import os
+import logging
 from collections.abc import Callable
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
 from typing import Any
 
 import httpx
@@ -13,29 +14,54 @@ from fastapi import FastAPI
 from fastapi import Request
 from fastapi.responses import Response
 
-"""
-Environment variables:
-- HTTP_CLIENT_HOST: Host of the HTTP client (default: hasura)
-- HTTP_CLIENT_PORT: Port of the HTTP client (default: 8080)
-- HTTP_SERVER_URL_PATH: URL path prefix for the API (default: /api/rest)
-- HTTP_SERVER_HOST: Host for the FastAPI server (default: 0.0.0.0)
-- HTTP_SERVER_PORT: Port for the FastAPI server (default: 8000)
-"""
+_logger = logging.getLogger(__name__)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Manage HTTP client lifecycle"""
-    client_host = os.getenv('HTTP_CLIENT_HOST', 'hasura')
-    client_port = os.getenv('HTTP_CLIENT_PORT', '8080')
+@dataclass
+class ProxyConfig:
+    """Configuration for the HTTP proxy"""
 
-    async with httpx.AsyncClient(base_url=f'http://{client_host}:{client_port}') as client:
-        app.state.client = client
-        yield
+    client_host: str = 'hasura'
+    client_port: str = '8080'
+    server_url_path: str = '/api/rest'
+    server_host: str = '0.0.0.0'
+    server_port: str = '8000'
 
 
-app = FastAPI(lifespan=lifespan)
-base_route = APIRouter(prefix=os.getenv('HTTP_SERVER_URL_PATH', '/api/rest'))
+def create_api(config: ProxyConfig) -> FastAPI:
+    """Create FastAPI application with the given configuration"""
+
+    _logger.info('Creating API with config: %s', config)
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        """Manage HTTP client lifecycle"""
+        async with httpx.AsyncClient(base_url=f'http://{config.client_host}:{config.client_port}') as client:
+            app.state.client = client
+            yield
+
+    app = FastAPI(lifespan=lifespan)
+    base_route = APIRouter(prefix=config.server_url_path)
+
+    @base_route.get('/latest-block')
+    async def forward_latest_block(request: Request):
+        return await forward_request(request)
+
+    @base_route.get('/asset')
+    async def forward_asset(request: Request):
+        return await forward_request(request)
+
+    @base_route.get('/pair')
+    async def forward_pair(request: Request):
+        return await forward_request(request)
+
+    @base_route.get('/events')
+    async def forward_events(request: Request):
+        return await forward_request(request, clean_json)
+
+    app.include_router(base_route)
+
+    return app
 
 
 def remove_none_fields(data: Any) -> Any:
@@ -75,16 +101,19 @@ def clean_json(data: bytes) -> bytes:
         cleaned_data = remove_none_fields(json_data)
         return json_dumps(cleaned_data, None)
     except orjson.JSONDecodeError as e:
-        print('Failed to decode JSON content: ', e)
+        _logger.error('Failed to decode JSON content: ', e)
         return data
     except Exception as e:
-        print('Error processing data: ', e)
+        _logger.error('Error processing data: ', e)
         return data
 
 
-async def forward_request(request: Request, transform: Callable[[bytes], bytes] | None = None) -> Response:
+async def forward_request(
+    request: Request,
+    transform: Callable[[bytes], bytes] | None = None,
+) -> Response:
     # Forward request with exact headers and body
-    client: httpx.AsyncClient = app.state.client
+    client: httpx.AsyncClient = request.app.state.client
     url = httpx.URL(path=request.url.path)
     # header filtering, if we will need it: headers = [(k, v) for k, v in request.headers.raw if k != b'host']
     forwarded_request = client.build_request(
@@ -95,7 +124,7 @@ async def forward_request(request: Request, transform: Callable[[bytes], bytes] 
         # params included in the URL
         content=request.stream(),
     )
-    print(f'Forwarding request to {forwarded_request.url}')
+    _logger.info('Forwarding request to %s', forwarded_request.url)
     response = await client.send(forwarded_request)
 
     headers = response.headers.copy()
@@ -115,33 +144,3 @@ async def forward_request(request: Request, transform: Callable[[bytes], bytes] 
         status_code=response.status_code,
         headers=headers,
     )
-
-
-@base_route.get('/latest-block')
-async def forward_latest_block(request: Request):
-    return await forward_request(request)
-
-
-@base_route.get('/asset')
-async def forward_asset(request: Request):
-    return await forward_request(request)
-
-
-@base_route.get('/pair')
-async def forward_pair(request: Request):
-    return await forward_request(request)
-
-
-@base_route.get('/events')
-async def forward_events(request: Request):
-    return await forward_request(request, clean_json)
-
-
-if __name__ == '__main__':
-    import uvicorn
-
-    app.include_router(base_route)
-
-    server_host = os.getenv('HTTP_SERVER_HOST', '0.0.0.0')
-    server_port = int(os.getenv('HTTP_SERVER_PORT', 8000))
-    uvicorn.run(app, host=server_host, port=server_port)

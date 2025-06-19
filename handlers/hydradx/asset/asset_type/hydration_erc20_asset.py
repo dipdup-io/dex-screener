@@ -14,12 +14,11 @@ class HydrationERC20Asset(BaseHydrationAsset):
         match event.payload:
             case {
                 'asset_id': int(asset_id),
-                'asset_name': str(asset_name_hex),
-                'symbol': str(asset_symbol_hex),
+                'asset_name': str(asset_name),
+                'symbol': str(asset_symbol),
                 'decimals': int(asset_decimals),
             }:
-                asset_name = bytes.fromhex(asset_name_hex.removeprefix('0x')).decode()
-                asset_symbol = bytes.fromhex(asset_symbol_hex.removeprefix('0x')).decode()
+                pass
             case _:
                 raise InvalidEventDataError('Unhandled Event Data.')
 
