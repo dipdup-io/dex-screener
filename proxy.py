@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+from collections.abc import Awaitable
 from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
@@ -27,6 +28,11 @@ class ProxyConfig:
     server_host: str = '0.0.0.0'
     server_port: str = '8000'
 
+    data_url_indexer: str = 'https://dex-screener-hydration.piltover.baking-bad.org/v1/graphql'
+    data_url_reserves: str = 'https://dex-screener-hydration-reserves.piltover.baking-bad.org/v1/graphql'
+    # data_url_indexer: str = 'http://hasura:8080/v1/graphql'
+    # data_url_reserves: str = 'http://hasura_reserves:8080/v1/graphql'
+
 
 def create_api(config: ProxyConfig) -> FastAPI:
     """Create FastAPI application with the given configuration"""
@@ -36,7 +42,7 @@ def create_api(config: ProxyConfig) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         """Manage HTTP client lifecycle"""
-        async with httpx.AsyncClient(base_url=f'http://{config.client_host}:{config.client_port}') as client:
+        async with httpx.AsyncClient() as client:
             app.state.client = client
             yield
 
@@ -45,19 +51,19 @@ def create_api(config: ProxyConfig) -> FastAPI:
 
     @base_route.get('/latest-block')
     async def forward_latest_block(request: Request):
-        return await forward_request(request)
+        return await forward_request(request, config)
 
     @base_route.get('/asset')
     async def forward_asset(request: Request):
-        return await forward_request(request)
+        return await forward_request(request, config)
 
     @base_route.get('/pair')
     async def forward_pair(request: Request):
-        return await forward_request(request)
+        return await forward_request(request, config)
 
     @base_route.get('/events')
     async def forward_events(request: Request):
-        return await forward_request(request, clean_json)
+        return await forward_request(request, config, transform=transform_events)
 
     app.include_router(base_route)
 
@@ -94,14 +100,73 @@ def remove_none_fields(data: Any) -> Any:
     return data
 
 
-def clean_json(data: bytes) -> bytes:
+async def get_pool_from_pair(pair_id: str, client: httpx.AsyncClient) -> dict[str, Any]:
+    # query ReserveID($pair_id: String!) {
+    #   dex_pair(where: {id: {_eq: $pair_id}}) {
+    #     dex_pool {
+    #       dex_pool_id
+    #       lp_token_id
+    #     }
+    #   }
+    # }
+    # TODO: ensure dict and response['data']['dex_pair'][0]
+    ...
+
+
+# TODO: could be decimal
+async def get_reserves_by_id(asset_pool: str) -> int:
+    # asset_pool = asset_id:pool_id
+    # query GetReserves($asset_pool: String!) {
+    #   balanceHistory(limit: 1, order_by: {id: desc}, where: {assetAccount: {_eq: $asset_pool}}) {
+    #     balance
+    #   }
+    # }
+    ...
+
+
+# TODO: could be decimal
+async def get_reserves_by_lp(lp_token_id: str) -> int:
+    # query GetReservesLP($lp_token_id: Int) {
+    #   supplyHistory(order_by: {id: desc}, limit: 1, where: {assetId: {_eq: $lp_token_id}}) {
+    #     supply
+    #   }
+    # }
+    ...
+
+async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.AsyncClient) -> Any:
+    # TODO: add fallback with error printing and skiping reserves
+    pairs = [e['pairId'] for e in data.get('events', [])]
+    # NOTE: pair -> (asset0_id, asset1_id, pool_id, lp_token_id)
+    pairs_dict = {}
+    for pair in pairs:
+        response = await get_pool_from_pair(pair, client)
+        if response['data']['dex_pair']:
+            pair_info = response['data']['dex_pair'][0]
+            pairs_dict[pair] = (pair_info['dex_pool']['dex_pool_id'],
+                                pair_info['dex_pool']['lp_token_id'])
+
+    for event in data.get('events', []):
+        pool_id, lp_token_id = pairs_dict.get(event['pairId'], (None, None))
+        asset0_id, asset1_id = event.get('asset0In') or event.get('asset0Out'), event.get('asset1In') or event.get('asset1Out')
+
+        event['reserves'] = {
+            'asset0': get_reserves_by_id(f'{asset0_id}:{pool_id}') if asset0_id == lp_token_id else get_reserves_by_lp(asset0_id),
+            'asset1': get_reserves_by_id(f'{asset1_id}:{pool_id}') if asset1_id == lp_token_id else get_reserves_by_lp(asset1_id),
+        }
+
+
+async def transform_events(data: bytes, config: ProxyConfig, client: httpx.AsyncClient) -> bytes:
     """Clean JSON data by removing None fields and returning bytes"""
     try:
         json_data = orjson.loads(data)
         cleaned_data = remove_none_fields(json_data)
-        return json_dumps(cleaned_data, None)
+        enriched_data = await add_reserves_to_events(cleaned_data, config, client)
+        return json_dumps(enriched_data, None)
     except orjson.JSONDecodeError as e:
         _logger.error('Failed to decode JSON content: ', e)
+        return data
+    except orjson.JSONEncodeError as e:
+        _logger.error('Failed to encode JSON content: ', e)
         return data
     except Exception as e:
         _logger.error('Error processing data: ', e)
@@ -110,11 +175,12 @@ def clean_json(data: bytes) -> bytes:
 
 async def forward_request(
     request: Request,
-    transform: Callable[[bytes], bytes] | None = None,
+    config: ProxyConfig,
+    transform: Callable[[bytes, ProxyConfig, httpx.AsyncClient], Awaitable[bytes]] | None = None,
 ) -> Response:
     # Forward request with exact headers and body
     client: httpx.AsyncClient = request.app.state.client
-    url = httpx.URL(path=request.url.path)
+    url = httpx.URL(f'http://{config.client_host}:{config.client_port}{request.url.path}')
     # header filtering, if we will need it: headers = [(k, v) for k, v in request.headers.raw if k != b'host']
     forwarded_request = client.build_request(
         method=request.method,
@@ -133,7 +199,7 @@ async def forward_request(
     if transform:
         # Read JSON content
         content = await response.aread()
-        data = transform(content)
+        data = await transform(content, config, client)
 
         headers['Content-Length'] = str(len(data)) if data else '0'
     else:
