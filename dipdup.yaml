@@ -72,6 +72,8 @@ indexes:
 
       - name: XYK.PoolCreated
         callback: hydradx.isolated_pool.on_pool_created
+      - name: XYK.PoolDestroyed
+        callback: hydradx.isolated_pool.on_pool_destroyed
       - name: XYK.BuyExecuted
         callback: hydradx.on_swap_executed
       - name: XYK.SellExecuted
