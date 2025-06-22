@@ -18,6 +18,10 @@ from fastapi.responses import Response
 _logger = logging.getLogger(__name__)
 
 
+class ReservesReceivingError(Exception):
+    """Custom exception for errors in receiving reserves data"""
+    pass
+
 @dataclass
 class ProxyConfig:
     """Configuration for the HTTP proxy"""
@@ -28,10 +32,8 @@ class ProxyConfig:
     server_host: str = '0.0.0.0'
     server_port: str = '8000'
 
-    data_url_indexer: str = 'https://dex-screener-hydration.piltover.baking-bad.org/v1/graphql'
-    data_url_reserves: str = 'https://dex-screener-hydration-reserves.piltover.baking-bad.org/v1/graphql'
-    # data_url_indexer: str = 'http://hasura:8080/v1/graphql'
-    # data_url_reserves: str = 'http://hasura_reserves:8080/v1/graphql'
+    data_url_indexer: str = 'http://hasura:8080/v1/graphql'
+    data_url_reserves: str = 'http://hasura_reserves:8080/v1/graphql'
 
 
 def create_api(config: ProxyConfig) -> FastAPI:
@@ -100,7 +102,7 @@ def remove_none_fields(data: Any) -> Any:
     return data
 
 
-async def get_pool_from_pair(pair_id: str, client: httpx.AsyncClient) -> dict[str, Any]:
+async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) -> tuple[str, str, str, str]:
     # query ReserveID($pair_id: String!) {
     #   dex_pair(where: {id: {_eq: $pair_id}}) {
     #     dex_pool {
@@ -109,50 +111,109 @@ async def get_pool_from_pair(pair_id: str, client: httpx.AsyncClient) -> dict[st
     #     }
     #   }
     # }
-    # TODO: ensure dict and response['data']['dex_pair'][0]
-    ...
+    try:
+        r = await client.post(
+            url,
+            json={
+                'query': '''
+                    query ReserveID($pair_id: String!) {
+                      dex_pair(where: {id: {_eq: $pair_id}}) {
+                        asset_0_id
+                        asset_1_id
+                        dex_pool {
+                          dex_pool_id
+                          lp_token_id
+                        }
+                      }
+                    }
+                ''',
+                'variables': {'pair_id': pair_id}
+            }
+        )
+    except httpx.RequestError as e:
+        raise ReservesReceivingError(f'Failed to get pool from pair {pair_id}') from e
+    if r.status_code != 200:
+        raise ReservesReceivingError(f'Error response from indexer for pair {pair_id}: {r.status_code} {r.text}')
+    result = r.json()
+    if not result.get('data', {}).get('dex_pair'):
+        raise ReservesReceivingError(f'No pool found for pair {pair_id}')
+    pair_data = result['data']['dex_pair'][0]
+    return pair_data['asset_0_id'], pair_data['asset_1_id'], pair_data['dex_pool']['dex_pool_id'], pair_data['dex_pool']['lp_token_id']
 
 
-# TODO: could be decimal
-async def get_reserves_by_id(asset_pool: str) -> int:
+async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: str) -> int:
     # asset_pool = asset_id:pool_id
     # query GetReserves($asset_pool: String!) {
     #   balanceHistory(limit: 1, order_by: {id: desc}, where: {assetAccount: {_eq: $asset_pool}}) {
     #     balance
     #   }
     # }
-    ...
+    try:
+        r = await client.post(
+            url,
+            json={
+                'query': '''
+                    query GetReserves($asset_pool: String!) {
+                      balanceHistory(limit: 1, order_by: {id: desc}, where: {assetAccount: {_eq: $asset_pool}}) {
+                        balance
+                      }
+                    }
+                ''',
+                'variables': {'asset_pool': asset_pool}
+            }
+        )
+    except httpx.RequestError as e:
+        raise ReservesReceivingError(f'Failed to get reserves for asset pool {asset_pool}') from e
+    if r.status_code != 200:
+        raise ReservesReceivingError(f'Error response from indexer for asset pool {asset_pool}: {r.status_code} {r.text}')
+    result = r.json()
+    if not result.get('data', {}).get('balanceHistory'):
+        raise ReservesReceivingError(f'No reserves found for asset pool {asset_pool}')
+    return result['data']['balanceHistory'][0]['balance']
 
 
 # TODO: could be decimal
-async def get_reserves_by_lp(lp_token_id: str) -> int:
+async def get_reserves_by_lp(client: httpx.AsyncClient, url: str, lp_token_id: str) -> int:
     # query GetReservesLP($lp_token_id: Int) {
     #   supplyHistory(order_by: {id: desc}, limit: 1, where: {assetId: {_eq: $lp_token_id}}) {
     #     supply
     #   }
     # }
-    ...
+    try:
+        r = await client.post(
+            url,
+            json={
+                'query': '''
+                    query GetReservesLP($lp_token_id: Int) {
+                      supplyHistory(order_by: {id: desc}, limit: 1, where: {assetId: {_eq: $lp_token_id}}) {
+                        supply
+                      }
+                    }
+                ''',
+                'variables': {'lp_token_id': lp_token_id}
+            }
+        )
+    except httpx.RequestError as e:
+        raise ReservesReceivingError(f'Failed to get reserves for LP token {lp_token_id}') from e
+    if r.status_code != 200:
+        raise ReservesReceivingError(f'Error response from indexer for LP token {lp_token_id}: {r.status_code} {r.text}')
+    result = r.json()
+    if not result.get('data', {}).get('supplyHistory'):
+        raise ReservesReceivingError(f'No reserves found for LP token {lp_token_id}')
+    return result['data']['supplyHistory'][0]['supply']
 
 async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.AsyncClient) -> Any:
-    # TODO: add fallback with error printing and skiping reserves
-    pairs = [e['pairId'] for e in data.get('events', [])]
-    # NOTE: pair -> (asset0_id, asset1_id, pool_id, lp_token_id)
-    pairs_dict = {}
-    for pair in pairs:
-        response = await get_pool_from_pair(pair, client)
-        if response['data']['dex_pair']:
-            pair_info = response['data']['dex_pair'][0]
-            pairs_dict[pair] = (pair_info['dex_pool']['dex_pool_id'],
-                                pair_info['dex_pool']['lp_token_id'])
-
     for event in data.get('events', []):
-        pool_id, lp_token_id = pairs_dict.get(event['pairId'], (None, None))
-        asset0_id, asset1_id = event.get('asset0In') or event.get('asset0Out'), event.get('asset1In') or event.get('asset1Out')
+        try:
+            asset0_id, asset1_id, pool_id, lp_token_id = await get_pool_from_pair(client, config.data_url_indexer, event['pairId'])
 
-        event['reserves'] = {
-            'asset0': get_reserves_by_id(f'{asset0_id}:{pool_id}') if asset0_id == lp_token_id else get_reserves_by_lp(asset0_id),
-            'asset1': get_reserves_by_id(f'{asset1_id}:{pool_id}') if asset1_id == lp_token_id else get_reserves_by_lp(asset1_id),
-        }
+            event['reserves'] = {
+                'asset0': await get_reserves_by_id(client, config.data_url_reserves, f'{asset0_id}:{pool_id}') if asset0_id != lp_token_id else await get_reserves_by_lp(client, config.data_url_reserves, asset0_id),
+                'asset1': await get_reserves_by_id(client, config.data_url_reserves, f'{asset1_id}:{pool_id}') if asset1_id != lp_token_id else await get_reserves_by_lp(client, config.data_url_reserves, asset1_id),
+            }
+        except ReservesReceivingError as e:
+            _logger.error('Error receiving reserves data: %s', e)
+            continue
 
 
 async def transform_events(data: bytes, config: ProxyConfig, client: httpx.AsyncClient) -> bytes:
@@ -160,8 +221,8 @@ async def transform_events(data: bytes, config: ProxyConfig, client: httpx.Async
     try:
         json_data = orjson.loads(data)
         cleaned_data = remove_none_fields(json_data)
-        enriched_data = await add_reserves_to_events(cleaned_data, config, client)
-        return json_dumps(enriched_data, None)
+        await add_reserves_to_events(cleaned_data, config, client)
+        return json_dumps(cleaned_data, None)
     except orjson.JSONDecodeError as e:
         _logger.error('Failed to decode JSON content: ', e)
         return data
