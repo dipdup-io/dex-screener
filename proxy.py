@@ -20,7 +20,9 @@ _logger = logging.getLogger(__name__)
 
 class ReservesReceivingError(Exception):
     """Custom exception for errors in receiving reserves data"""
+
     pass
+
 
 @dataclass
 class ProxyConfig:
@@ -115,7 +117,7 @@ async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) 
         r = await client.post(
             url,
             json={
-                'query': '''
+                'query': """
                     query ReserveID($pair_id: String!) {
                       dex_pair(where: {id: {_eq: $pair_id}}) {
                         asset_0_id
@@ -126,9 +128,9 @@ async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) 
                         }
                       }
                     }
-                ''',
-                'variables': {'pair_id': pair_id}
-            }
+                """,
+                'variables': {'pair_id': pair_id},
+            },
         )
     except httpx.RequestError as e:
         raise ReservesReceivingError(f'Failed to get pool from pair {pair_id}') from e
@@ -138,7 +140,12 @@ async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) 
     if not result.get('data', {}).get('dex_pair'):
         raise ReservesReceivingError(f'No pool found for pair {pair_id}')
     pair_data = result['data']['dex_pair'][0]
-    return pair_data['asset_0_id'], pair_data['asset_1_id'], pair_data['dex_pool']['dex_pool_id'], pair_data['dex_pool']['lp_token_id']
+    return (
+        pair_data['asset_0_id'],
+        pair_data['asset_1_id'],
+        pair_data['dex_pool']['dex_pool_id'],
+        pair_data['dex_pool']['lp_token_id'],
+    )
 
 
 async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: str) -> int:
@@ -152,20 +159,22 @@ async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: st
         r = await client.post(
             url,
             json={
-                'query': '''
+                'query': """
                     query GetReserves($asset_pool: String!) {
                       balanceHistory(limit: 1, order_by: {id: desc}, where: {assetAccount: {_eq: $asset_pool}}) {
                         balance
                       }
                     }
-                ''',
-                'variables': {'asset_pool': asset_pool}
-            }
+                """,
+                'variables': {'asset_pool': asset_pool},
+            },
         )
     except httpx.RequestError as e:
         raise ReservesReceivingError(f'Failed to get reserves for asset pool {asset_pool}') from e
     if r.status_code != 200:
-        raise ReservesReceivingError(f'Error response from indexer for asset pool {asset_pool}: {r.status_code} {r.text}')
+        raise ReservesReceivingError(
+            f'Error response from indexer for asset pool {asset_pool}: {r.status_code} {r.text}'
+        )
     result = r.json()
     if not result.get('data', {}).get('balanceHistory'):
         raise ReservesReceivingError(f'No reserves found for asset pool {asset_pool}')
@@ -183,33 +192,42 @@ async def get_reserves_by_lp(client: httpx.AsyncClient, url: str, lp_token_id: s
         r = await client.post(
             url,
             json={
-                'query': '''
+                'query': """
                     query GetReservesLP($lp_token_id: Int) {
                       supplyHistory(order_by: {id: desc}, limit: 1, where: {assetId: {_eq: $lp_token_id}}) {
                         supply
                       }
                     }
-                ''',
-                'variables': {'lp_token_id': lp_token_id}
-            }
+                """,
+                'variables': {'lp_token_id': lp_token_id},
+            },
         )
     except httpx.RequestError as e:
         raise ReservesReceivingError(f'Failed to get reserves for LP token {lp_token_id}') from e
     if r.status_code != 200:
-        raise ReservesReceivingError(f'Error response from indexer for LP token {lp_token_id}: {r.status_code} {r.text}')
+        raise ReservesReceivingError(
+            f'Error response from indexer for LP token {lp_token_id}: {r.status_code} {r.text}'
+        )
     result = r.json()
     if not result.get('data', {}).get('supplyHistory'):
         raise ReservesReceivingError(f'No reserves found for LP token {lp_token_id}')
     return result['data']['supplyHistory'][0]['supply']
 
+
 async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.AsyncClient) -> Any:
     for event in data.get('events', []):
         try:
-            asset0_id, asset1_id, pool_id, lp_token_id = await get_pool_from_pair(client, config.data_url_indexer, event['pairId'])
+            asset0_id, asset1_id, pool_id, lp_token_id = await get_pool_from_pair(
+                client, config.data_url_indexer, event['pairId']
+            )
 
             event['reserves'] = {
-                'asset0': await get_reserves_by_id(client, config.data_url_reserves, f'{asset0_id}:{pool_id}') if asset0_id != lp_token_id else await get_reserves_by_lp(client, config.data_url_reserves, asset0_id),
-                'asset1': await get_reserves_by_id(client, config.data_url_reserves, f'{asset1_id}:{pool_id}') if asset1_id != lp_token_id else await get_reserves_by_lp(client, config.data_url_reserves, asset1_id),
+                'asset0': await get_reserves_by_id(client, config.data_url_reserves, f'{asset0_id}:{pool_id}')
+                if asset0_id != lp_token_id
+                else await get_reserves_by_lp(client, config.data_url_reserves, asset0_id),
+                'asset1': await get_reserves_by_id(client, config.data_url_reserves, f'{asset1_id}:{pool_id}')
+                if asset1_id != lp_token_id
+                else await get_reserves_by_lp(client, config.data_url_reserves, asset1_id),
             }
         except ReservesReceivingError as e:
             _logger.error('Error receiving reserves data: %s', e)
