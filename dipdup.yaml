@@ -101,10 +101,20 @@ indexes:
         callback: hydradx.on_swap_executed
 
 custom:
-  # NOTE: See `hooks`
+  # NOTE: See `hooks/`
   syncing_blocks_refresh_period:
     minutes: 1
   realtime_blocks_refresh_period:
     seconds: 10
-  # NOTE: See `cli.py`
-  proxy: {}
+
+  # NOTE See `proxy.py`
+  proxy:
+    client_host: ${PROXY_CLIENT_HOST:-'hasura'}
+    client_port: ${PROXY_CLIENT_PORT:-'8080'}
+
+    server_url_path: ${PROXY_SERVER_URL_PATH:-'/v1/graphql'}
+    server_host: ${PROXY_SERVER_HOST:-'0.0.0.0'}
+    server_port: ${PROXY_SERVER_PORT:-'8000'}
+
+    data_url_indexer: ${PROXY_DATA_URL_INDEXER:-'http://hasura:8080/v1/graphql'}
+    data_url_reserves: ${PROXY_DATA_URL_RESERVES:-'http://hasura_reserves:8080/v1/graphql'}
