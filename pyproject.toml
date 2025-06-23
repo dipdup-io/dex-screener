@@ -10,6 +10,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "cachetools>=6.1.0",
     "dipdup==8.4.2",
     "fastapi>=0.115.12",
 ]
@@ -19,6 +20,7 @@ dev = [
     "ruff>=0.9.2",
     "mypy>=1.14.1",
     "pytest>=8.3.5",
+    "types-cachetools>=6.0.0.20250525",
 ]
 
 [tool.ruff]

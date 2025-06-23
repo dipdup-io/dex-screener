@@ -9,13 +9,20 @@ from typing import Any
 
 import httpx
 import orjson
+from cachetools import Cache
+from cachetools import TTLCache
+from cachetools import cached
 from dipdup.utils import json_dumps
 from fastapi import APIRouter
 from fastapi import FastAPI
 from fastapi import Request
 from fastapi.responses import Response
 
+CACHE_SIZE = 10000
+CACHE_TTL = 60 * 60  # 1 hour
+
 _logger = logging.getLogger(__name__)
+_client: httpx.AsyncClient | None = None
 
 
 class ReservesReceivingError(Exception):
@@ -45,9 +52,12 @@ def create_api(config: ProxyConfig) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
+        global _client
+
         """Manage HTTP client lifecycle"""
         async with httpx.AsyncClient() as client:
             app.state.client = client
+            _client = client
             yield
 
     app = FastAPI(lifespan=lifespan)
@@ -106,9 +116,10 @@ def remove_none_fields(data: Any) -> Any:
     return data
 
 
-async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) -> tuple[int, int, str, int]:
+@cached(cache=Cache())
+async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int]:
     try:
-        r = await client.post(
+        r = await _client.post(
             url,
             json={
                 'query': """
@@ -142,9 +153,10 @@ async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) 
     )
 
 
-async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: str) -> str:
+@cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
+async def get_reserves_by_id(url: str, asset_pool: str) -> str:
     try:
-        r = await client.post(
+        r = await _client.post(
             url,
             json={
                 'query': """
@@ -169,9 +181,10 @@ async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: st
     return result['data']['balanceHistory'][0]['balance']
 
 
-async def get_reserves_by_lp(client: httpx.AsyncClient, url: str, lp_token_id: int) -> str:
+@cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
+async def get_reserves_by_lp(url: str, lp_token_id: int) -> str:
     try:
-        r = await client.post(
+        r = await _client.post(
             url,
             json={
                 'query': """
@@ -196,15 +209,10 @@ async def get_reserves_by_lp(client: httpx.AsyncClient, url: str, lp_token_id: i
     return result['data']['supplyHistory'][0]['supply']
 
 
-_decimals: dict[int, int] = {}
-
-
-async def get_decimals_by_asset_id(client: httpx.AsyncClient, url: str, asset_id: int) -> int:
-    if asset_id in _decimals:
-        return _decimals[asset_id]
-
+@cached(cache=Cache())
+async def get_decimals_by_asset_id(url: str, asset_id: int) -> int:
     try:
-        r = await client.post(
+        r = await _client.post(
             url,
             json={
                 'query': """
@@ -225,9 +233,7 @@ async def get_decimals_by_asset_id(client: httpx.AsyncClient, url: str, asset_id
     if not result.get('data', {}).get('dex_asset'):
         raise ReservesReceivingError(f'No asset found for id {asset_id}')
 
-    decimals = result['data']['dex_asset'][0]['decimals']
-    _decimals[asset_id] = decimals
-    return decimals
+    return result['data']['dex_asset'][0]['decimals']
 
 
 async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.AsyncClient) -> Any:
@@ -293,7 +299,7 @@ async def forward_request(
         content=request.stream(),
     )
     _logger.info('Forwarding request to %s', forwarded_request.url)
-    response = await client.send(forwarded_request)
+    response = await _client.send(forwarded_request)
 
     headers = response.headers.copy()
     headers.pop('Content-Encoding', None)
