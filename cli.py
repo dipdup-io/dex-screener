@@ -21,7 +21,7 @@ async def proxy(ctx) -> None:
 
     config: DipDupConfig = ctx.obj.config
 
-    proxy_config = ProxyConfig(config.custom['proxy']) if config.custom['proxy'] else ProxyConfig()
+    proxy_config = ProxyConfig(**config.custom['proxy'])
 
     api = create_api(proxy_config)
 
