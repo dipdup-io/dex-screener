@@ -106,7 +106,7 @@ def remove_none_fields(data: Any) -> Any:
     return data
 
 
-async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) -> tuple[str, str, str, str]:
+async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) -> tuple[int, int, str, int]:
     try:
         r = await client.post(
             url,
@@ -142,7 +142,7 @@ async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) 
     )
 
 
-async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: str) -> int:
+async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: str) -> str:
     try:
         r = await client.post(
             url,
@@ -169,8 +169,7 @@ async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: st
     return result['data']['balanceHistory'][0]['balance']
 
 
-# TODO: Could be decimal
-async def get_reserves_by_lp(client: httpx.AsyncClient, url: str, lp_token_id: str) -> int:
+async def get_reserves_by_lp(client: httpx.AsyncClient, url: str, lp_token_id: int) -> str:
     try:
         r = await client.post(
             url,
@@ -197,6 +196,31 @@ async def get_reserves_by_lp(client: httpx.AsyncClient, url: str, lp_token_id: s
     return result['data']['supplyHistory'][0]['supply']
 
 
+async def get_decimals_by_asset_id(client: httpx.AsyncClient, url: str, asset_id: int) -> int:
+    try:
+        r = await client.post(
+            url,
+            json={
+                'query': """
+                    query GetDecimals($asset_id: Int) {
+                      dex_asset(where: {id: {_eq: $asset_id}}) {
+                        decimals
+                      }
+                    }
+                """,
+                'variables': {'asset_id': asset_id},
+            },
+        )
+    except httpx.RequestError as e:
+        raise ReservesReceivingError(f'Failed to get decimals for asset {asset_id}') from e
+    if r.status_code != 200:
+        raise ReservesReceivingError(f'Error response from indexer for asset {asset_id}: {r.status_code} {r.text}')
+    result = r.json()
+    if not result.get('data', {}).get('dex_asset'):
+        raise ReservesReceivingError(f'No asset found for id {asset_id}')
+    return result['data']['dex_asset'][0]['decimals']
+
+
 async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.AsyncClient) -> Any:
     for event in data.get('events', []):
         try:
@@ -204,13 +228,20 @@ async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.A
                 client, config.data_url_indexer, event['pairId']
             )
 
+            if asset0_id != lp_token_id:
+                asset0_reserves = await get_reserves_by_id(client, config.data_url_reserves, f'{asset0_id}:{pool_id}')
+            else:
+                asset0_reserves = await get_reserves_by_lp(client, config.data_url_reserves, asset0_id)
+            if asset1_id != lp_token_id:
+                asset1_reserves = await get_reserves_by_id(client, config.data_url_reserves, f'{asset1_id}:{pool_id}')
+            else:
+                asset1_reserves = await get_reserves_by_lp(client, config.data_url_reserves, asset1_id)
+
+            asset0_decimals = await get_decimals_by_asset_id(client, config.data_url_indexer, asset0_id)
+            asset1_decimals = await get_decimals_by_asset_id(client, config.data_url_indexer, asset1_id)
             event['reserves'] = {
-                'asset0': await get_reserves_by_id(client, config.data_url_reserves, f'{asset0_id}:{pool_id}')
-                if asset0_id != lp_token_id
-                else await get_reserves_by_lp(client, config.data_url_reserves, asset0_id),
-                'asset1': await get_reserves_by_id(client, config.data_url_reserves, f'{asset1_id}:{pool_id}')
-                if asset1_id != lp_token_id
-                else await get_reserves_by_lp(client, config.data_url_reserves, asset1_id),
+                'asset0': float(asset0_reserves) / (10**asset0_decimals),
+                'asset1': float(asset1_reserves) / (10**asset1_decimals),
             }
         except ReservesReceivingError as e:
             _logger.error('Error receiving reserves data: %s', e)
