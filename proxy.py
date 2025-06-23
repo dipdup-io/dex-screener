@@ -196,7 +196,13 @@ async def get_reserves_by_lp(client: httpx.AsyncClient, url: str, lp_token_id: i
     return result['data']['supplyHistory'][0]['supply']
 
 
+_decimals: dict[int, int] = {}
+
+
 async def get_decimals_by_asset_id(client: httpx.AsyncClient, url: str, asset_id: int) -> int:
+    if asset_id in _decimals:
+        return _decimals[asset_id]
+
     try:
         r = await client.post(
             url,
@@ -218,7 +224,10 @@ async def get_decimals_by_asset_id(client: httpx.AsyncClient, url: str, asset_id
     result = r.json()
     if not result.get('data', {}).get('dex_asset'):
         raise ReservesReceivingError(f'No asset found for id {asset_id}')
-    return result['data']['dex_asset'][0]['decimals']
+
+    decimals = result['data']['dex_asset'][0]['decimals']
+    _decimals[asset_id] = decimals
+    return decimals
 
 
 async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.AsyncClient) -> Any:
