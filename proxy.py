@@ -94,10 +94,12 @@ def remove_none_fields(data: Any) -> Any:
             item.pop('asset1In', None)
         if item.get('asset1Out') is None:
             item.pop('asset1Out', None)
+        if item.get('priceNative') is None:
+            item.pop('priceNative', None)
         if (reserves := item.get('reserves')) is not None:
-            if reserves.get('asset0') is None or reserves.get('asset0') == 'None':
+            if reserves.get('asset0') in (None, 'None'):
                 reserves.pop('asset0', None)
-            if reserves.get('asset1') is None or reserves.get('asset1') == 'None':
+            if reserves.get('asset1') in (None, 'None'):
                 reserves.pop('asset1', None)
             if len(reserves) < 2:
                 item.pop('reserves', None)
@@ -105,14 +107,6 @@ def remove_none_fields(data: Any) -> Any:
 
 
 async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) -> tuple[str, str, str, str]:
-    # query ReserveID($pair_id: String!) {
-    #   dex_pair(where: {id: {_eq: $pair_id}}) {
-    #     dex_pool {
-    #       dex_pool_id
-    #       lp_token_id
-    #     }
-    #   }
-    # }
     try:
         r = await client.post(
             url,
@@ -149,12 +143,6 @@ async def get_pool_from_pair(client: httpx.AsyncClient, url: str, pair_id: str) 
 
 
 async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: str) -> int:
-    # asset_pool = asset_id:pool_id
-    # query GetReserves($asset_pool: String!) {
-    #   balanceHistory(limit: 1, order_by: {id: desc}, where: {assetAccount: {_eq: $asset_pool}}) {
-    #     balance
-    #   }
-    # }
     try:
         r = await client.post(
             url,
@@ -181,13 +169,8 @@ async def get_reserves_by_id(client: httpx.AsyncClient, url: str, asset_pool: st
     return result['data']['balanceHistory'][0]['balance']
 
 
-# TODO: could be decimal
+# TODO: Could be decimal
 async def get_reserves_by_lp(client: httpx.AsyncClient, url: str, lp_token_id: str) -> int:
-    # query GetReservesLP($lp_token_id: Int) {
-    #   supplyHistory(order_by: {id: desc}, limit: 1, where: {assetId: {_eq: $lp_token_id}}) {
-    #     supply
-    #   }
-    # }
     try:
         r = await client.post(
             url,
