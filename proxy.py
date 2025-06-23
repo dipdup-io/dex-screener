@@ -9,9 +9,9 @@ from typing import Any
 
 import httpx
 import orjson
+from asyncache import cached  # type: ignore[import-untyped]`
 from cachetools import Cache
 from cachetools import TTLCache
-from cachetools import cached
 from dipdup.utils import json_dumps
 from fastapi import APIRouter
 from fastapi import FastAPI
