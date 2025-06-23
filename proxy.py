@@ -116,10 +116,10 @@ def remove_none_fields(data: Any) -> Any:
     return data
 
 
-@cached(cache=Cache())
+@cached(cache=Cache(CACHE_SIZE))
 async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int]:
     try:
-        r = await _client.post(
+        r = await _client.post(  # type: ignore[union-attr]
             url,
             json={
                 'query': """
@@ -156,7 +156,7 @@ async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int
 @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
 async def get_reserves_by_id(url: str, asset_pool: str) -> str:
     try:
-        r = await _client.post(
+        r = await _client.post(  # type: ignore[union-attr]
             url,
             json={
                 'query': """
@@ -184,7 +184,7 @@ async def get_reserves_by_id(url: str, asset_pool: str) -> str:
 @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
 async def get_reserves_by_lp(url: str, lp_token_id: int) -> str:
     try:
-        r = await _client.post(
+        r = await _client.post(  # type: ignore[union-attr]
             url,
             json={
                 'query': """
@@ -209,10 +209,10 @@ async def get_reserves_by_lp(url: str, lp_token_id: int) -> str:
     return result['data']['supplyHistory'][0]['supply']
 
 
-@cached(cache=Cache())
+@cached(cache=Cache(CACHE_SIZE))
 async def get_decimals_by_asset_id(url: str, asset_id: int) -> int:
     try:
-        r = await _client.post(
+        r = await _client.post(  # type: ignore[union-attr]
             url,
             json={
                 'query': """
@@ -240,20 +240,20 @@ async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.A
     for event in data.get('events', []):
         try:
             asset0_id, asset1_id, pool_id, lp_token_id = await get_pool_from_pair(
-                client, config.data_url_indexer, event['pairId']
+                config.data_url_indexer, event['pairId']
             )
 
             if asset0_id != lp_token_id:
-                asset0_reserves = await get_reserves_by_id(client, config.data_url_reserves, f'{asset0_id}:{pool_id}')
+                asset0_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset0_id}:{pool_id}')
             else:
-                asset0_reserves = await get_reserves_by_lp(client, config.data_url_reserves, asset0_id)
+                asset0_reserves = await get_reserves_by_lp(config.data_url_reserves, asset0_id)
             if asset1_id != lp_token_id:
-                asset1_reserves = await get_reserves_by_id(client, config.data_url_reserves, f'{asset1_id}:{pool_id}')
+                asset1_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset1_id}:{pool_id}')
             else:
-                asset1_reserves = await get_reserves_by_lp(client, config.data_url_reserves, asset1_id)
+                asset1_reserves = await get_reserves_by_lp(config.data_url_reserves, asset1_id)
 
-            asset0_decimals = await get_decimals_by_asset_id(client, config.data_url_indexer, asset0_id)
-            asset1_decimals = await get_decimals_by_asset_id(client, config.data_url_indexer, asset1_id)
+            asset0_decimals = await get_decimals_by_asset_id(config.data_url_indexer, asset0_id)
+            asset1_decimals = await get_decimals_by_asset_id(config.data_url_indexer, asset1_id)
             event['reserves'] = {
                 'asset0': float(asset0_reserves) / (10**asset0_decimals),
                 'asset1': float(asset1_reserves) / (10**asset1_decimals),
@@ -299,7 +299,7 @@ async def forward_request(
         content=request.stream(),
     )
     _logger.info('Forwarding request to %s', forwarded_request.url)
-    response = await _client.send(forwarded_request)
+    response = await _client.send(forwarded_request)  # type: ignore[union-attr]
 
     headers = response.headers.copy()
     headers.pop('Content-Encoding', None)
