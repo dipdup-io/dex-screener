@@ -128,7 +128,7 @@ async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int
                         asset_0_id
                         asset_1_id
                         dex_pool {
-                          dex_pool_id
+                          account
                           lp_token_id
                         }
                       }
@@ -148,7 +148,7 @@ async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int
     return (
         pair_data['asset_0_id'],
         pair_data['asset_1_id'],
-        pair_data['dex_pool']['dex_pool_id'],
+        pair_data['dex_pool']['account'],
         pair_data['dex_pool']['lp_token_id'],
     )
 
