@@ -6,6 +6,7 @@ from dex_screener.models import Asset
 async def on_reindex(
     ctx: HookContext,
 ) -> None:
+    return
     await ctx.execute_sql_script('on_reindex')
 
     assets = []

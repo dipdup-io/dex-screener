@@ -95,6 +95,8 @@ async def batch(
 
         await ctx.fire_matched_handler(handler)
 
+    return
+
     if RuntimeFlag.blocks_refresh_condition():
         ctx.logger.info('Processing refresh `dex_block`...')
         await ctx.execute_sql_script('refresh_blocks.01_drop_unused_blocks')

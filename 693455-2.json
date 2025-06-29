@@ -1,0 +1,34 @@
+{
+    "code": 0,
+    "message": "Success",
+    "generated_at": 1751170101,
+    "data": [
+        {
+            "extrinsic_index": "693455-2",
+            "params": [
+                {
+                    "name": "call",
+                    "type": "Call",
+                    "type_name": "Box<<T as Config>::Call>",
+                    "value": {
+                        "call_index": "0105",
+                        "call_module": "System",
+                        "call_name": "set_storage",
+                        "params": [
+                            {
+                                "name": "items",
+                                "type": "Vec<Tuple:Vec<U8>Vec<U8>>",
+                                "value": [
+                                    {
+                                        "col1": "1754677a24055221d22db56f83f5e21390895d6c6b21a85c004b8942c3bc35ae",
+                                        "col2": "1c83220b0d0c0c252dddd6a98c9b643e34625419b646c4a6447583c92c01dbcc"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -51,6 +51,8 @@ indexes:
         callback: hydradx.currencies.on_balance_updated
       - name: Currencies.Withdrawn
         callback: hydradx.currencies.on_balance_updated
+      - name: Currencies.BalanceUpdated
+        callback: hydradx.currencies.on_balance_updated
       - name: Currencies.Transferred
         callback: hydradx.currencies.on_balance_transfer
 

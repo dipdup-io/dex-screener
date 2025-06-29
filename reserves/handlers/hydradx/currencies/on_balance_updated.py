@@ -5,10 +5,11 @@ from reserves.handlers.batch import RuntimeFlag
 from reserves.models import BalanceHistory
 from reserves.models import BalanceUpdateEvent
 from reserves.models import SupplyHistory
+from reserves.types.hydradx.substrate_events.currencies_balance_updated import CurrenciesBalanceUpdatedPayload
 from reserves.types.hydradx.substrate_events.currencies_deposited import CurrenciesDepositedPayload
 from reserves.types.hydradx.substrate_events.currencies_withdrawn import CurrenciesWithdrawnPayload
 
-CurrenciesUpdatePayload = CurrenciesDepositedPayload | CurrenciesWithdrawnPayload
+CurrenciesUpdatePayload = CurrenciesDepositedPayload | CurrenciesWithdrawnPayload | CurrenciesBalanceUpdatedPayload
 
 
 async def on_balance_updated(
@@ -25,6 +26,8 @@ async def on_balance_updated(
         case 'Currencies.Withdrawn' | 'Tokens.Withdrawn':
             account = event.payload['who']
             balance_update = -event.payload['amount']
+        case 'Currencies.BalanceUpdated':
+            pass
         case _:
             raise ValueError(event)
 

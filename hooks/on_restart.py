@@ -12,6 +12,9 @@ from dex_screener.models.dex_fields import Account
 async def on_restart(
     ctx: HookContext,
 ) -> None:
+    ctx.get_substrate_datasource('subscan')
+
+    return
     await ctx.execute_sql_script('on_restart')
 
     blocks_refresh_period_params = ctx.config.custom['syncing_blocks_refresh_period']
