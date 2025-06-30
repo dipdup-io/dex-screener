@@ -67,4 +67,3 @@ async def on_position_updated(
     fields.update({'event_type': event_type})
 
     await DexEvent.create(**fields)
-    

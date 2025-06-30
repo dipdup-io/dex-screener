@@ -76,6 +76,8 @@ indexes:
       - name: Balances.Transfer
         callback: hydradx.balances.on_balance_transfer
 
+      - name: Sudo.Sudid
+        callback: hydradx.on_sudo_sudid
 
 advanced:
   reindex:
