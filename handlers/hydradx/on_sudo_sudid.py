@@ -1,4 +1,6 @@
+from functools import cache
 from pathlib import Path
+from turtle import st
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 import orjson
@@ -7,48 +9,51 @@ from dipdup.abi.substrate import decode_arg
 from dex_screener import models as models
 from dex_screener.types.hydradx.substrate_events.sudo_sudid import SudoSudidPayload
 
+# NOTE: It's not an original xxhash, but a custom implementation
+from aiosubstrate.utils.hasher import xxh128 as substrate_xxh128
 
-import json
-import xxhash
-
-from aiosubstrate.utils.hasher import xxh128
-
-def twox_128(x):
-    return xxh128(x).hex()
-
-pallet_xxs  = {}
-storage_xxs = {}
+from models.dex_fields import Any
 
 
-def get_prefixes():
+known = []
+
+@cache
+def get_prefix_hashes() -> tuple[dict[str, str], dict[str, str]]:
+    pallet_xxs  = {}
+    storage_xxs = {}
+
     metadata_path = Path(__file__).parent.parent.parent / 'abi' / 'hydradx' / 'v313.json'
     metadata = orjson.loads(metadata_path.read_bytes())
 
     for pallet in metadata:
         name = pallet['name']
-        hash_hex = twox_128(name)
+        hash_hex = substrate_xxh128(name).hex()
         pallet_xxs[hash_hex] = name
-
-        print(f"{name}: {hash_hex}")
 
         for storage in pallet.get('storage') or []:
             storage_name = storage['name']
-            storage_hash_hex = twox_128(storage_name)
+            storage_hash_hex = substrate_xxh128(storage_name).hex()
             storage_xxs[storage_hash_hex] = storage_name
 
-            print(f"  {storage_name}: {storage_hash_hex}")
+    return pallet_xxs, storage_xxs
 
-get_prefixes()
-# quit()
 
 def extract_set_storage_calls(obj):
     results = []
     if isinstance(obj, dict):
-        # If this is a set_storage call, add it
-        if obj.get("call_name") == "set_storage":
+        # Check for set_storage call in the new format
+        if (
+            obj.get("call_function") == "set_storage"
+            and obj.get("call_module") == "System"
+        ):
             results.append(obj)
-        # Always check "params" and "value" keys for further nesting
-        for key in ["params", "value"]:
+        # Check nested 'call' and 'call_args'
+        if "call" in obj:
+            results.extend(extract_set_storage_calls(obj["call"]))
+        if "call_args" in obj:
+            results.extend(extract_set_storage_calls(obj["call_args"]))
+        # Also check 'value' and 'params' for completeness
+        for key in ["value", "params"]:
             if key in obj:
                 results.extend(extract_set_storage_calls(obj[key]))
     elif isinstance(obj, list):
@@ -57,15 +62,36 @@ def extract_set_storage_calls(obj):
     return results
 
 
+def parse_set_storage_params(
+    set_storage_call: dict,
+    metadata: list,
+) -> tuple[str, Any]:
+    key = set_storage_call['params'][0]['value'][0]['col1']
+    value = set_storage_call['params'][0]['value'][0]['col2']
+    key_bytes = bytes.fromhex(key)
+    value_bytes = bytes.fromhex(value)
+
+    pallet_xxs, storage_xxs = get_prefix_hashes()
+
+    pallet_prefix = key_bytes[:16].hex()
+    storage_prefix = key_bytes[16:32].hex()
+    storage_key = key_bytes[32:].hex()
+
+    storage_name = storage_xxs[storage_prefix]
+    pallet_name = pallet_xxs[pallet_prefix]
+
+    path = f'{pallet_name}.{storage_name}'
+    if path not in known:
+        known.append(path)
+        print(f'New storage path: {path}')
+
 
 async def on_sudo_sudid(
     ctx: HandlerContext,
     event: SubstrateEvent[SudoSudidPayload],
 ) -> None:
-    # print(event.payload)
     extrinsic_index = f'{event.data.block_number}-{event.data.extrinsic_index}'
 
-    subscan = ctx.get_substrate_datasource('subscan')
     node = ctx.get_substrate_datasource('node')
 
     def decode(t, v):
@@ -75,30 +101,14 @@ async def on_sudo_sudid(
             type_=t,
             full_type=t,
         )
-        
-
-    ext_params = await subscan.request(
-        'post',
-        'scan/extrinsic/params',
-        json={'extrinsic_index': [extrinsic_index]},
-        weight=5,
-    )
-    ext_params = ext_params['data'][0]['params']
-
+    
+    # Use node to get extrinsic params
+    ext_params = await node._interface.retrieve_extrinsic_by_identifier(extrinsic_index)
+    await ext_params.retrieve_extrinsic()
+    ext_params = ext_params.extrinsic
+    # print(f'Processing sudo_sudid extrinsic: {ext_params}')
 
     set_storage_calls = extract_set_storage_calls(ext_params)
 
     for call in set_storage_calls:
-        print(call)
-        key, value = call['params'][0]['value'][0]['col1'], call['params'][0]['value'][0]['col2']
-
-
-        key_bytes = bytes.fromhex(key)
-
-        pallet_prefix = key_bytes[:16].hex()
-        print('Pallet prefix:', pallet_prefix)
-        print('Pallet name:', pallet_xxs.get(pallet_prefix, 'Unknown'))
-
-        storage_prefix = key_bytes[16:32].hex()
-        print('Storage prefix:', storage_prefix)
-        print('Storage name:', storage_xxs.get(storage_prefix, 'Unknown'))
+        parse_set_storage_params(call, node._interface.metadata)
