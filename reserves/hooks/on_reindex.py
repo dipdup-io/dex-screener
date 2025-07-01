@@ -7,6 +7,7 @@ from reserves.models import BalanceUpdateEvent
 async def on_reindex(
     ctx: HookContext,
 ) -> None:
+    return
     await ctx.execute_sql_script('on_reindex')
 
     client = ctx.get_substrate_datasource('node')._interface  # type: ignore[union-attr]
