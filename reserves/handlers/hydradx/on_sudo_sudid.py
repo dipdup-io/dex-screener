@@ -1,7 +1,5 @@
-from copy import copy
 import logging
 from functools import cache
-from pathlib import Path
 from typing import Any
 
 import orjson
@@ -10,17 +8,19 @@ from aiosubstrate import SubstrateInterface
 # NOTE: It's not an original xxhash, but a custom implementation
 from aiosubstrate.utils.hasher import xxh128 as substrate_xxh128
 from dipdup.context import HandlerContext
-from dipdup.models.substrate import SubstrateEvent, SubstrateEventData
-from scalecodec import GenericExtrinsic
-from scalecodec import ScaleBytes
-
+from dipdup.env import get_package_path
+from dipdup.models.substrate import SubstrateEvent
+from dipdup.models.substrate import SubstrateEventData
 from reserves.types.hydradx.substrate_events.balances_balance_set.v100 import V100 as BalancesBalanceSetPayload
 from reserves.types.hydradx.substrate_events.sudo_sudid import SudoSudidPayload
+from scalecodec import GenericExtrinsic
+from scalecodec import ScaleBytes
 
 _logger = logging.getLogger(__name__)
 
 _processed_extrinsics = set()
 
+_storage_filter = (('System', 'Account'),)
 
 
 async def on_sudo_sudid(
@@ -28,42 +28,36 @@ async def on_sudo_sudid(
     event: SubstrateEvent[SudoSudidPayload],
 ) -> None:
     extrinsic_index = f'{event.data.block_number}-{event.data.extrinsic_index}'
+
+    # NOTE: Multiple `Sudo.Sudid` events can be emitted in one block
     if extrinsic_index in _processed_extrinsics:
         return
 
     node = ctx.get_substrate_datasource('node')
 
-    # Use node to get extrinsic params
-    ext_params = await node._interface.retrieve_extrinsic_by_identifier(extrinsic_index)
-    await ext_params.retrieve_extrinsic()
-    ext_params = ext_params.extrinsic
+    await node._interface.init_runtime(block_id=event.level)
+    extrinsic_reciept = await node._interface.retrieve_extrinsic_by_identifier(extrinsic_index)
+    await extrinsic_reciept.retrieve_extrinsic()
+    extrinsic = extrinsic_reciept.extrinsic
 
-    set_storage_calls = extract_set_storage_calls(ext_params)
+    set_storage_calls = extract_set_storage_calls(extrinsic)
     if not set_storage_calls:
         return
 
-    print(f'Found {len(set_storage_calls)} set_storage calls in sudo_sudid extrinsic: {extrinsic_index}')
-
-    await node._interface.init_runtime(block_id=event.level)
-
-
+    ctx.logger.info(
+        'Found %s `set_storage` calls in extrinsic emitted Sudo.Sudid: %s', len(set_storage_calls), extrinsic_index
+    )
 
     for call in set_storage_calls:
-        key = call['call_args'][0]['value'][0][0]
-        value = call['call_args'][0]['value'][0][1]
+        raw_key = call['call_args'][0]['value'][0][0]
+        raw_value = call['call_args'][0]['value'][0][1]
 
-        try:
-            key, value = await decode_set_storage_call(node._interface, key, value)
-        except Exception as e:
-            _logger.error('!!! Failed to decode set_storage call: %s', e)
+        key, value = await decode_set_storage_call(node._interface, raw_key, raw_value)
+        if not key:
             continue
 
-        try:
-            free=value['data']['free'].value if value else 0
-            reserved=value['data']['reserved'].value if value else 0
-        except TypeError as e:
-            _logger.error('!!! Failed to decode balance value: %s', e)
-            continue
+        free = value['data']['free'].value if value else 0
+        reserved = value['data']['reserved'].value if value else 0
 
         decoded_args = BalancesBalanceSetPayload(
             who=key.value,
@@ -85,13 +79,20 @@ async def on_sudo_sudid(
         await ctx.fire_handler(
             name='hydradx.balances.on_balance_set',
             index='hydradx_events',
-            args=(new_event, ),
+            args=(new_event,),
         )
-    
+
     _processed_extrinsics.add(extrinsic_index)
 
-async def decode_set_storage_call(self: SubstrateInterface, key: str, value: str) -> tuple[Any, Any | None]:
+
+async def decode_set_storage_call(
+    self: SubstrateInterface,
+    key: str,
+    value: str,
+) -> tuple[Any | Any, Any | None]:
     module, storage_function, key = parse_set_storage_key(key)
+    if (module, storage_function) not in _storage_filter:
+        return (None, None)
 
     metadata_pallet = self.metadata.get_metadata_pallet(module)
     if not metadata_pallet:
@@ -111,8 +112,6 @@ async def decode_set_storage_call(self: SubstrateInterface, key: str, value: str
             return 0
         raise ValueError('Unsupported hash type')
 
-    # Determine type string
-    print(key, value)
     key_type_string = []
     for n in range(len(param_types)):
         key_type_string.append(f'[u8; {concat_hash_len(key_hashers[n])}]')
@@ -128,8 +127,9 @@ async def decode_set_storage_call(self: SubstrateInterface, key: str, value: str
 
     if isinstance(value, str) and not value.replace('\x00', ''):
         return (item_key, None)
-    # if not value.startswith('0x'):
-    #     value = '0x' + value
+
+    if '\x00' in value:
+        value = '0x' + bytes(value, 'utf-8').hex()
 
     item_value = self.runtime_config.create_scale_object(
         type_string=value_type,
@@ -144,25 +144,24 @@ async def decode_set_storage_call(self: SubstrateInterface, key: str, value: str
 
 
 @cache
-def get_prefix_hashes() -> tuple[dict[str, str], dict[str, str]]:
+def get_prefix_hashes() -> dict[str, str]:
     # FIXME: hardcode
-    metadata_path = Path(__file__).parent.parent.parent.parent / 'abi' / 'hydradx' / 'v313.json'
+    metadata_path = get_package_path('dex_screener') / 'abi' / 'hydradx' / 'v313.json'
     metadata = orjson.loads(metadata_path.read_bytes())
 
-    pallet_xxs = {}
-    storage_xxs = {}
+    xx_hashes = {}
 
     for pallet in metadata:
         name = pallet['name']
         hash_hex = substrate_xxh128(name).hex()
-        pallet_xxs[hash_hex] = name
+        xx_hashes[hash_hex] = name
 
         for storage in pallet.get('storage') or []:
             storage_name = storage['name']
             storage_hash_hex = substrate_xxh128(storage_name).hex()
-            storage_xxs[storage_hash_hex] = storage_name
+            xx_hashes[storage_hash_hex] = storage_name
 
-    return pallet_xxs, storage_xxs
+    return xx_hashes
 
 
 def extract_set_storage_calls(obj):
@@ -186,66 +185,16 @@ def extract_set_storage_calls(obj):
     return results
 
 
-def parse_set_storage_key(
-    key: str,
-):
+def parse_set_storage_key(key: str) -> tuple[str, str, str]:
+    prefix_hashes = get_prefix_hashes()
     key_bytes = bytes.fromhex(key[2:])
-    pallet_xxs, storage_xxs = get_prefix_hashes()
 
     pallet_prefix = key_bytes[:16].hex()
     storage_prefix = key_bytes[16:32].hex()
     rest = key_bytes[32:].hex()
 
     return (
-        pallet_xxs[pallet_prefix],
-        storage_xxs[storage_prefix],
+        prefix_hashes[pallet_prefix],
+        prefix_hashes[storage_prefix],
         rest,
     )
-
-
-
-
-
-#     key_bytes = bytes.fromhex(key[2:])
-#     # value_bytes = bytes.fromhex(value)
-
-#     pallet_xxs, storage_xxs = get_prefix_hashes()
-
-#     pallet_prefix = key_bytes[:16].hex()
-#     storage_prefix = key_bytes[16:32].hex()
-#     key_bytes[32:].hex()
-
-#     storage_name = storage_xxs[storage_prefix]
-#     pallet_name = pallet_xxs[pallet_prefix]
-
-#     path = f'{pallet_name}.{storage_name}'
-
-#     if path != 'System.Account':
-#         return
-
-
-#     pallet_abi = next(p for p in metadata if p['name'] == pallet_name)
-#     storage_abi = next(s for s in pallet_abi['storage'] if s['name'] == storage_name)
-
-#     key_type = storage_abi['type']['n_map_type']['key_vec'][0]
-#     value_type = storage_abi['type']['n_map_type']['value'].replace('frame_system:AccountInfo')
-
-#     decoded_key = decode_arg(
-#         runtime_config=runtime_config,
-#         value=key_bytes,
-#         type_=key_type,
-#         full_type=key_type,
-#     )
-#     decoded_value = decode_arg(
-#         runtime_config=runtime_config,
-#         value=value,
-#         type_=value_type,
-#         full_type=value_type,
-#     )
-
-#     print(f'New {path} storage value:')
-#     print(f'  - {key_type=}')
-#     print(f'  - {decoded_key=}')
-#     print(f'  - {value_type=}')
-#     print(f'  - {decoded_value=}')
-
