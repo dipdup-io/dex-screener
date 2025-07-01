@@ -1,3 +1,4 @@
+from copy import copy
 import logging
 from functools import cache
 from pathlib import Path
@@ -9,21 +10,87 @@ from aiosubstrate import SubstrateInterface
 # NOTE: It's not an original xxhash, but a custom implementation
 from aiosubstrate.utils.hasher import xxh128 as substrate_xxh128
 from dipdup.context import HandlerContext
-from dipdup.models.substrate import SubstrateEvent
+from dipdup.models.substrate import SubstrateEvent, SubstrateEventData
 from scalecodec import GenericExtrinsic
 from scalecodec import ScaleBytes
 
+from reserves.types.hydradx.substrate_events.balances_balance_set.v100 import V100 as BalancesBalanceSetPayload
 from reserves.types.hydradx.substrate_events.sudo_sudid import SudoSudidPayload
 
 _logger = logging.getLogger(__name__)
 
-
-# FIXME: hardcode
-metadata_path = Path(__file__).parent.parent.parent.parent.parent / 'abi' / 'hydradx' / 'v313.json'
-metadata = orjson.loads(metadata_path.read_bytes())
+_processed_extrinsics = set()
 
 
-async def decode_set_storage_call(self: SubstrateInterface, key: str, value: str) -> tuple[Any, Any]:
+
+async def on_sudo_sudid(
+    ctx: HandlerContext,
+    event: SubstrateEvent[SudoSudidPayload],
+) -> None:
+    extrinsic_index = f'{event.data.block_number}-{event.data.extrinsic_index}'
+    if extrinsic_index in _processed_extrinsics:
+        return
+
+    node = ctx.get_substrate_datasource('node')
+
+    # Use node to get extrinsic params
+    ext_params = await node._interface.retrieve_extrinsic_by_identifier(extrinsic_index)
+    await ext_params.retrieve_extrinsic()
+    ext_params = ext_params.extrinsic
+
+    set_storage_calls = extract_set_storage_calls(ext_params)
+    if not set_storage_calls:
+        return
+
+    print(f'Found {len(set_storage_calls)} set_storage calls in sudo_sudid extrinsic: {extrinsic_index}')
+
+    await node._interface.init_runtime(block_id=event.level)
+
+
+
+    for call in set_storage_calls:
+        key = call['call_args'][0]['value'][0][0]
+        value = call['call_args'][0]['value'][0][1]
+
+        try:
+            key, value = await decode_set_storage_call(node._interface, key, value)
+        except Exception as e:
+            _logger.error('!!! Failed to decode set_storage call: %s', e)
+            continue
+
+        try:
+            free=value['data']['free'].value if value else 0
+            reserved=value['data']['reserved'].value if value else 0
+        except TypeError as e:
+            _logger.error('!!! Failed to decode balance value: %s', e)
+            continue
+
+        decoded_args = BalancesBalanceSetPayload(
+            who=key.value,
+            free=free,
+            reserved=reserved,
+        )
+
+        new_event_data = SubstrateEventData(
+            **{
+                **event.data.__dict__,
+                'decoded_args': decoded_args,
+                'args': None,
+            }
+        )
+        new_event = SubstrateEvent(
+            data=new_event_data,
+            runtime=event.runtime,
+        )
+        await ctx.fire_handler(
+            name='hydradx.balances.on_balance_set',
+            index='hydradx_events',
+            args=(new_event, ),
+        )
+    
+    _processed_extrinsics.add(extrinsic_index)
+
+async def decode_set_storage_call(self: SubstrateInterface, key: str, value: str) -> tuple[Any, Any | None]:
     module, storage_function, key = parse_set_storage_key(key)
 
     metadata_pallet = self.metadata.get_metadata_pallet(module)
@@ -45,28 +112,43 @@ async def decode_set_storage_call(self: SubstrateInterface, key: str, value: str
         raise ValueError('Unsupported hash type')
 
     # Determine type string
+    print(key, value)
     key_type_string = []
     for n in range(len(param_types)):
         key_type_string.append(f'[u8; {concat_hash_len(key_hashers[n])}]')
         key_type_string.append(param_types[n])
 
     item_key = self.runtime_config.create_scale_object(
-        type_string=f'({", ".join(key_type_string)})', data=ScaleBytes('0x' + key), metadata=self.metadata
+        type_string=f'({", ".join(key_type_string)})',
+        data=ScaleBytes('0x' + key),
+        metadata=self.metadata,
     )
     item_key.decode()
     item_key = item_key.value_object[1]
 
-    item_value = await self.decode_scale(
-        type_string=value_type,
-        scale_bytes=value,
-        return_scale_obj=True,
-    )
+    if isinstance(value, str) and not value.replace('\x00', ''):
+        return (item_key, None)
+    # if not value.startswith('0x'):
+    #     value = '0x' + value
 
+    item_value = self.runtime_config.create_scale_object(
+        type_string=value_type,
+        data=ScaleBytes(value),
+        metadata=self.metadata,
+    )
+    item_value.decode()
+    item_value = item_value.value_object
+
+    print(item_key, item_value)
     return (item_key, item_value)
 
 
 @cache
 def get_prefix_hashes() -> tuple[dict[str, str], dict[str, str]]:
+    # FIXME: hardcode
+    metadata_path = Path(__file__).parent.parent.parent.parent / 'abi' / 'hydradx' / 'v313.json'
+    metadata = orjson.loads(metadata_path.read_bytes())
+
     pallet_xxs = {}
     storage_xxs = {}
 
@@ -121,22 +203,7 @@ def parse_set_storage_key(
     )
 
 
-async def parse_set_storage_params(
-    set_storage_call: dict,
-    interface: SubstrateInterface,
-    block_number: int,
-) -> tuple[str, Any]:
-    key = set_storage_call['call_args'][0]['value'][0][0]
-    value = set_storage_call['call_args'][0]['value'][0][1]
 
-    await interface.init_runtime(block_id=block_number)
-    key, value = await decode_set_storage_call(
-        self=interface,
-        key=key,
-        value=value,
-    )
-
-    print(key, value)
 
 
 #     key_bytes = bytes.fromhex(key[2:])
@@ -182,25 +249,3 @@ async def parse_set_storage_params(
 #     print(f'  - {value_type=}')
 #     print(f'  - {decoded_value=}')
 
-
-async def on_sudo_sudid(
-    ctx: HandlerContext,
-    event: SubstrateEvent[SudoSudidPayload],
-) -> None:
-    extrinsic_index = f'{event.data.block_number}-{event.data.extrinsic_index}'
-
-    node = ctx.get_substrate_datasource('node')
-
-    # Use node to get extrinsic params
-    ext_params = await node._interface.retrieve_extrinsic_by_identifier(extrinsic_index)
-    await ext_params.retrieve_extrinsic()
-    ext_params = ext_params.extrinsic
-
-    set_storage_calls = extract_set_storage_calls(ext_params)
-    if not set_storage_calls:
-        return
-
-    print(f'Found {len(set_storage_calls)} set_storage calls in sudo_sudid extrinsic: {extrinsic_index}')
-
-    for call in set_storage_calls:
-        await parse_set_storage_params(call, node._interface, event.data.block_number)

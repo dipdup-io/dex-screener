@@ -45,6 +45,7 @@ indexes:
       - subsquid
       - subscan
       - node
+    # first_level: 4536200
 
     handlers:
       # - name: Currencies.Deposited
@@ -63,8 +64,8 @@ indexes:
       # - name: Tokens.Transfer
       #   callback: hydradx.currencies.on_balance_transfer
 
-      # - name: Balances.BalanceSet
-      #   callback: hydradx.balances.on_balance_set
+      - name: Balances.BalanceSet
+        callback: hydradx.balances.on_balance_set
       # - name: Balances.Deposit
       #   callback: hydradx.balances.on_balance_updated
       # - name: Balances.Minted
