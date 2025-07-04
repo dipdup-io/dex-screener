@@ -1,1 +1,0 @@
-{"code":0,"message":"Success","generated_at":1751170103,"data":[{"extrinsic_index":"1444890-2","params":[{"name":"call","type":"Call","type_name":"Box<<T as Config>::Call>","value":{"call_index":"6b05","call_module":"PolkadotXcm","call_name":"force_default_xcm_version","params":[{"name":"maybe_xcm_version","type":"option<U32>","value":2}]}}]}]}
