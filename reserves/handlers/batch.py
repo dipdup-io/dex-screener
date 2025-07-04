@@ -96,8 +96,6 @@ async def batch(
     for handler in handlers:
         await ctx.fire_matched_handler(handler)
 
-    return
-
     if not RuntimeFlag.realtime:
         if EventBuffer.filled():
             await EventBuffer.flush(ctx)

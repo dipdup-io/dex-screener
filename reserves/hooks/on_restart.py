@@ -10,7 +10,6 @@ async def on_restart(
     ctx: HookContext,
 ) -> None:
     EventBuffer.buffer_limit = ctx.config.custom['event_buffer']['buffer_limit']
-    return
 
     await ctx.execute_sql_script('on_restart')
 
