@@ -41,7 +41,6 @@ indexes:
       - subsquid
       - subscan
       - node
-
     handlers:
       - name: AssetRegistry.Registered
         callback: hydradx.asset.on_asset_registered
@@ -62,6 +61,8 @@ indexes:
         callback: hydradx.omnipool.on_position_created
       - name: Omnipool.PositionDestroyed
         callback: hydradx.omnipool.on_position_destroyed
+      - name: Omnipool.PositionUpdated
+        callback: hydradx.omnipool.on_position_updated
 
       - name: Stableswap.PoolCreated
         callback: hydradx.stableswap.on_pool_created

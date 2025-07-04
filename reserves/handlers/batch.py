@@ -8,7 +8,6 @@ from dipdup.context import DipDupContext
 from dipdup.context import HandlerContext
 from dipdup.index import MatchedHandler
 from dipdup.models.substrate import SubstrateEvent
-
 from reserves.models import BalanceUpdateEvent
 
 

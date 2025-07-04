@@ -9,7 +9,7 @@ from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import Pool
 from dex_screener.models.dto import DexScreenerEventInfoDTO
-from dex_screener.service.dex.stableswap.const import DEX_PULL_ACCOUNT_MAPPING
+from dex_screener.service.dex.stableswap.const import DEX_POOL_ACCOUNT_MAPPING
 
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
@@ -31,7 +31,7 @@ class StableSwapService:
     @classmethod
     async def register_pool(cls, event: SubstrateEvent[StableswapPoolCreatedPayload]):
         dex_pool_id = event.payload['pool_id']
-        account = DEX_PULL_ACCOUNT_MAPPING[int(dex_pool_id)]
+        account = DEX_POOL_ACCOUNT_MAPPING[int(dex_pool_id)]
         pool = await Pool.create(
             account=account,
             dex_key=DexKey.StableSwap,
