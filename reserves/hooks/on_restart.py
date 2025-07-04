@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from dipdup.context import HookContext
-
 from reserves.handlers.batch import EventBuffer
 from reserves.handlers.batch import RuntimeFlag
 

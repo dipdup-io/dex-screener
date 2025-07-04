@@ -19,7 +19,7 @@ async def on_position_destroyed(
 ) -> None:
     # set omnipool position created=False
     # create exit event (and fetch data for event)
-    
+
     position: DexOmnipoolPosition = await DexOmnipoolPosition.get(
         position_id=event.payload['position_id'],
     )
@@ -53,6 +53,6 @@ async def on_position_destroyed(
         **event_data.model_dump(),
         **pool_data.model_dump(),
         **market_data.model_dump(),
-        'event_type': DexScreenerEventType.Exit
+        'event_type': DexScreenerEventType.Exit,
     }
     await DexEvent.create(**fields)

@@ -60,4 +60,3 @@ async def on_position_created(
         'event_type': DexScreenerEventType.Join,
     }
     await DexEvent.create(**fields)
-

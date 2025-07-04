@@ -61,7 +61,7 @@ async def on_position_updated(
         **event_data.model_dump(),
         **pool_data.model_dump(),
         **market_data.model_dump(),
-        'event_type': DexScreenerEventType.Join if delta_sign else DexScreenerEventType.Exit
+        'event_type': DexScreenerEventType.Join if delta_sign else DexScreenerEventType.Exit,
     }
 
     await DexEvent.create(**fields)
