@@ -1,8 +1,8 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
-from dex_screener import models as models
 from dex_screener.models import DexEvent
+from dex_screener.models import DexOmnipoolPosition
 from dex_screener.models import Pair
 from dex_screener.service.dex.omnipool.const import OMNIPOOL_HUB_ASSET_ID
 from dex_screener.service.dex.omnipool.omnipool_service import OmnipoolService
@@ -17,22 +17,20 @@ async def on_position_updated(
     ctx: HandlerContext,
     event: SubstrateEvent[OmnipoolPositionUpdatedPayload],
 ) -> None:
-    position = await models.DexOmnipoolPosition.get(position_id=event.payload['position_id'])
-    prev_amount = position.amount
-    prev_shares = position.shares
+    # update omnipool position number of shares and amount
+    # create join/exit event (and fetch data for event)
 
-    # Calculate side based on difference
+    position = await DexOmnipoolPosition.get(position_id=event.payload['position_id'])
+
     new_amount = event.payload['amount']
     new_shares = event.payload['shares']
-    if new_amount > prev_amount or new_shares > prev_shares:
-        event_type = DexScreenerEventType.Join
-    else:
-        event_type = DexScreenerEventType.Exit
 
-    position.owner = event.payload['owner']
-    position.asset_id = event.payload['asset']
-    position.amount = new_amount
-    position.shares = new_shares
+    delta_position_amount = new_amount - int(position.amount)
+    delta_position_shares = new_shares - int(position.shares)
+    delta_sign = delta_position_amount < 0
+
+    position.amount = str(new_amount)
+    position.shares = str(new_shares)
     await position.save()
 
     event_data = DexScreenerEventDataDTO(
@@ -42,28 +40,28 @@ async def on_position_updated(
         tx_index=event.data.extrinsic_index if event.data.extrinsic_index is not None else 0,
     )
 
+    pair_id = OmnipoolService.get_pair_id(position.asset_id, OMNIPOOL_HUB_ASSET_ID)
     pool_data = JoinExitEventPoolDataDTO(
-        pair_id=OmnipoolService.get_pair_id(position.asset_id, OMNIPOOL_HUB_ASSET_ID),
+        pair_id=pair_id,
     )
+
     pair = await Pair.get(id=pool_data.pair_id).prefetch_related('asset_0', 'asset_1')
-    amount_list = [
-        pair.asset_0.from_minor(position.amount),
-        pair.asset_1.from_minor(position.shares),
-    ]
+    amount_0 = pair.asset_0.from_minor(delta_position_amount)
+    amount_1 = pair.asset_1.from_minor(delta_position_shares)
     if pair.asset_0.id != position.asset_id:
-        amount_list.reverse()
+        amount_0, amount_1 = amount_1, amount_0
 
     market_data = JoinExitEventMarketDataDTO(
         maker=position.owner,
-        amount_0=str(amount_list[0]),
-        amount_1=str(amount_list[1]),
+        amount_0=str(amount_0),
+        amount_1=str(amount_1),
     )
 
     fields = {
         **event_data.model_dump(),
         **pool_data.model_dump(),
         **market_data.model_dump(),
+        'event_type': DexScreenerEventType.Join if delta_sign else DexScreenerEventType.Exit
     }
-    fields.update({'event_type': event_type})
 
     await DexEvent.create(**fields)
