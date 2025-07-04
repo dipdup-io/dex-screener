@@ -36,8 +36,16 @@ async def on_sudo_sudid(
     node = ctx.get_substrate_datasource('node')
 
     await node._interface.init_runtime(block_id=event.level)
-    extrinsic_reciept = await node._interface.retrieve_extrinsic_by_identifier(extrinsic_index)
-    await extrinsic_reciept.retrieve_extrinsic()
+    try:
+        extrinsic_reciept = await node._interface.retrieve_extrinsic_by_identifier(extrinsic_index)
+        await extrinsic_reciept.retrieve_extrinsic()
+    except ValueError as e:
+        ctx.logger.error(
+            'Failed to retrieve extrinsic %s: %s',
+            extrinsic_index,
+            e,
+        )
+        return
     extrinsic = extrinsic_reciept.extrinsic
 
     set_storage_calls = extract_set_storage_calls(extrinsic)
@@ -139,7 +147,6 @@ async def decode_set_storage_call(
     item_value.decode()
     item_value = item_value.value_object
 
-    print(item_key, item_value)
     return (item_key, item_value)
 
 
