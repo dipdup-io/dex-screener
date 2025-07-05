@@ -1,8 +1,7 @@
-from types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
-
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
+from dex_screener.types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
 from models import DexEvent
 from models import DexOmnipoolPosition
 from models import Pair
