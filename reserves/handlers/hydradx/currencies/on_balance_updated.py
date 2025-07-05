@@ -1,6 +1,5 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
-
 from reserves.handlers.batch import RuntimeFlag
 from reserves.models import BalanceHistory
 from reserves.models import BalanceUpdateEvent
@@ -19,15 +18,24 @@ async def on_balance_updated(
     ctx.logger.debug('%s event: %s-%s.', event.name, event.data.level, event.data.index)
 
     asset_id = event.payload['currency_id']
+    account = event.payload['who']
     match event.name:
         case 'Currencies.Deposited' | 'Tokens.Deposited':
-            account = event.payload['who']
             balance_update = event.payload['amount']
         case 'Currencies.Withdrawn' | 'Tokens.Withdrawn':
-            account = event.payload['who']
             balance_update = -event.payload['amount']
         case 'Currencies.BalanceUpdated':
-            pass
+            balance_obj = (
+                await BalanceHistory.filter(
+                    asset_id=asset_id,
+                    account=account,
+                )
+                .order_by('-id')
+                .first()
+            )
+            balance = 0 if balance_obj is None else balance_obj.balance
+            balance_update = event.payload['amount'] - balance
+
         case _:
             raise ValueError(event)
 

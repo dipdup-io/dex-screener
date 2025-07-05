@@ -70,11 +70,19 @@ indexes:
         callback: hydradx.on_swap_executed
       - name: Stableswap.SellExecuted
         callback: hydradx.on_swap_executed
+      - name: Stableswap.LiquidityAdded
+        callback: hydradx.stableswap.on_liquidity_added
+      - name: Stableswap.LiquidityRemoved
+        callback: hydradx.stableswap.on_liquidity_removed
 
       - name: XYK.PoolCreated
         callback: hydradx.isolated_pool.on_pool_created
       - name: XYK.PoolDestroyed
         callback: hydradx.isolated_pool.on_pool_destroyed
+      - name: XYK.LiquidityAdded
+        callback: hydradx.isolated_pool.on_liquidity_added
+      - name: XYK.LiquidityRemoved
+        callback: hydradx.isolated_pool.on_liquidity_removed
       - name: XYK.BuyExecuted
         callback: hydradx.on_swap_executed
       - name: XYK.SellExecuted
@@ -82,6 +90,12 @@ indexes:
 
       - name: LBP.PoolCreated
         callback: hydradx.lbp.on_pool_created
+      - name: LBP.PoolUpdated
+        callback: hydradx.lbp.on_pool_updated
+      - name: LBP.LiquidityAdded
+        callback: hydradx.lbp.on_liquidity_added
+      - name: LBP.LiquidityRemoved
+        callback: hydradx.lbp.on_liquidity_removed
       - name: LBP.BuyExecuted
         callback: hydradx.on_swap_executed
       - name: LBP.SellExecuted
