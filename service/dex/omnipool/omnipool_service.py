@@ -15,8 +15,8 @@ from dex_screener.service.dex.omnipool.const import OMNIPOOL_SYSTEM_ACCOUNT
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
 
+    from dex_screener.types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
     from dex_screener.types.hydradx.substrate_events.omnipool_token_added import OmnipoolTokenAddedPayload
-
 
 class OmnipoolService:
     logger = logging.getLogger('omnipool_service')
@@ -84,3 +84,27 @@ class OmnipoolService:
             pool=pool, asset=new_asset, defaults={'reserve': event.payload['initial_amount']}
         )
         cls.logger.info('Pair Asset added to pool %r: %s.', pool, new_asset)
+
+    @classmethod
+    async def register_pair_from_positions(cls, event: SubstrateEvent[OmnipoolPositionCreatedPayload]) -> Pair:
+        pool = await cls.get_pool()
+        asset_0, asset_1 = min(event.payload['asset'], OMNIPOOL_HUB_ASSET_ID), max(event.payload['asset'], OMNIPOOL_HUB_ASSET_ID)
+
+        pair_id = cls.get_pair_id(asset_0, asset_1)
+
+        event_info = DexScreenerEventInfoDTO.from_event(event)
+
+        pair = await Pair.create(
+            id=pair_id,
+            dex_key=DexKey.Omnipool,
+            asset_0_id=asset_0,
+            asset_1_id=asset_1,
+            pool=pool,
+            created_at_block_id=event_info.block_id,
+            created_at_tx_id=event_info.tx_index,
+            # fee_bps=None,
+        )
+        await pair.fetch_related('asset_0', 'asset_1')
+
+        cls.logger.info('Pair registered in pool %r: %r.', pool, pair)
+        return pair
