@@ -1,6 +1,8 @@
 import logging
 from functools import cache
+from typing import TYPE_CHECKING
 from typing import Any
+from typing import cast
 
 import orjson
 from aiosubstrate import SubstrateInterface
@@ -11,10 +13,14 @@ from dipdup.context import HandlerContext
 from dipdup.env import get_package_path
 from dipdup.models.substrate import SubstrateEvent
 from dipdup.models.substrate import SubstrateEventData
+from scalecodec import GenericExtrinsic  # type: ignore[import-untyped]
+from scalecodec import ScaleBytes
+
 from reserves.types.hydradx.substrate_events.balances_balance_set.v100 import V100 as BalancesBalanceSetPayload
 from reserves.types.hydradx.substrate_events.sudo_sudid import SudoSudidPayload
-from scalecodec import GenericExtrinsic
-from scalecodec import ScaleBytes
+
+if TYPE_CHECKING:
+    from dipdup.datasources.substrate_node import SubstrateNodeDatasource
 
 _logger = logging.getLogger(__name__)
 
@@ -36,7 +42,7 @@ async def on_sudo_sudid(
     if extrinsic_index in _processed_extrinsics:
         return
 
-    node = ctx.get_substrate_datasource('node')
+    node = cast('SubstrateNodeDatasource', ctx.get_substrate_datasource('node'))
 
     await node._interface.init_runtime(block_id=event.level)
     try:
@@ -87,7 +93,7 @@ async def on_sudo_sudid(
             }
         )
 
-        new_event = SubstrateEvent(
+        new_event: Any = SubstrateEvent(
             data=new_event_data,
             runtime=event.runtime,
         )
