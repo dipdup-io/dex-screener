@@ -1,16 +1,16 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
+from dex_screener.models import DexEvent
+from dex_screener.models import DexOmnipoolPosition
+from dex_screener.models import Pair
+from dex_screener.service.dex.omnipool.const import OMNIPOOL_HUB_ASSET_ID
+from dex_screener.service.dex.omnipool.omnipool_service import OmnipoolService
+from dex_screener.service.event.const import DexScreenerEventType
+from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
+from dex_screener.service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
+from dex_screener.service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
 from dex_screener.types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
-from models import DexEvent
-from models import DexOmnipoolPosition
-from models import Pair
-from service.dex.omnipool.const import OMNIPOOL_HUB_ASSET_ID
-from service.dex.omnipool.omnipool_service import OmnipoolService
-from service.event.const import DexScreenerEventType
-from service.event.entity.dto import DexScreenerEventDataDTO
-from service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
-from service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
 
 
 async def on_position_created(

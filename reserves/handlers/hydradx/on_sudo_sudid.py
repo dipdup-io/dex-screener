@@ -22,6 +22,9 @@ _processed_extrinsics = set()
 
 _storage_filter = (('System', 'Account'),)
 
+# NOTE: highest MAX_ID where (((MAX_INT << 16) + MAX_ID) << 1) + 1 < MAX_INT; MAX_INT = (2**63) - 1
+MAX_ID = (2**16) - 1
+
 
 async def on_sudo_sudid(
     ctx: HandlerContext,
@@ -56,7 +59,7 @@ async def on_sudo_sudid(
         'Found %s `set_storage` calls in extrinsic emitted Sudo.Sudid: %s', len(set_storage_calls), extrinsic_index
     )
 
-    for call in set_storage_calls:
+    for artificial_event_index, call in enumerate(set_storage_calls):
         raw_key = call['call_args'][0]['value'][0][0]
         raw_value = call['call_args'][0]['value'][0][1]
 
@@ -73,13 +76,17 @@ async def on_sudo_sudid(
             reserved=reserved,
         )
 
+        # NOTE: temporate hack
+        event_id = MAX_ID - event.data.index - artificial_event_index
         new_event_data = SubstrateEventData(
             **{
                 **event.data.__dict__,
+                'index': event_id,
                 'decoded_args': decoded_args,
                 'args': None,
             }
         )
+
         new_event = SubstrateEvent(
             data=new_event_data,
             runtime=event.runtime,
