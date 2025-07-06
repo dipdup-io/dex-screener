@@ -3,9 +3,9 @@ from types.hydradx.substrate_events.omnipool_position_created import OmnipoolPos
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
-from models import DexEvent
-from models import DexOmnipoolPosition
-from models import Pair
+from dex_screener.models import DexEvent
+from dex_screener.models import DexOmnipoolPosition
+from dex_screener.models import Pair
 from service.dex.omnipool.const import OMNIPOOL_HUB_ASSET_ID
 from service.dex.omnipool.omnipool_service import OmnipoolService
 from service.event.const import DexScreenerEventType
