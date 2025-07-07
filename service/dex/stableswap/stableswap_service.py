@@ -31,7 +31,14 @@ class StableSwapService:
     @classmethod
     async def register_pool(cls, event: SubstrateEvent[StableswapPoolCreatedPayload]):
         dex_pool_id = event.payload['pool_id']
-        account = DEX_POOL_ACCOUNT_MAPPING[int(dex_pool_id)]
+
+        # TODO: Extract from first liquitidyadded?
+        try:
+            account = DEX_POOL_ACCOUNT_MAPPING[int(dex_pool_id)]
+        except KeyError:
+            cls.logger.error('Unknown dex pool id %s.', dex_pool_id)
+            account = str(dex_pool_id)
+
         pool = await Pool.create(
             account=account,
             dex_key=DexKey.StableSwap,
