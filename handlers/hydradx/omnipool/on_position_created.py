@@ -41,7 +41,10 @@ async def on_position_created(
         pair_id=pair_id,
     )
 
-    pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1')
+    pair = await Pair.get_or_none(id=pair_id).prefetch_related('asset_0', 'asset_1')
+    if not pair:
+        pair = await OmnipoolService.register_pair_from_positions(event)
+
     amount_0 = pair.asset_0.from_minor(position.amount)
     amount_1 = pair.asset_1.from_minor(position.shares)
     if pair.asset_0.id != position.asset_id:
