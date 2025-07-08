@@ -47,14 +47,14 @@ indexes:
       - node
 
     handlers:
-      - name: Currencies.Deposited
-        callback: hydradx.currencies.on_balance_updated
-      - name: Currencies.Withdrawn
-        callback: hydradx.currencies.on_balance_updated
-      - name: Currencies.BalanceUpdated
-        callback: hydradx.currencies.on_balance_updated
-      - name: Currencies.Transferred
-        callback: hydradx.currencies.on_balance_transfer
+      # - name: Currencies.Deposited
+      #   callback: hydradx.currencies.on_balance_updated
+      # - name: Currencies.Withdrawn
+      #   callback: hydradx.currencies.on_balance_updated
+      # - name: Currencies.BalanceUpdated
+      #   callback: hydradx.currencies.on_balance_updated
+      # - name: Currencies.Transferred
+      #   callback: hydradx.currencies.on_balance_transfer
 
       - name: Tokens.Deposited
         callback: hydradx.currencies.on_balance_updated
@@ -76,8 +76,8 @@ indexes:
       - name: Balances.Transfer
         callback: hydradx.balances.on_balance_transfer
 
-      - name: Sudo.Sudid
-        callback: hydradx.on_sudo_sudid
+      # - name: Sudo.Sudid
+      #   callback: hydradx.on_sudo_sudid
 
 advanced:
   reindex:
