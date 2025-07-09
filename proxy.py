@@ -154,19 +154,19 @@ async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int
 
 
 @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-async def get_reserves_by_id(url: str, asset_pool: str) -> str:
+async def get_reserves_by_id(url: str, asset_pool: str, level: int) -> str:
     try:
         r = await _client.post(  # type: ignore[union-attr]
             url,
             json={
                 'query': """
-                    query GetReserves($asset_pool: String!) {
-                      balanceHistory(limit: 1, order_by: {id: desc}, where: {assetAccount: {_eq: $asset_pool}}) {
+                    query GetReserves($asset_pool: String!, $current_block_id: bigint, $next_block_id: bigint) {
+                      balanceHistory(limit: 1, order_by: {id: desc}, where: {assetAccount: {_eq: $asset_pool}, id: {_lt: $next_block_id}}) {
                         balance
                       }
                     }
                 """,
-                'variables': {'asset_pool': asset_pool},
+                'variables': {'asset_pool': asset_pool, 'next_block_id': (level + 1) << 17},
             },
         )
     except httpx.RequestError as e:
@@ -182,19 +182,19 @@ async def get_reserves_by_id(url: str, asset_pool: str) -> str:
 
 
 @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-async def get_reserves_by_lp(url: str, lp_token_id: int) -> str:
+async def get_reserves_by_lp(url: str, lp_token_id: int, level: int) -> str:
     try:
         r = await _client.post(  # type: ignore[union-attr]
             url,
             json={
                 'query': """
-                    query GetReservesLP($lp_token_id: Int) {
-                      supplyHistory(order_by: {id: desc}, limit: 1, where: {assetId: {_eq: $lp_token_id}}) {
+                    query GetReservesLP($lp_token_id: Int, $current_block_id: bigint, $next_block_id: bigint) {
+                      supplyHistory(order_by: {id: desc}, limit: 1, where: {assetId: {_eq: $lp_token_id}, id: {_lt: $next_block_id}}) {
                         supply
                       }
                     }
                 """,
-                'variables': {'lp_token_id': lp_token_id},
+                'variables': {'lp_token_id': lp_token_id, 'next_block_id': (level + 1) << 17},
             },
         )
     except httpx.RequestError as e:
@@ -243,14 +243,16 @@ async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.A
                 config.data_url_indexer, event['pairId']
             )
 
+            level = event['block']['blockNumber']
+
             if asset0_id != lp_token_id:
-                asset0_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset0_id}:{pool_id}')
+                asset0_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset0_id}:{pool_id}', level)
             else:
-                asset0_reserves = await get_reserves_by_lp(config.data_url_reserves, asset0_id)
+                asset0_reserves = await get_reserves_by_lp(config.data_url_reserves, asset0_id, level)
             if asset1_id != lp_token_id:
-                asset1_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset1_id}:{pool_id}')
+                asset1_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset1_id}:{pool_id}', level)
             else:
-                asset1_reserves = await get_reserves_by_lp(config.data_url_reserves, asset1_id)
+                asset1_reserves = await get_reserves_by_lp(config.data_url_reserves, asset1_id, level)
 
             asset0_decimals = await get_decimals_by_asset_id(config.data_url_indexer, asset0_id)
             asset1_decimals = await get_decimals_by_asset_id(config.data_url_indexer, asset1_id)
