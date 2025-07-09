@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from dex_screener.types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
     from dex_screener.types.hydradx.substrate_events.omnipool_token_added import OmnipoolTokenAddedPayload
 
+
 class OmnipoolService:
     logger = logging.getLogger('omnipool_service')
 
@@ -88,7 +89,10 @@ class OmnipoolService:
     @classmethod
     async def register_pair_from_positions(cls, event: SubstrateEvent[OmnipoolPositionCreatedPayload]) -> Pair:
         pool = await cls.get_pool()
-        asset_0, asset_1 = min(event.payload['asset'], OMNIPOOL_HUB_ASSET_ID), max(event.payload['asset'], OMNIPOOL_HUB_ASSET_ID)
+        asset_0, asset_1 = (
+            min(event.payload['asset'], OMNIPOOL_HUB_ASSET_ID),
+            max(event.payload['asset'], OMNIPOOL_HUB_ASSET_ID),
+        )
 
         pair_id = cls.get_pair_id(asset_0, asset_1)
 
