@@ -7,7 +7,7 @@ from reserves.models import BalanceUpdateEvent
 from reserves.types.hydradx.substrate_events.tokens_transfer import TokensTransferPayload
 
 
-async def on_balance_transfer(
+async def on_tokens_transfer(
     ctx: HandlerContext,
     event: SubstrateEvent[TokensTransferPayload],
 ) -> None:

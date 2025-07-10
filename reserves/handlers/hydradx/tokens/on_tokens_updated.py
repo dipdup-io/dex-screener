@@ -1,5 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
+
 from reserves.handlers.batch import RuntimeFlag
 from reserves.models import BalanceHistory
 from reserves.models import BalanceUpdateEvent
@@ -10,8 +11,7 @@ from reserves.types.hydradx.substrate_events.tokens_withdrawn import TokensWithd
 TokensUpdatePayload = TokensDepositedPayload | TokensWithdrawnPayload
 
 
-
-async def on_balance_updated(
+async def on_tokens_updated(
     ctx: HandlerContext,
     event: SubstrateEvent[TokensUpdatePayload],
 ) -> None:
