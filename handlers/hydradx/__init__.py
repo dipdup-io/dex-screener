@@ -14,6 +14,11 @@ async def liquidity_added(
     ctx: HandlerContext,
     event: SubstrateEvent[XYKLiquidityAddedPayload | LBPLiquidityAddedPayload],
 ) -> None:
+    if 'assetA' in event.payload:
+        event.payload['asset_a'] = event.payload.pop('assetA')
+    if 'assetB' in event.payload:
+        event.payload['asset_b'] = event.payload.pop('assetB')
+
     from dex_screener.models import DexEvent
     from dex_screener.models import DexKey
     from dex_screener.models import DexScreenerEventType
@@ -66,6 +71,11 @@ async def liquidity_removed(
     ctx: HandlerContext,
     event: SubstrateEvent[XYKLiquidityRemovedPayload | LBPLiquidityRemovedPayload],
 ):
+    if 'assetA' in event.payload:
+        event.payload['asset_a'] = event.payload.pop('assetA')
+    if 'assetB' in event.payload:
+        event.payload['asset_b'] = event.payload.pop('assetB')
+
     from dex_screener.models import DexEvent
     from dex_screener.models import DexKey
     from dex_screener.models import DexScreenerEventType
