@@ -26,9 +26,9 @@ async def liquidity_added(
         tx_index=event.data.extrinsic_index if event.data.extrinsic_index is not None else 0,
     )
 
-    dex_key = DexKey.XYX if event.name.startswith('XYK') else DexKey.LBP
-    asset_0 = min(int(event.payload.asset_a), int(event.payload.asset_b))
-    asset_1 = max(int(event.payload.asset_a), int(event.payload.asset_b))
+    dex_key = DexKey.IsolatedPool if event.name.startswith('XYK') else DexKey.LBP
+    asset_0 = min(int(event.payload['asset_a']), int(event.payload['asset_b']))
+    asset_1 = max(int(event.payload['asset_a']), int(event.payload['asset_b']))
 
     pair = (
         await Pair.filter(
@@ -43,12 +43,12 @@ async def liquidity_added(
         pair_id=pair.id,
     )
 
-    amount_0 = pair.asset_0.from_minor(event.payload.amount_a)
-    amount_1 = pair.asset_1.from_minor(event.payload.amount_b)
+    amount_0 = pair.asset_0.from_minor(event.payload['amount_a'])
+    amount_1 = pair.asset_1.from_minor(event.payload['amount_b'])
     if pair.asset_0.id != asset_0:
         amount_0, amount_1 = amount_1, amount_0
     market_data = JoinExitEventMarketDataDTO(
-        maker=event.payload.wh,
+        maker=event.payload['who'],
         amount_0=str(amount_0),
         amount_1=str(amount_1),
     )
@@ -79,8 +79,8 @@ async def liquidity_removed(
     )
 
     dex_key = DexKey.IsolatedPool if event.name.startswith('XYK') else DexKey.LBP
-    asset_0 = min(int(event.payload.asset_a), int(event.payload.asset_b))
-    asset_1 = max(int(event.payload.asset_a), int(event.payload.asset_b))
+    asset_0 = min(int(event.payload['asset_a']), int(event.payload['asset_b']))
+    asset_1 = max(int(event.payload['asset_a']), int(event.payload['asset_b']))
 
     pair = (
         await Pair.filter(
@@ -95,12 +95,12 @@ async def liquidity_removed(
         pair_id=pair.id,
     )
 
-    amount_0 = pair.asset_0.from_minor(event.payload.amount_a)
-    amount_1 = pair.asset_1.from_minor(event.payload.amount_b)
+    amount_0 = pair.asset_0.from_minor(event.payload['amount_a'])
+    amount_1 = pair.asset_1.from_minor(event.payload['amount_b'])
     if pair.asset_0.id != asset_0:
         amount_0, amount_1 = amount_1, amount_0
     market_data = JoinExitEventMarketDataDTO(
-        maker=event.payload.who,
+        maker=event.payload['who'],
         amount_0=str(amount_0),
         amount_1=str(amount_1),
     )
