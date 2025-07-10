@@ -48,11 +48,11 @@ indexes:
 
     handlers:
       - name: Tokens.Deposited
-        callback: hydradx.currencies.on_balance_updated
+        callback: hydradx.tokens.on_tokens_updated
       - name: Tokens.Withdrawn
-        callback: hydradx.currencies.on_balance_updated
+        callback: hydradx.tokens.on_tokens_updated
       - name: Tokens.Transfer
-        callback: hydradx.currencies.on_balance_transfer
+        callback: hydradx.tokens.on_tokens_transfer
 
       - name: Balances.BalanceSet
         callback: hydradx.balances.on_balance_set
