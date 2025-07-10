@@ -1,13 +1,9 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
-from dex_screener.handlers.hydradx.omnipool.on_position_created import JoinExitEventMarketDataDTO
-from dex_screener.handlers.hydradx.omnipool.on_position_created import JoinExitEventPoolDataDTO
-from dex_screener.handlers.hydradx.omnipool.on_position_destroyed import DexScreenerEventDataDTO
-from dex_screener.models import DexEvent
-from dex_screener.models import DexKey
-from dex_screener.models import DexScreenerEventType
-from dex_screener.models import Pair
+from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
+from dex_screener.service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
+from dex_screener.service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
 from dex_screener.types.hydradx.substrate_events.lbp_liquidity_added import LBPLiquidityAddedPayload
 from dex_screener.types.hydradx.substrate_events.lbp_liquidity_removed import LBPLiquidityRemovedPayload
 from dex_screener.types.hydradx.substrate_events.xyk_liquidity_added import XYKLiquidityAddedPayload
@@ -18,6 +14,11 @@ async def liquidity_added(
     ctx: HandlerContext,
     event: SubstrateEvent[XYKLiquidityAddedPayload | LBPLiquidityAddedPayload],
 ) -> None:
+    from dex_screener.models import DexEvent
+    from dex_screener.models import DexKey
+    from dex_screener.models import DexScreenerEventType
+    from dex_screener.models import Pair
+
     event_data = DexScreenerEventDataDTO(
         event_index=event.data.index,
         name=event.data.name,
@@ -65,6 +66,11 @@ async def liquidity_removed(
     ctx: HandlerContext,
     event: SubstrateEvent[XYKLiquidityRemovedPayload | LBPLiquidityRemovedPayload],
 ):
+    from dex_screener.models import DexEvent
+    from dex_screener.models import DexKey
+    from dex_screener.models import DexScreenerEventType
+    from dex_screener.models import Pair
+
     event_data = DexScreenerEventDataDTO(
         event_index=event.data.index,
         name=event.data.name,
