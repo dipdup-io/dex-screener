@@ -5,6 +5,7 @@ from datetime import datetime
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
+from dipdup import env
 from dipdup.config.substrate_events import SubstrateEventsHandlerConfig
 
 from dex_screener.models import Block
@@ -94,6 +95,9 @@ async def batch(
             batch_levels.add(handler.level)
 
         await ctx.fire_matched_handler(handler)
+
+    if getattr(env, 'NO_HOOKS', False):
+        return
 
     if RuntimeFlag.blocks_refresh_condition():
         ctx.logger.info('Processing refresh `dex_block`...')

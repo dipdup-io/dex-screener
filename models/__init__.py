@@ -126,7 +126,7 @@ class AssetPoolReserve(Model):
         to_field='account',
         related_name='reserves',
     )
-    reserve = fields.CharField(max_length=40, null=True)
+    reserve = AssetAmountField(default='0')
 
 
 class Pair(Model):
@@ -223,6 +223,7 @@ class DexEvent(Model):
     metadata = fields.JSONField(null=True)
 
     block_id: int
+    pair_id: int
 
     def __repr__(self) -> str:
         return f'<{self.event_type!s}Event[{self.name}]({self.block_id}-{self.event_index})>'
