@@ -44,6 +44,7 @@ class StableSwapService:
             dex_key=DexKey.StableSwap,
             dex_pool_id=dex_pool_id,
             lp_token_id=dex_pool_id,
+            shares='0',
         )
         cls.logger.info('StableSwap Pool registered: %r.', pool)
 

@@ -102,6 +102,7 @@ class Pool(Model):
         null=True,
     )
     lp_token_id: int
+    shares = AssetAmountField()
 
     def __repr__(self) -> str:
         return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'

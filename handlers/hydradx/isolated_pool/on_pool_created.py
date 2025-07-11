@@ -13,7 +13,7 @@ async def on_pool_created(
 ) -> None:
     try:
         pool = await IsolatedPoolService.register_pool(event)
-        await IsolatedPoolService.register_pair(pool, event)
+        await IsolatedPoolService.register_pair(ctx, pool, event)
     except IntegrityError:
         destroyed_pools = await Meta.get(key='destroyed_pools')
         if event.payload['pool'] not in destroyed_pools.value:

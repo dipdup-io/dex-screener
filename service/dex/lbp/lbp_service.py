@@ -25,6 +25,7 @@ class LBPService:
             defaults={
                 'dex_key': DexKey.LBP,
                 'dex_pool_id': event.payload['pool'],
+                'shares': '0',
             },
         )
         cls.logger.info('Pool registered: %r.', pool)

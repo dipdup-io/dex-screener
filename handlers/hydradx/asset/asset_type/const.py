@@ -18,6 +18,7 @@ ASSET_TYPE_MAP: dict[str, type[AbstractHydrationAsset]] = {
     AssetType.XYK: HydrationXYKAsset,
 }
 
+# NOTE: See also: https://github.com/subscan-explorer/assets-info/blob/main/assets/hydration.json
 PRE_RESOLVED_TOKENS_METADATA = {
     11: {'name': 'interBTC', 'symbol': 'iBTC', 'decimals': 8},
     12: {'name': 'Zeitgeist', 'symbol': 'ZTG', 'decimals': 10},
@@ -26,6 +27,7 @@ PRE_RESOLVED_TOKENS_METADATA = {
     15: {'name': 'Bifrost Voucher DOT', 'symbol': 'vDOT', 'decimals': 10},
     16: {'name': 'Glimmer', 'symbol': 'GLMR', 'decimals': 18},
     17: {'name': 'Interlay', 'symbol': 'INTR', 'decimals': 10},
+    # FIXME:
     1000010: {'symbol': 'HDXb', 'decimals': 10},
     1000013: {'symbol': 'HDXb', 'decimals': 10},
     1000050: {'symbol': 'HDXb', 'decimals': 10},

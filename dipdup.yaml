@@ -51,29 +51,29 @@ indexes:
       - name: AssetRegistry.LocationSet
         callback: hydradx.asset.on_location_set
 
-      - name: Omnipool.TokenAdded
-        callback: hydradx.omnipool.on_token_added
-      - name: Omnipool.BuyExecuted
-        callback: hydradx.on_swap_executed
-      - name: Omnipool.SellExecuted
-        callback: hydradx.on_swap_executed
-      - name: Omnipool.PositionCreated
-        callback: hydradx.omnipool.on_position_created
-      - name: Omnipool.PositionDestroyed
-        callback: hydradx.omnipool.on_position_destroyed
-      - name: Omnipool.PositionUpdated
-        callback: hydradx.omnipool.on_position_updated
+      # - name: Omnipool.TokenAdded
+      #   callback: hydradx.omnipool.on_token_added
+      # - name: Omnipool.BuyExecuted
+      #   callback: hydradx.on_swap_executed
+      # - name: Omnipool.SellExecuted
+      #   callback: hydradx.on_swap_executed
+      # - name: Omnipool.PositionCreated
+      #   callback: hydradx.omnipool.on_position_created
+      # - name: Omnipool.PositionDestroyed
+      #   callback: hydradx.omnipool.on_position_destroyed
+      # - name: Omnipool.PositionUpdated
+      #   callback: hydradx.omnipool.on_position_updated
 
-      - name: Stableswap.PoolCreated
-        callback: hydradx.stableswap.on_pool_created
-      - name: Stableswap.BuyExecuted
-        callback: hydradx.on_swap_executed
-      - name: Stableswap.SellExecuted
-        callback: hydradx.on_swap_executed
-      - name: Stableswap.LiquidityAdded
-        callback: hydradx.stableswap.on_liquidity_added
-      - name: Stableswap.LiquidityRemoved
-        callback: hydradx.stableswap.on_liquidity_removed
+      # - name: Stableswap.PoolCreated
+      #   callback: hydradx.stableswap.on_pool_created
+      # - name: Stableswap.BuyExecuted
+      #   callback: hydradx.on_swap_executed
+      # - name: Stableswap.SellExecuted
+      #   callback: hydradx.on_swap_executed
+      # - name: Stableswap.LiquidityAdded
+      #   callback: hydradx.stableswap.on_liquidity_added
+      # - name: Stableswap.LiquidityRemoved
+      #   callback: hydradx.stableswap.on_liquidity_removed
 
       - name: XYK.PoolCreated
         callback: hydradx.isolated_pool.on_pool_created
@@ -83,37 +83,37 @@ indexes:
         callback: hydradx.isolated_pool.on_liquidity_added
       - name: XYK.LiquidityRemoved
         callback: hydradx.isolated_pool.on_liquidity_removed
-      - name: XYK.BuyExecuted
-        callback: hydradx.on_swap_executed
-      - name: XYK.SellExecuted
-        callback: hydradx.on_swap_executed
+      # - name: XYK.BuyExecuted
+      #   callback: hydradx.on_swap_executed
+      # - name: XYK.SellExecuted
+      #   callback: hydradx.on_swap_executed
 
-      - name: LBP.PoolCreated
-        callback: hydradx.lbp.on_pool_created
-      - name: LBP.PoolUpdated
-        callback: hydradx.lbp.on_pool_updated
-      - name: LBP.LiquidityAdded
-        callback: hydradx.lbp.on_liquidity_added
-      - name: LBP.LiquidityRemoved
-        callback: hydradx.lbp.on_liquidity_removed
-      - name: LBP.BuyExecuted
-        callback: hydradx.on_swap_executed
-      - name: LBP.SellExecuted
-        callback: hydradx.on_swap_executed
+      # - name: LBP.PoolCreated
+      #   callback: hydradx.lbp.on_pool_created
+      # - name: LBP.PoolUpdated
+      #   callback: hydradx.lbp.on_pool_updated
+      # - name: LBP.LiquidityAdded
+      #   callback: hydradx.lbp.on_liquidity_added
+      # - name: LBP.LiquidityRemoved
+      #   callback: hydradx.lbp.on_liquidity_removed
+      # - name: LBP.BuyExecuted
+      #   callback: hydradx.on_swap_executed
+      # - name: LBP.SellExecuted
+      #   callback: hydradx.on_swap_executed
 
-      - name: OTC.Placed
-        callback: hydradx.otc.on_order_placed
-      - name: OTC.Filled
-        callback: hydradx.on_swap_executed
-      - name: OTC.PartiallyFilled
-        callback: hydradx.on_swap_executed
+      # - name: OTC.Placed
+      #   callback: hydradx.otc.on_order_placed
+      # - name: OTC.Filled
+      #   callback: hydradx.on_swap_executed
+      # - name: OTC.PartiallyFilled
+      #   callback: hydradx.on_swap_executed
 
-      - name: Broadcast.Swapped
-        callback: hydradx.on_swap_executed
-      - name: Broadcast.Swapped2
-        callback: hydradx.on_swap_executed
-      - name: Broadcast.Swapped3
-        callback: hydradx.on_swap_executed
+      # - name: Broadcast.Swapped
+      #   callback: hydradx.on_swap_executed
+      # - name: Broadcast.Swapped2
+      #   callback: hydradx.on_swap_executed
+      # - name: Broadcast.Swapped3
+      #   callback: hydradx.on_swap_executed
 
 custom:
   # NOTE: See `hooks/`
