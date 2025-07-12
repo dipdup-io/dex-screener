@@ -51,6 +51,9 @@ async def on_liquidity_removed(
     pair.pool.shares = str(int(pair.pool.shares) - burned_shares)
     await pair.pool.save()
 
+    # if pair.pool.shares[0] == '-':
+    #     raise Exception
+
     # NOTE: Convert amounts to major units
     amount_0 = pair.asset_0.from_minor(amount_0)
     amount_1 = pair.asset_1.from_minor(amount_1)

@@ -104,8 +104,8 @@ class Pool(Model):
     lp_token_id: int
     shares = AssetAmountField()
 
-    def __repr__(self) -> str:
-        return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'
+    # def __repr__(self) -> str:
+    #     return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'
 
 
 class AssetPoolReserve(Model):
@@ -164,8 +164,10 @@ class Pair(Model):
     created_at_tx_id = fields.IntField()
     fee_bps = fields.IntField(null=True)
 
-    def __repr__(self) -> str:
-        return f'<Pair[{self.dex_key}]({self.asset_0}/{self.asset_1})>'
+    pool_id: str
+
+    # def __repr__(self) -> str:
+    #     return f'<Pair[{self.dex_key}]({self.asset_0}/{self.asset_1})>'
 
     async def get_reserves(self) -> tuple[str, str]:
         await self.fetch_related('asset_0', 'asset_1', 'pool')
@@ -224,7 +226,7 @@ class DexEvent(Model):
     metadata = fields.JSONField(null=True)
 
     block_id: int
-    pair_id: int
+    pair_id: str
 
     def __repr__(self) -> str:
         return f'<{self.event_type!s}Event[{self.name}]({self.block_id}-{self.event_index})>'
