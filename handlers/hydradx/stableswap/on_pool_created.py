@@ -11,3 +11,4 @@ async def on_pool_created(
 ) -> None:
     pool = await StableSwapService.register_pool(event)
     await StableSwapService.register_pair(pool, event)
+    # NOTE: join liqudity event could be needed
