@@ -58,6 +58,7 @@ async def on_pool_created(
         await pool.assets.add(asset_a, asset_b)  # type: ignore[attr-defined]
         ctx.logger.info('Pair Assets added to pool %r: %s, %s.', pool, asset_a, asset_b)
 
+    await update_reserves(ctx, pool, event)
 
 async def update_reserves(
     ctx: HandlerContext,
