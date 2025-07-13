@@ -46,10 +46,13 @@ async def on_position_updated(
     )
 
     pair = await Pair.get(id=pool_data.pair_id).prefetch_related('asset_0', 'asset_1')
-    amount_0 = pair.asset_0.from_minor(delta_position_amount)
-    amount_1 = pair.asset_1.from_minor(delta_position_shares)
-    if pair.asset_0.id != position.asset_id:
-        amount_0, amount_1 = amount_1, amount_0
+    amount_0, amount_1 = (
+        (delta_position_amount, delta_position_shares)
+        if pair.asset_0.id == position.asset_id
+        else (delta_position_shares, delta_position_amount)
+    )
+    amount_0 = pair.asset_0.from_minor(amount_0)
+    amount_1 = pair.asset_1.from_minor(amount_1)
 
     market_data = JoinExitEventMarketDataDTO(
         maker=position.owner,
