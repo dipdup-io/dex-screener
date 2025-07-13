@@ -8,6 +8,7 @@ from dex_screener.models import AssetPoolReserve
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import Pool
+from dex_screener.models.dex_fields import Account
 from dex_screener.models.dto import DexScreenerEventInfoDTO
 from dex_screener.types.hydradx.substrate_events.xyk_pool_created import XYKPoolCreatedPayload
 
@@ -23,12 +24,12 @@ async def on_pool_created(
     event: SubstrateEvent[XYKPoolCreatedPayload],
 ) -> None:
     # NOTE: Pool can be destroyed and recreated later. We don't need to process this event because shares=0.
-    account = event.payload['pool']
+    account = Account(event.payload['pool'])
     pool, _ = await Pool.update_or_create(
         account=account,
         defaults={
             'dex_key': DexKey.IsolatedPool,
-            'dex_pool_id': account,
+            'dex_pool_id': event.payload['pool'],
             'lp_token_id': event.payload['share_token'],
             'shares': event.payload['initial_shares_amount'],
         },

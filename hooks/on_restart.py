@@ -17,7 +17,7 @@ async def on_restart(
     blocks_refresh_period_params = ctx.config.custom['syncing_blocks_refresh_period']
     RuntimeFlag.blocks_refresh_period = timedelta(**blocks_refresh_period_params)
 
-    await validate_indexed_values(ctx)
+    # await validate_indexed_values(ctx)
 
 
 async def validate_indexed_values(ctx: HookContext):
