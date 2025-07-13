@@ -16,7 +16,7 @@ async def on_liquidity_removed(
     ctx: HandlerContext,
     event: SubstrateEvent[XYKLiquidityRemovedPayload],
 ) -> None:
-    # FIXME: De-camelcasing fails when parsing payload
+    # FIXME: De-camelcasing fails when parsing payload. Probably `snake_to_pascal`
     if 'assetA' in event.payload:
         event.payload['asset_a'] = event.payload.pop('assetA')  # type: ignore[typeddict-item]
     if 'assetB' in event.payload:

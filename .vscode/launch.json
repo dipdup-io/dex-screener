@@ -23,7 +23,20 @@
             "module": "dipdup",
             "args": [
                 "-C", "compose",
-                "-C", "xyk-only",
+                "-C", "only-xyk",
+                "-e", "local.env",
+                "run",
+            ],
+            "cwd": "${workspaceFolder}",
+        },
+        {
+            "name": "dex_screener: Run LBP",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "dipdup",
+            "args": [
+                "-C", "compose",
+                "-C", "only-lbp",
                 "-e", "local.env",
                 "run",
             ],
