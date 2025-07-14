@@ -60,6 +60,7 @@ async def on_pool_created(
 
     await update_reserves(ctx, pool, event)
 
+
 async def update_reserves(
     ctx: HandlerContext,
     pool: Pool,

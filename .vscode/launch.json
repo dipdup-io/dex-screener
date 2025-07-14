@@ -42,5 +42,29 @@
             ],
             "cwd": "${workspaceFolder}",
         },
+        {
+            "name": "reserves: WIPE",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "dipdup",
+            "args": [
+                "-C", "compose",
+                "-e", "../local.env",
+                "schema", "wipe", "--force",
+            ],
+            "cwd": "${workspaceFolder}/reserves",
+        },        
+        {
+            "name": "reserves: Run",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "dipdup",
+            "args": [
+                "-C", "compose",
+                "-e", "../local.env",
+                "run",
+            ],
+            "cwd": "${workspaceFolder}/reserves",
+        },        
     ]
 }

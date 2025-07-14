@@ -1,9 +1,11 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
-from dex_screener.models import DexKey, Pair, Pool, Asset
+from dex_screener.models import Asset
+from dex_screener.models import DexKey
+from dex_screener.models import Pair
+from dex_screener.models import Pool
 from dex_screener.models.dto import DexScreenerEventInfoDTO
-from dex_screener.service.dex.lbp.lbp_service import LBPService
 from dex_screener.types.hydradx.substrate_events.lbp_pool_created import LBPPoolCreatedPayload
 
 

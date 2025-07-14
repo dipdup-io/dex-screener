@@ -2,7 +2,6 @@ from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
 from dex_screener.models import DexEvent
-from dex_screener.models import Pair
 from dex_screener.models import Pool
 from dex_screener.types.hydradx.substrate_events.stableswap_liquidity_removed import StableswapLiquidityRemovedPayload
 from service.dex.stableswap.stableswap_service import StableSwapService
@@ -27,12 +26,9 @@ async def on_liquidity_removed(
             name=event.data.name,
             block_id=event.data.level,
             tx_index=event.data.extrinsic_index if event.data.extrinsic_index is not None else 0,
-
             pair_id=pair_id,
-
             maker=event.payload['who'],
             amount_0='0',  # TODO: extract amount_0 from lp token amount
             amount_1='0',  # TODO: extract amount_1 from asset amount
-
             event_type=DexScreenerEventType.Exit,
         )

@@ -35,7 +35,7 @@ class StableSwapService:
         except KeyError:
             cls.logger.error('Unknown dex pool id %s.', dex_pool_id)
             return str(dex_pool_id)
-        
+
     @classmethod
     async def get_pool(cls, dex_pool_id: int) -> Pool | None:
         account = cls.get_pool_id(dex_pool_id)
