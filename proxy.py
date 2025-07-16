@@ -10,7 +10,6 @@ from typing import Any
 import httpx
 import orjson
 from asyncache import cached  # type: ignore[import-untyped]
-from cachetools import Cache
 from cachetools import TTLCache
 from dipdup.utils import json_dumps
 from fastapi import APIRouter
@@ -18,24 +17,45 @@ from fastapi import FastAPI
 from fastapi import Request
 from fastapi.responses import Response
 
-from dipdup.database import get_connection
-
-CACHE_SIZE = 10000
-CACHE_TTL = 60 * 60  # 1 hour
+from dex_screener import utils
 
 _logger = logging.getLogger(__name__)
 _client: httpx.AsyncClient | None = None
 
 
-class ReservesReceivingError(Exception):
-    """Custom exception for errors in receiving reserves data"""
+# TODO: Tune values
+BALANCES_CACHE_SIZE = 10000
+POOL_CACHE_SIZE = 10000
+SUPPLY_CACHE_SIZE = 10000
+DECIMALS_CACHE_SIZE = 10000
 
-    pass
+CACHE_TTL = 60 * 60
+
+
+# NOTE: Cached versions of utility functions.
+get_pool_by_pair = cached(
+    cache=TTLCache(maxsize=POOL_CACHE_SIZE, ttl=CACHE_TTL),
+)(utils.get_pool_by_pair)
+
+get_balance_by_account = cached(
+    cache=TTLCache(maxsize=BALANCES_CACHE_SIZE, ttl=CACHE_TTL),
+)(utils.get_balance_by_account)
+
+get_asset_supply = cached(
+    cache=TTLCache(maxsize=SUPPLY_CACHE_SIZE, ttl=CACHE_TTL),
+)(utils.get_asset_supply)
+
+get_decimals_by_asset_id = cached(
+    cache=TTLCache(maxsize=DECIMALS_CACHE_SIZE, ttl=CACHE_TTL),
+)(utils.get_decimals_by_asset_id)
 
 
 @dataclass
 class ProxyConfig:
-    """Configuration for the HTTP proxy"""
+    """Configuration for the HTTP proxy.
+
+    Parsed from `custom` section of the DipDup configuration.
+    """
 
     client_host: str = 'hasura'
     client_port: str = '8080'
@@ -108,18 +128,13 @@ def remove_none_fields(data: Any) -> Any:
             item.pop('asset1Out', None)
         if item.get('priceNative') is None:
             item.pop('priceNative', None)
-        if (reserves := item.get('reserves')) is not None:
-            if reserves.get('asset0') in (None, 'None'):
-                reserves.pop('asset0', None)
-            if reserves.get('asset1') in (None, 'None'):
-                reserves.pop('asset1', None)
-            if len(reserves) < 2:
-                item.pop('reserves', None)
+        item['reserves'] = {
+            'asset_0': item.get('asset0Reserve'),
+            'asset_1': item.get('asset1Reserve'),
+        }
     return data
 
 
-# @cached(cache=Cache(CACHE_SIZE))
-# async def get_pool_from_pair(pair_id: str) -> tuple[int, int, str, int]:
 #     try:
 #         r = await _client.post(  # type: ignore[union-attr]
 #             url,
@@ -140,12 +155,12 @@ def remove_none_fields(data: Any) -> Any:
 #             },
 #         )
 #     except httpx.RequestError as e:
-#         raise ReservesReceivingError(f'Failed to get pool from pair {pair_id}') from e
+#         raise NotFound(f'Failed to get pool from pair {pair_id}') from e
 #     if r.status_code != 200:
-#         raise ReservesReceivingError(f'Error response from indexer for pair {pair_id}: {r.status_code} {r.text}')
+#         raise NotFound(f'Error response from indexer for pair {pair_id}: {r.status_code} {r.text}')
 #     result = r.json()
 #     if not result.get('data', {}).get('dex_pair'):
-#         raise ReservesReceivingError(f'No pool found for pair {pair_id}')
+#         raise NotFound(f'No pool found for pair {pair_id}')
 #     pair_data = result['data']['dex_pair'][0]
 #     return (
 #         pair_data['asset_0_id'],
@@ -155,26 +170,6 @@ def remove_none_fields(data: Any) -> Any:
 #     )
 
 
-@cached(cache=Cache(CACHE_SIZE))
-async def get_pool_from_pair(pair_id: str) -> tuple[int, int, str, int]:
-    conn = get_connection()
-    sql = """
-        SELECT asset_0_id, asset_1_id, dex_pool.account, dex_pool.lp_token_id
-        FROM reserves.dex_pair
-        JOIN reserves.dex_pool ON dex_pair.dex_pool_id = dex_pool.id
-        WHERE dex_pair.id = $1
-    """
-    try:
-        res = await conn.execute_query(sql, pair_id)
-        if not res:
-            raise ReservesReceivingError(f'No pool found for pair {pair_id}')
-        return res[0]
-    except Exception as e:
-        raise ReservesReceivingError(f'Failed to get pool from pair {pair_id}') from e
-
-
-# @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-# async def get_reserves_by_id(asset_pool: str, level: int) -> str:
 #     try:
 #         r = await _client.post(  # type: ignore[union-attr]
 #             url,
@@ -190,35 +185,17 @@ async def get_pool_from_pair(pair_id: str) -> tuple[int, int, str, int]:
 #             },
 #         )
 #     except httpx.RequestError as e:
-#         raise ReservesReceivingError(f'Failed to get reserves for asset pool {asset_pool}') from e
+#         raise NotFound(f'Failed to get reserves for asset pool {asset_pool}') from e
 #     if r.status_code != 200:
-#         raise ReservesReceivingError(
+#         raise NotFound(
 #             f'Error response from indexer for asset pool {asset_pool}: {r.status_code} {r.text}'
 #         )
 #     result = r.json()
 #     if not result.get('data', {}).get('balanceHistory'):
-#         raise ReservesReceivingError(f'No reserves found for asset pool {asset_pool}')
+#         raise NotFound(f'No reserves found for asset pool {asset_pool}')
 #     return result['data']['balanceHistory'][0]['balance']
 
 
-@cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-async def get_reserves_by_id(asset_pool: str, level: int) -> str:
-    conn = get_connection()
-    sql = """
-        SELECT balance FROM reserves.balance_history
-        WHERE asset_account = $1 AND id < $2
-        ORDER BY id DESC LIMIT 1
-    """
-    args = (asset_pool, (level + 1) << 17)
-    try:
-        res = await conn.execute_query(sql, *args)
-        return res[0][0]
-    except Exception as e:
-        raise ReservesReceivingError(f'Failed to get reserves for asset pool {asset_pool}') from e
-
-
-# @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-# async def get_reserves_by_lp(lp_token_id: int, level: int) -> str:
 #     try:
 #         r = await _client.post(  # type: ignore[union-attr]
 #             url,
@@ -234,35 +211,17 @@ async def get_reserves_by_id(asset_pool: str, level: int) -> str:
 #             },
 #         )
 #     except httpx.RequestError as e:
-#         raise ReservesReceivingError(f'Failed to get reserves for LP token {lp_token_id}') from e
+#         raise NotFound(f'Failed to get reserves for LP token {lp_token_id}') from e
 #     if r.status_code != 200:
-#         raise ReservesReceivingError(
+#         raise NotFound(
 #             f'Error response from indexer for LP token {lp_token_id}: {r.status_code} {r.text}'
 #         )
 #     result = r.json()
 #     if not result.get('data', {}).get('supplyHistory'):
-#         raise ReservesReceivingError(f'No reserves found for LP token {lp_token_id}')
+#         raise NotFound(f'No reserves found for LP token {lp_token_id}')
 #     return result['data']['supplyHistory'][0]['supply']
 
 
-@cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-async def get_reserves_by_lp(lp_token_id: int, level: int) -> str:
-    conn = get_connection()
-    sql = """
-        SELECT supply FROM reserves.supply_history
-        WHERE asset_id = $1 AND id < $2
-        ORDER BY id DESC LIMIT 1
-    """
-    args = (lp_token_id, (level + 1) << 17)
-    try:
-        res = await conn.execute_query(sql, *args)
-        return res[0][0]
-    except Exception as e:
-        raise ReservesReceivingError(f'Failed to get reserves for LP token {lp_token_id}') from e
-
-
-# @cached(cache=Cache(CACHE_SIZE))
-# async def get_decimals_by_asset_id(asset_id: int) -> int:
 #     try:
 #         r = await _client.post(  # type: ignore[union-attr]
 #             url,
@@ -278,65 +237,53 @@ async def get_reserves_by_lp(lp_token_id: int, level: int) -> str:
 #             },
 #         )
 #     except httpx.RequestError as e:
-#         raise ReservesReceivingError(f'Failed to get decimals for asset {asset_id}') from e
+#         raise NotFound(f'Failed to get decimals for asset {asset_id}') from e
 #     if r.status_code != 200:
-#         raise ReservesReceivingError(f'Error response from indexer for asset {asset_id}: {r.status_code} {r.text}')
+#         raise NotFound(f'Error response from indexer for asset {asset_id}: {r.status_code} {r.text}')
 #     result = r.json()
 #     if not result.get('data', {}).get('dex_asset'):
-#         raise ReservesReceivingError(f'No asset found for id {asset_id}')
+#         raise NotFound(f'No asset found for id {asset_id}')
 
 #     return result['data']['dex_asset'][0]['decimals']
 
 
-@cached(cache=Cache(CACHE_SIZE))
-async def get_decimals_by_asset_id(asset_id: int) -> int:
-    conn = get_connection()
-    sql = """
-        SELECT decimals FROM reserves.dex_asset
-        WHERE id = $1
-    """
-    try:
-        res = await conn.execute_query(sql, asset_id)
-        return res[0][0]
-    except Exception as e:
-        raise ReservesReceivingError(f'Failed to get decimals for asset {asset_id}') from e
+# async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.AsyncClient) -> Any:
+#     for event in data.get('events', []):
+#         try:
+#             asset0_id, asset1_id, pool_id, lp_token_id = await get_pool_from_pair(
+#                 config.data_url_indexer, event['pairId']
+#             )
+
+#             level = event['block']['blockNumber']
+
+#             if asset0_id != lp_token_id:
+#                 asset0_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset0_id}:{pool_id}', level)
+#             else:
+#                 asset0_reserves = await get_reserves_by_lp(config.data_url_reserves, asset0_id, level)
+#             if asset1_id != lp_token_id:
+#                 asset1_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset1_id}:{pool_id}', level)
+#             else:
+#                 asset1_reserves = await get_reserves_by_lp(config.data_url_reserves, asset1_id, level)
+
+#             asset0_decimals = await get_decimals_by_asset_id(config.data_url_indexer, asset0_id)
+#             asset1_decimals = await get_decimals_by_asset_id(config.data_url_indexer, asset1_id)
+#             event['reserves'] = {
+#                 'asset0': float(asset0_reserves) / (10**asset0_decimals),
+#                 'asset1': float(asset1_reserves) / (10**asset1_decimals),
+#             }
+#         except NotFound as e:
+#             _logger.error('Error receiving reserves data: %s', e)
+#             continue
 
 
-async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.AsyncClient) -> Any:
-    for event in data.get('events', []):
-        try:
-            asset0_id, asset1_id, pool_id, lp_token_id = await get_pool_from_pair(
-                config.data_url_indexer, event['pairId']
-            )
-
-            level = event['block']['blockNumber']
-
-            if asset0_id != lp_token_id:
-                asset0_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset0_id}:{pool_id}', level)
-            else:
-                asset0_reserves = await get_reserves_by_lp(config.data_url_reserves, asset0_id, level)
-            if asset1_id != lp_token_id:
-                asset1_reserves = await get_reserves_by_id(config.data_url_reserves, f'{asset1_id}:{pool_id}', level)
-            else:
-                asset1_reserves = await get_reserves_by_lp(config.data_url_reserves, asset1_id, level)
-
-            asset0_decimals = await get_decimals_by_asset_id(config.data_url_indexer, asset0_id)
-            asset1_decimals = await get_decimals_by_asset_id(config.data_url_indexer, asset1_id)
-            event['reserves'] = {
-                'asset0': float(asset0_reserves) / (10**asset0_decimals),
-                'asset1': float(asset1_reserves) / (10**asset1_decimals),
-            }
-        except ReservesReceivingError as e:
-            _logger.error('Error receiving reserves data: %s', e)
-            continue
-
-
-async def transform_events(data: bytes, config: ProxyConfig, client: httpx.AsyncClient) -> bytes:
+async def transform_events(
+    data: bytes,
+) -> bytes:
     """Clean JSON data by removing None fields and returning bytes"""
     try:
         json_data = orjson.loads(data)
         cleaned_data = remove_none_fields(json_data)
-        await add_reserves_to_events(cleaned_data, config, client)
+        # await add_reserves_to_events(cleaned_data, config, client)
         return json_dumps(cleaned_data, None)
     except orjson.JSONDecodeError as e:
         _logger.error('Failed to decode JSON content: ', e)
