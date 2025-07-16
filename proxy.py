@@ -18,7 +18,7 @@ from fastapi import FastAPI
 from fastapi import Request
 from fastapi.responses import Response
 
-from handlers.hydradx.isolated_pool.on_liquidity_added import get_connection
+from dipdup.database import get_connection
 
 CACHE_SIZE = 10000
 CACHE_TTL = 60 * 60  # 1 hour
@@ -119,7 +119,7 @@ def remove_none_fields(data: Any) -> Any:
 
 
 # @cached(cache=Cache(CACHE_SIZE))
-# async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int]:
+# async def get_pool_from_pair(pair_id: str) -> tuple[int, int, str, int]:
 #     try:
 #         r = await _client.post(  # type: ignore[union-attr]
 #             url,
@@ -154,8 +154,9 @@ def remove_none_fields(data: Any) -> Any:
 #         pair_data['dex_pool']['lp_token_id'],
 #     )
 
+
 @cached(cache=Cache(CACHE_SIZE))
-async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int]:
+async def get_pool_from_pair(pair_id: str) -> tuple[int, int, str, int]:
     conn = get_connection()
     sql = """
         SELECT asset_0_id, asset_1_id, dex_pool.account, dex_pool.lp_token_id
@@ -171,8 +172,9 @@ async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int
     except Exception as e:
         raise ReservesReceivingError(f'Failed to get pool from pair {pair_id}') from e
 
+
 # @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-# async def get_reserves_by_id(url: str, asset_pool: str, level: int) -> str:
+# async def get_reserves_by_id(asset_pool: str, level: int) -> str:
 #     try:
 #         r = await _client.post(  # type: ignore[union-attr]
 #             url,
@@ -200,7 +202,7 @@ async def get_pool_from_pair(url: str, pair_id: str) -> tuple[int, int, str, int
 
 
 @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-async def get_reserves_by_id(url: str, asset_pool: str, level: int) -> str:
+async def get_reserves_by_id(asset_pool: str, level: int) -> str:
     conn = get_connection()
     sql = """
         SELECT balance FROM reserves.balance_history
@@ -214,8 +216,9 @@ async def get_reserves_by_id(url: str, asset_pool: str, level: int) -> str:
     except Exception as e:
         raise ReservesReceivingError(f'Failed to get reserves for asset pool {asset_pool}') from e
 
+
 # @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-# async def get_reserves_by_lp(url: str, lp_token_id: int, level: int) -> str:
+# async def get_reserves_by_lp(lp_token_id: int, level: int) -> str:
 #     try:
 #         r = await _client.post(  # type: ignore[union-attr]
 #             url,
@@ -241,8 +244,9 @@ async def get_reserves_by_id(url: str, asset_pool: str, level: int) -> str:
 #         raise ReservesReceivingError(f'No reserves found for LP token {lp_token_id}')
 #     return result['data']['supplyHistory'][0]['supply']
 
+
 @cached(cache=TTLCache(CACHE_SIZE, CACHE_TTL))
-async def get_reserves_by_lp(url: str, lp_token_id: int, level: int) -> str:
+async def get_reserves_by_lp(lp_token_id: int, level: int) -> str:
     conn = get_connection()
     sql = """
         SELECT supply FROM reserves.supply_history
@@ -258,7 +262,7 @@ async def get_reserves_by_lp(url: str, lp_token_id: int, level: int) -> str:
 
 
 # @cached(cache=Cache(CACHE_SIZE))
-# async def get_decimals_by_asset_id(url: str, asset_id: int) -> int:
+# async def get_decimals_by_asset_id(asset_id: int) -> int:
 #     try:
 #         r = await _client.post(  # type: ignore[union-attr]
 #             url,
@@ -283,8 +287,9 @@ async def get_reserves_by_lp(url: str, lp_token_id: int, level: int) -> str:
 
 #     return result['data']['dex_asset'][0]['decimals']
 
+
 @cached(cache=Cache(CACHE_SIZE))
-async def get_decimals_by_asset_id(url: str, asset_id: int) -> int:
+async def get_decimals_by_asset_id(asset_id: int) -> int:
     conn = get_connection()
     sql = """
         SELECT decimals FROM reserves.dex_asset
@@ -295,6 +300,7 @@ async def get_decimals_by_asset_id(url: str, asset_id: int) -> int:
         return res[0][0]
     except Exception as e:
         raise ReservesReceivingError(f'Failed to get decimals for asset {asset_id}') from e
+
 
 async def add_reserves_to_events(data: Any, config: ProxyConfig, client: httpx.AsyncClient) -> Any:
     for event in data.get('events', []):

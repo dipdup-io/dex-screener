@@ -102,7 +102,6 @@ class Pool(Model):
         null=True,
     )
     lp_token_id: int
-    shares = AssetAmountField()
 
     # def __repr__(self) -> str:
     #     return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'
@@ -241,5 +240,6 @@ class DexOmnipoolPosition(Model):
     owner = AccountField()
     asset_id = fields.IntField()
     amount = AssetAmountField()
+    # FIXME: Remove from handlers
     shares = AssetAmountField()
     created = fields.BooleanField(db_index=True, default=False)

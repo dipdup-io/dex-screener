@@ -39,26 +39,26 @@ async def on_liquidity_removed(
     )
 
     # NOTE: Get reserve models
-    reserves_0_model = await AssetPoolReserve.get(pool=pair.pool, asset=asset_0)
-    reserves_1_model = await AssetPoolReserve.get(pool=pair.pool, asset=asset_1)
-    int_reserves_0 = int(Decimal(reserves_0_model.reserve) * (10**pair.asset_0.decimals))
-    int_reserves_1 = int(Decimal(reserves_1_model.reserve) * (10**pair.asset_1.decimals))
+    # reserves_0_model = await AssetPoolReserve.get(pool=pair.pool, asset=asset_0)
+    # reserves_1_model = await AssetPoolReserve.get(pool=pair.pool, asset=asset_1)
+    # int_reserves_0 = int(Decimal(reserves_0_model.reserve) * (10**pair.asset_0.decimals))
+    # int_reserves_1 = int(Decimal(reserves_1_model.reserve) * (10**pair.asset_1.decimals))
 
     # NOTE: XYK: Calculate amounts from burned shares
-    burned_shares = int(event.payload['shares'])
-    amount_0 = burned_shares * int_reserves_0 / int(pair.pool.shares)
-    amount_1 = burned_shares * int_reserves_1 / int(pair.pool.shares)
-    pair.pool.shares = str(int(pair.pool.shares) - burned_shares)
+    # burned_shares = int(event.payload['shares'])
+    # amount_0 = burned_shares * int_reserves_0 / int(pair.pool.shares)
+    # amount_1 = burned_shares * int_reserves_1 / int(pair.pool.shares)
+    # pair.pool.shares = str(int(pair.pool.shares) - burned_shares)
     await pair.pool.save()
 
     # if pair.pool.shares[0] == '-':
     #     raise Exception
 
     # NOTE: Convert amounts to major units
-    amount_0 = pair.asset_0.from_minor(amount_0)
-    amount_1 = pair.asset_1.from_minor(amount_1)
-    reserves_0 = pair.asset_0.amount(reserves_0_model.reserve)
-    reserves_1 = pair.asset_1.amount(reserves_1_model.reserve)
+    # amount_0 = pair.asset_0.from_minor(amount_0)
+    # amount_1 = pair.asset_1.from_minor(amount_1)
+    # reserves_0 = pair.asset_0.amount(reserves_0_model.reserve)
+    # reserves_1 = pair.asset_1.amount(reserves_1_model.reserve)
 
     # NOTE: Update reserves
     reserves_0_model.reserve = str(reserves_0 - amount_0)

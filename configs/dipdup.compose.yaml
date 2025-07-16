@@ -6,16 +6,16 @@ database:
   user: ${POSTGRES_USER:-dipdup}
   password: ${POSTGRES_PASSWORD:-changeme}
   database: ${POSTGRES_DB:-dipdup}
-  # NOTE: Do not modify
-  schema_name: reserves
+  # NOTE: Hardcode, do not modify
+  schema_name: public
 
-hasura:
-  url: http://${HASURA_HOST:-hasura}:${HASURA_PORT:-8080}
-  admin_secret: ${HASURA_SECRET:-changeme}
-  allow_aggregations: ${HASURA_ALLOW_AGGREGATIONS:-true}
-  select_limit: ${HASURA_SELECT_LIMIT:-10000}
-  camel_case: ${HASURA_CAMEL_CASE:-true}
-  rest: false
+# hasura:
+#   url: http://${HASURA_HOST:-hasura}:${HASURA_PORT:-8080}
+#   admin_secret: ${HASURA_SECRET:-changeme}
+#   allow_aggregations: ${HASURA_ALLOW_AGGREGATIONS:-true}
+#   select_limit: ${HASURA_SELECT_LIMIT:-10000}
+#   camel_case: ${HASURA_CAMEL_CASE:-true}
+#   rest: false
 
 sentry:
   dsn: ${SENTRY_DSN:-''}

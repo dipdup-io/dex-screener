@@ -6,7 +6,7 @@ database:
   user: ${POSTGRES_USER:-dipdup}
   password: ${POSTGRES_PASSWORD:-changeme}
   database: ${POSTGRES_DB:-dipdup}
-  # NOTE: Do not modify
+  # NOTE: Hardcode, do not modify
   schema_name: reserves
 
 hasura:
