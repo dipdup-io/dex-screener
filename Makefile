@@ -50,7 +50,7 @@ up:             ## Start Compose stack
 	docker-compose -f ${COMPOSE} logs -f
 
 up_db:          ## Start Compose stack with db and hasura only
-	docker-compose -f ${COMPOSE} up -d --build db db_reserves hasura hasura_reserves
+	docker-compose -f ${COMPOSE} up -d --build db hasura
 
 down:           ## Stop Compose stack
 	docker-compose -f ${COMPOSE} down

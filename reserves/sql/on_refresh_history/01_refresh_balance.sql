@@ -80,9 +80,9 @@ WITH bucs AS (
     SELECT
         id,
         asset_account,
-        last(asset_id, id) AS asset_id,
-        last(account, id) AS account,
-        COALESCE(last(latest_balance, id), 0)+SUM(SUM(balance_update)) OVER (
+        public.last(asset_id, id) AS asset_id,
+        public.last(account, id) AS account,
+        COALESCE(public.last(latest_balance, id), 0)+SUM(SUM(balance_update)) OVER (
             PARTITION BY asset_account
             ORDER BY id
         ) AS balance

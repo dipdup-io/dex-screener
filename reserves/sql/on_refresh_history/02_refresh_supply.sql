@@ -33,9 +33,9 @@ CREATE INDEX idx_tmp_new_supply_key_btree
 DROP TABLE IF EXISTS tmp_updated_supply;
 CREATE TEMP TABLE tmp_updated_supply AS
     SELECT
-    last(bh.id, bh.id) AS id,
-    last(bh.asset_id, bh.id) AS asset_id,
-    last(supply, bh.id) AS balance_update
+    public.last(bh.id, bh.id) AS id,
+    public.last(bh.asset_id, bh.id) AS asset_id,
+    public.last(supply, bh.id) AS balance_update
     FROM supply_history AS bh
          JOIN tmp_new_supply_key AS ub USING (asset_id)
     GROUP BY bh.asset_id;
@@ -50,7 +50,7 @@ SELECT id, asset_id, balance_update
 WITH sucs AS (
     WITH sues AS (
         SELECT
-            last(id, id) AS id,
+            public.last(id, id) AS id,
             id / 2 AS key,
             asset_id,
             SUM(balance_update) AS event_supply_update

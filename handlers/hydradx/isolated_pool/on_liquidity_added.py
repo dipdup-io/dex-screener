@@ -1,13 +1,17 @@
 from decimal import Decimal
 
+from dipdup.database import get_connection
+import httpx
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
+import dex_screener
 from dex_screener.models import AssetPoolReserve
 from dex_screener.models import DexEvent
 from dex_screener.models import DexKey
 from dex_screener.models import DexScreenerEventType
 from dex_screener.models import Pair
+from dex_screener.proxy import get_reserves_by_id, get_reserves_by_lp
 from dex_screener.types.hydradx.substrate_events.xyk_liquidity_added import XYKLiquidityAddedPayload
 
 
@@ -32,6 +36,23 @@ async def on_liquidity_added(
         .prefetch_related('asset_0', 'asset_1', 'pool')
         .get()
     )
+
+    # get_reserves_by_id
+    async with httpx.AsyncClient() as client:
+        dex_screener.proxy._client = client
+
+        tries = 0
+        while True:
+            try:
+                reserves_0 = await get_reserves_by_lp('http://localhost:8081/v1/graphql', asset_0, event.data.level)
+                reserves_1 = await get_reserves_by_lp('http://localhost:8081/v1/graphql', asset_1, event.data.level)
+                lp_shares = await get_reserves_by_id('http://localhost:8081/v1/graphql', pair.pool.lp_token_id, event.data.level)
+            except KeyError as e:
+                tries += 1
+                ctx.logger.warning('Attempt #%s failed to get reserves for pair %s: %s. Retrying...', tries, pair.id, e)
+                await dex_screener.sleep(1)
+                continue
+
 
     # NOTE: Get reserve models
     reserves_0_model = await AssetPoolReserve.get(pool=pair.pool, asset=asset_0)

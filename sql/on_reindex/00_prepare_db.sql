@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 
-SELECT create_hypertable('dex_event', 'id', if_not_exists:=TRUE);
-SELECT set_chunk_time_interval('dex_event', 100000);
+SELECT public.create_hypertable('dex_event', 'id', if_not_exists:=TRUE);
+SELECT public.set_chunk_time_interval('dex_event', 100000);
 
 
 -- see: https://github.com/tortoise/tortoise-orm/issues/1428

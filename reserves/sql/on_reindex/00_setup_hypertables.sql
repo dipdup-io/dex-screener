@@ -1,6 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 
-
 ALTER TABLE balance_update_event
     DROP CONSTRAINT balance_update_event_pkey;
 CREATE UNIQUE INDEX balance_update_event_pkey
@@ -12,9 +11,8 @@ CREATE INDEX idx_balance_update_event_asset_account
 CREATE INDEX idx_balance_update_event_asset_id
     ON balance_update_event USING hash (asset_id);
 
-SELECT create_hypertable('balance_update_event', 'id', if_not_exists := TRUE);
-SELECT set_chunk_time_interval('balance_update_event', 100000::BIGINT << 17);
-
+SELECT public.create_hypertable('balance_update_event', 'id', if_not_exists := TRUE);
+SELECT public.set_chunk_time_interval('balance_update_event', 100000::BIGINT << 17);
 
 ALTER TABLE balance_history
     DROP CONSTRAINT balance_history_pkey;
@@ -31,8 +29,8 @@ create index idx_balance_history_asset_account_btree
 CREATE INDEX idx_balance_history_asset_id
     ON balance_history USING hash (asset_id);
 
-SELECT create_hypertable('balance_history', 'id', if_not_exists := TRUE);
-SELECT set_chunk_time_interval('balance_history', 100000::BIGINT << 17);
+SELECT public.create_hypertable('balance_history', 'id', if_not_exists := TRUE);
+SELECT public.set_chunk_time_interval('balance_history', 100000::BIGINT << 17);
 
 
 ALTER TABLE supply_history
@@ -46,5 +44,5 @@ CREATE INDEX idx_supply_history_distinct
 CREATE INDEX idx_supply_history_asset_id
     ON supply_history USING hash (asset_id);
 
-SELECT create_hypertable('supply_history', 'id', if_not_exists := TRUE);
-SELECT set_chunk_time_interval('supply_history', 100000::BIGINT << 18);
+SELECT public.create_hypertable('supply_history', 'id', if_not_exists := TRUE);
+SELECT public.set_chunk_time_interval('supply_history', 100000::BIGINT << 18);
