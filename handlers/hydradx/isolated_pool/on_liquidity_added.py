@@ -1,4 +1,3 @@
-import asyncio
 
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
@@ -8,8 +7,8 @@ from dex_screener.models import DexKey
 from dex_screener.models import DexScreenerEventType
 from dex_screener.models import Pair
 from dex_screener.types.hydradx.substrate_events.xyk_liquidity_added import XYKLiquidityAddedPayload
-from dex_screener.utils import NotFound
 from utils import get_balance_by_account
+from utils import wait_for_reserves
 
 
 async def on_liquidity_added(
@@ -34,25 +33,17 @@ async def on_liquidity_added(
         .get()
     )
 
-    tries = 0
-    while True:
-        try:
-            reserves_0 = await get_balance_by_account(
-                account=pair.pool.account,
-                asset_id=asset_0,
-                level=event.data.level,
-            )
-            reserves_1 = await get_balance_by_account(
-                account=pair.pool.account,
-                asset_id=asset_1,
-                level=event.data.level,
-            )
-            break
-        except NotFound as e:
-            tries += 1
-            ctx.logger.warning('Attempt #%s failed to get reserves for pair %s: %s. Retrying...', tries, pair.id, e)
-            await asyncio.sleep(10)
-            continue
+    await wait_for_reserves(event.data.level)
+    reserves_0 = await get_balance_by_account(
+        account=pair.pool.account,
+        asset_id=asset_0,
+        level=event.data.level,
+    )
+    reserves_1 = await get_balance_by_account(
+        account=pair.pool.account,
+        asset_id=asset_1,
+        level=event.data.level,
+    )
 
     amount_0 = str(pair.asset_0.from_minor(amount_0))
     amount_1 = str(pair.asset_1.from_minor(amount_1))

@@ -1,4 +1,3 @@
-import asyncio
 
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
@@ -9,9 +8,9 @@ from dex_screener.models import DexKey
 from dex_screener.models import DexScreenerEventType
 from dex_screener.models import Pair
 from dex_screener.types.hydradx.substrate_events.xyk_liquidity_removed import XYKLiquidityRemovedPayload
-from utils import NotFound
 from utils import get_asset_supply
 from utils import get_balance_by_account
+from utils import wait_for_reserves
 
 
 async def on_liquidity_removed(
@@ -40,34 +39,21 @@ async def on_liquidity_removed(
         .get()
     )
 
-    tries = 0
-    while True:
-        try:
-            reserves_0 = await get_balance_by_account(
-                account=pair.pool.account,
-                asset_id=asset_0,
-                level=event.data.level,
-            )
-            reserves_1 = await get_balance_by_account(
-                account=pair.pool.account,
-                asset_id=asset_1,
-                level=event.data.level,
-            )
-            pool_shares = await get_asset_supply(
-                asset_id=pair.pool.lp_token_id,
-                level=event.data.level,
-            )
-            break
-        except NotFound as e:
-            tries += 1
-            ctx.logger.warning('Attempt #%s failed to get reserves for pair %s: %s. Retrying...', tries, pair.id, e)
-            await asyncio.sleep(10)
-            continue
+    await wait_for_reserves(event.data.level)
+    reserves_0 = await get_balance_by_account(pair.pool.account, asset_0, event.data.level)
+    reserves_1 = await get_balance_by_account(pair.pool.account, asset_1, event.data.level)
+    pool_shares = await get_asset_supply(pair.pool.lp_token_id, event.data.level)
+
+    if pool_shares == 0:
+        ctx.logger.warning('FIXME: Pool was destroyed after the last liquidity removal, using last known reserves')
+        reserves_0 = await get_balance_by_account(pair.pool.account, asset_0, event.data.level - 1)
+        reserves_1 = await get_balance_by_account(pair.pool.account, asset_1, event.data.level - 1)
+        pool_shares = await get_asset_supply(pair.pool.lp_token_id, event.data.level - 1)
 
     # NOTE: XYK: Calculate amounts from burned shares
     burned_shares = int(event.payload['shares'])
-    amount_0 = burned_shares * reserves_0 / int(pool_shares)
-    amount_1 = burned_shares * reserves_1 / int(pool_shares)
+    amount_0 = burned_shares * reserves_0 // pool_shares
+    amount_1 = burned_shares * reserves_1 // pool_shares
 
     # NOTE: Convert amounts to major units
     amount_0 = str(pair.asset_0.from_minor(amount_0))
