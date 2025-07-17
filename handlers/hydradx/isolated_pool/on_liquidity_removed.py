@@ -65,8 +65,8 @@ async def on_liquidity_removed(
 
     # NOTE: XYK: Calculate amounts from burned shares
     burned_shares = int(event.payload['shares'])
-    amount_0 = burned_shares * reserves_0 / int(pool_shares or '1')
-    amount_1 = burned_shares * reserves_1 / int(pool_shares or '1')
+    amount_0 = burned_shares * reserves_0 / int(pool_shares)
+    amount_1 = burned_shares * reserves_1 / int(pool_shares)
 
     # NOTE: Convert amounts to major units
     amount_0 = str(pair.asset_0.from_minor(amount_0))

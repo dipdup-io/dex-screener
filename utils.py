@@ -22,10 +22,11 @@ async def get_pool_by_pair(
         WHERE dex_pair.id = $1
     """
     res = await conn.execute_query(sql, pair_id)
-    if not res:
+    try:
+        return res[1][0]
+    except IndexError as e:
         msg = f'No pool found for pair {pair_id}'
-        raise NotFound(msg)
-    return res[0]
+        raise NotFound(msg) from e
 
 
 async def get_balance_by_account(
@@ -44,10 +45,11 @@ async def get_balance_by_account(
 
     conn = get_connection()
     res = await conn.execute_query(sql, args)
-    if not res:
+    try:
+        return res[1][0]['balance']
+    except IndexError as e:
         msg = f'No balance found for account {account} at level {level}'
-        raise NotFound(msg)
-    return res[0]
+        raise NotFound(msg) from e
 
 
 async def get_asset_supply(
@@ -65,10 +67,11 @@ async def get_asset_supply(
     args = (asset_id, first_id)
 
     res = await conn.execute_query(sql, args)
-    if not res:
+    try:
+        return res[1][0]['supply']
+    except IndexError as e:
         msg = f'No supply found for asset {asset_id} at level {level}'
-        raise NotFound(msg)
-    return res[0]
+        raise NotFound(msg) from e
 
 
 async def get_decimals_by_asset_id(asset_id: int) -> int:
@@ -78,7 +81,8 @@ async def get_decimals_by_asset_id(asset_id: int) -> int:
         WHERE id = $1
     """
     res = await conn.execute_query(sql, asset_id)
-    if not res:
+    try:
+        return res[1][0]['decimals']
+    except IndexError as e:
         msg = f'No decimals found for asset {asset_id}'
-        raise NotFound(msg)
-    return res[0][0]
+        raise NotFound(msg) from e
