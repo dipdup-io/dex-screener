@@ -1,3 +1,11 @@
+"""
+Batch handler for processing matched event handlers, deprecating old event types, and managing block timestamp updates.
+
+- Removes deprecated event handlers from the index config and skips their processing after a certain block level.
+- Creates Block records for each unique block level in the batch.
+- Periodically refreshes block timestamps from an external explorer and updates the database.
+"""
+
 from __future__ import annotations
 
 from datetime import UTC
@@ -22,6 +30,8 @@ class DeprecatedEvent:
 
 
 class DexSwapEvent(DeprecatedEvent):
+    """Deprecates swap-related events after a specific block level."""
+
     names = (
         'Omnipool.BuyExecuted',
         'Omnipool.SellExecuted',
@@ -38,11 +48,15 @@ class DexSwapEvent(DeprecatedEvent):
 
 
 class BroadcastSwapped(DeprecatedEvent):
+    """Deprecates the Broadcast.Swapped event after a specific block level."""
+
     names = ('Broadcast.Swapped',)
     level: int = 7342919
 
 
 class BroadcastSwapped2(DeprecatedEvent):
+    """Deprecates the Broadcast.Swapped2 event after a specific block level."""
+
     names = ('Broadcast.Swapped2',)
     level: int = 7582524
 
@@ -58,6 +72,12 @@ async def batch(
     ctx: HandlerContext,
     handlers: tuple[MatchedHandler, ...],
 ) -> None:
+    """
+    Main batch handler:
+    - Removes deprecated event handlers from config and skips their processing.
+    - Creates Block records for each unique block level.
+    - Refreshes block timestamps from explorer if needed.
+    """
     current_level = handlers[0].level
     for deprecated in deprecations:
         if current_level <= deprecated.level:
@@ -119,6 +139,7 @@ async def batch(
                 ),
             }
 
+            # FIXME: Why explorer? Do we need another datasource?
             explorer = ctx.get_http_datasource('explorer')
             response = await explorer.request('post', 'graphql', json=request_payload)
 
@@ -142,6 +163,8 @@ async def batch(
 
 
 class RuntimeFlag:
+    """Controls scheduling and conditions for block timestamp refreshes."""
+
     blocks_refresh_at: datetime = datetime.now(UTC)
     blocks_refresh_period: timedelta = timedelta(seconds=60)
 
