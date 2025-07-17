@@ -9,7 +9,8 @@ from dex_screener.models import DexKey
 from dex_screener.models import DexScreenerEventType
 from dex_screener.models import Pair
 from dex_screener.types.hydradx.substrate_events.xyk_liquidity_removed import XYKLiquidityRemovedPayload
-from utils import NotFound, get_asset_supply
+from utils import NotFound
+from utils import get_asset_supply
 from utils import get_balance_by_account
 
 

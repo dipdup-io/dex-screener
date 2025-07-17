@@ -1,3 +1,5 @@
+"""Batch handler for reserves: buffers events and refreshes history tables until real-time mode."""
+
 from asyncio import Queue
 from datetime import UTC
 from datetime import datetime
@@ -14,6 +16,9 @@ async def batch(
     ctx: HandlerContext,
     handlers: tuple[MatchedHandler, ...],
 ) -> None:
+    """
+    Fires handlers, flushes buffer, and refreshes history until real-time.
+    """
     for handler in handlers:
         await ctx.fire_matched_handler(handler)
 
@@ -36,6 +41,9 @@ async def batch(
 
 
 async def refresh_history(ctx: HandlerContext):
+    """
+    Flushes buffer and refreshes history tables.
+    """
     await EventBuffer.flush(ctx)
     refresh_start = datetime.now()
     await ctx.execute_sql_script('on_refresh_history')
@@ -44,6 +52,10 @@ async def refresh_history(ctx: HandlerContext):
 
 
 class RuntimeFlag:
+    """
+    Controls refresh and real-time state.
+    """
+
     realtime: bool = False
     synchronized: bool = False
     history_refresh_at: datetime = datetime.now(UTC)
@@ -61,6 +73,10 @@ class RuntimeFlag:
 
 
 class EventBuffer:
+    """
+    Buffers and bulk-inserts events.
+    """
+
     buffer_limit: int = 10000
     queue: Queue[BalanceUpdateEvent] = Queue()
 
