@@ -49,8 +49,8 @@ ignore_missing_imports = true
 [tool.hatch.build.targets.wheel]
 packages = ["dex_screener"]
 
-# [tool.uv.sources]
-# dipdup = { git = "https://github.com/dipdup-io/dipdup.git", rev = "next" }
+[tool.uv.sources]
+dipdup = { git = "https://github.com/dipdup-io/dipdup.git", rev = "aux/no-hooks" }
 
 [build-system]
 requires = ["hatchling"]

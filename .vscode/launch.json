@@ -4,67 +4,15 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": "dex_screener: WIPE",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "dipdup",
-            "args": [
-                "-C", "compose",
-                "-e", "local.env",
-                "schema", "wipe", "--force",
-            ],
-            "cwd": "${workspaceFolder}",
-        },
-        {
-            "name": "dex_screener: Run XYK",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "dipdup",
-            "args": [
-                "-C", "compose",
-                "-C", "only-xyk",
-                "-e", "local.env",
-                "run",
-            ],
-            "cwd": "${workspaceFolder}",
-        },
-        {
-            "name": "dex_screener: Run LBP",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "dipdup",
-            "args": [
-                "-C", "compose",
-                "-C", "only-lbp",
-                "-e", "local.env",
-                "run",
-            ],
-            "cwd": "${workspaceFolder}",
-        },
-        {
-            "name": "reserves: WIPE",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "dipdup",
-            "args": [
-                "-C", "compose",
-                "-e", "../local.env",
-                "schema", "wipe", "--force",
-            ],
-            "cwd": "${workspaceFolder}/reserves",
-        },        
-        {
-            "name": "reserves: Run",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "dipdup",
-            "args": [
-                "-C", "compose",
-                "-e", "../local.env",
-                "run",
-            ],
-            "cwd": "${workspaceFolder}/reserves",
-        },        
+    {
+      "name": "Python: Attach to DipDup debugpy",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "justMyCode": false
+    }
     ]
 }
