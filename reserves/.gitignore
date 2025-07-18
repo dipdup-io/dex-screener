@@ -31,3 +31,5 @@
 !.dockerignore
 !**/Dockerfile
 !**/Makefile
+
+!local.env
