@@ -45,10 +45,7 @@ init:
 	dipdup init --no-base
 	cd reserves && dipdup init --no-base
 
-up:             ## Start Compose stack: DB and Hasura only
-	docker-compose -f ${COMPOSE} up -d --build db hasura
-
-up_full:        ## Start Compose stack: DB, Hasura, and indexer
+up:             ## Start Compose stack: DB, Hasura, and indexer
 	docker-compose -f ${COMPOSE} up -d --build
 	docker-compose -f ${COMPOSE} logs -f
 
@@ -56,14 +53,33 @@ down:           ## Stop Compose stack
 	docker-compose -f ${COMPOSE} down
 
 ##
+## Local development
+##
+
+up_db:          ## Start Compose stack: DB and Hasura only
+	docker-compose -f ${COMPOSE} up -d --build db hasura
 
 run_main:       ## Run main indexer
-	dipdup -C compose -C only-xyk -e local.env run
+	dipdup -C compose -e local.env run
 
 run_reserves:   ## Run reserves indexer
 	cd reserves; dipdup -C compose -e local.env run
 
 run_proxy:      ## Run Hasura proxy
 	python -m dex_screener -C compose -e local.env proxy
+
+only_stableswap:##
+	dipdup -C compose -C only-stableswap -e local.env run
+
+only_xyk:       ##
+	dipdup -C compose -C only-xyk -e local.env run
+
+##
+
+wipe_main:      ## Wipe public schema
+	dipdup -C compose -e local.env schema wipe --force
+
+wipe_reserves:  ## Wipe reserves schema
+	cd reserves; dipdup -C compose -e local.env schema wipe --force
 
 ##

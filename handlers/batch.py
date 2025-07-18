@@ -116,7 +116,8 @@ async def batch(
 
         await ctx.fire_matched_handler(handler)
 
-    if getattr(env, 'NO_HOOKS', False):
+    if env.NO_HOOKS:
+        ctx.logger.info('Skipping block timestamp refresh due to NO_HOOKS environment variable.')
         return
 
     if RuntimeFlag.blocks_refresh_condition():
