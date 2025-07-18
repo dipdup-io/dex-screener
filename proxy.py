@@ -128,6 +128,8 @@ def remove_none_fields(data: Any) -> Any:
             item.pop('asset1Out', None)
         if item.get('priceNative') is None:
             item.pop('priceNative', None)
+
+        # NOTE: `reserves` is a nested field
         item['reserves'] = {
             'asset_0': item.get('asset0Reserve'),
             'asset_1': item.get('asset1Reserve'),
@@ -299,7 +301,7 @@ async def transform_events(
 async def forward_request(
     request: Request,
     config: ProxyConfig,
-    transform: Callable[[bytes, ProxyConfig, httpx.AsyncClient], Awaitable[bytes]] | None = None,
+    transform: Callable[[bytes], Awaitable[bytes]] | None = None,
 ) -> Response:
     # Forward request with exact headers and body
     client: httpx.AsyncClient = request.app.state.client
@@ -322,7 +324,7 @@ async def forward_request(
     if transform:
         # Read JSON content
         content = await response.aread()
-        data = await transform(content, config, client)
+        data = await transform(content)
 
         headers['Content-Length'] = str(len(data)) if data else '0'
     else:

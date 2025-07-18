@@ -47,8 +47,8 @@ async def on_liquidity_added(
 
     amount_0 = str(pair.asset_0.from_minor(amount_0))
     amount_1 = str(pair.asset_1.from_minor(amount_1))
-    asset_0_reserve = str(pair.asset_0.amount(reserves_0))
-    asset_1_reserve = str(pair.asset_1.amount(reserves_1))
+    asset_0_reserve = str(pair.asset_0.from_minor(reserves_0))
+    asset_1_reserve = str(pair.asset_1.from_minor(reserves_1))
 
     # NOTE: Create DexEvent
     await DexEvent.create(
