@@ -32,7 +32,7 @@ lint:           ## Lint code with ruff and mypy
 	mypy .
 	cd reserves; make lint
 
-test: 		 ## Run tests
+test:           ## Run tests
 	pytest tests
 
 ##
@@ -45,23 +45,25 @@ init:
 	dipdup init --no-base
 	cd reserves && dipdup init --no-base
 
-up:             ## Start Compose stack
+up:             ## Start Compose stack: DB and Hasura only
+	docker-compose -f ${COMPOSE} up -d --build db hasura
+
+up_full:        ## Start Compose stack: DB, Hasura, and indexer
 	docker-compose -f ${COMPOSE} up -d --build
 	docker-compose -f ${COMPOSE} logs -f
-
-up_db:          ## Start Compose stack: DB and Hasura only
-	docker-compose -f ${COMPOSE} up -d --build db hasura
 
 down:           ## Stop Compose stack
 	docker-compose -f ${COMPOSE} down
 
-run_main:	    ## Run main indexer
+##
+
+run_main:       ## Run main indexer
 	dipdup -C compose -C only-xyk -e local.env run
 
 run_reserves:   ## Run reserves indexer
 	cd reserves; dipdup -C compose -e local.env run
 
-run_proxy: 	    ## Run Hasura proxy
+run_proxy:      ## Run Hasura proxy
 	python -m dex_screener -C compose -e local.env proxy
 
 ##

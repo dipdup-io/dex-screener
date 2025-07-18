@@ -16,7 +16,7 @@ datasources:
   node:
     kind: substrate.node
     url: ${NODE_URL:-https://hydration-rpc.n.dwellir.com}
-    # ws_url: ${NODE_WS_URL:-wss://hydration-rpc.n.dwellir.com}
+    ws_url: null
   explorer:
     kind: http
     url: https://explorer.hydradx.cloud/
@@ -51,11 +51,6 @@ indexes:
         callback: hydradx.balances.on_balance_updated
       - name: Balances.Transfer
         callback: hydradx.balances.on_balance_transfer
-
-advanced:
-  reindex:
-    config_modified: ignore
-    schema_modified: exception
 
 custom:
   history_refresh_period:

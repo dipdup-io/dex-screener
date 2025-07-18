@@ -41,6 +41,7 @@ indexes:
       - subscan
       - node
     handlers:
+      # Asset Registry (common)
       - name: AssetRegistry.Registered
         callback: hydradx.asset.on_asset_registered
       - name: AssetRegistry.Updated
@@ -50,6 +51,15 @@ indexes:
       - name: AssetRegistry.LocationSet
         callback: hydradx.asset.on_location_set
 
+      # Swap Broadcasts (common)
+      - name: Broadcast.Swapped
+        callback: hydradx.on_swap_executed
+      - name: Broadcast.Swapped2
+        callback: hydradx.on_swap_executed
+      - name: Broadcast.Swapped3
+        callback: hydradx.on_swap_executed
+
+      # Omnipool
       - name: Omnipool.TokenAdded
         callback: hydradx.omnipool.on_token_added
       - name: Omnipool.BuyExecuted
@@ -63,6 +73,7 @@ indexes:
       - name: Omnipool.PositionUpdated
         callback: hydradx.omnipool.on_position_updated
 
+      # Stableswap
       - name: Stableswap.PoolCreated
         callback: hydradx.stableswap.on_pool_created
       - name: Stableswap.BuyExecuted
@@ -74,6 +85,7 @@ indexes:
       - name: Stableswap.LiquidityRemoved
         callback: hydradx.stableswap.on_liquidity_removed
 
+      # Isolated Pool (XYK)
       - name: XYK.PoolCreated
         callback: hydradx.isolated_pool.on_pool_created
       - name: XYK.LiquidityAdded
@@ -85,31 +97,26 @@ indexes:
       - name: XYK.SellExecuted
         callback: hydradx.on_swap_executed
 
-      - name: LBP.PoolCreated
-        callback: hydradx.lbp.on_pool_created
-      - name: LBP.PoolUpdated
-        callback: hydradx.lbp.on_pool_updated
-      - name: LBP.LiquidityAdded
-        callback: hydradx.lbp.on_liquidity_added
-      - name: LBP.LiquidityRemoved
-        callback: hydradx.lbp.on_liquidity_removed
-      - name: LBP.BuyExecuted
-        callback: hydradx.on_swap_executed
-      - name: LBP.SellExecuted
-        callback: hydradx.on_swap_executed
+      # LBP (not in spec)
+      # - name: LBP.PoolCreated
+      #   callback: hydradx.lbp.on_pool_created
+      # - name: LBP.PoolUpdated
+      #   callback: hydradx.lbp.on_pool_updated
+      # - name: LBP.LiquidityAdded
+      #   callback: hydradx.lbp.on_liquidity_added
+      # - name: LBP.LiquidityRemoved
+      #   callback: hydradx.lbp.on_liquidity_removed
+      # - name: LBP.BuyExecuted
+      #   callback: hydradx.on_swap_executed
+      # - name: LBP.SellExecuted
+      #   callback: hydradx.on_swap_executed
 
+      # OTC
       - name: OTC.Placed
         callback: hydradx.otc.on_order_placed
       - name: OTC.Filled
         callback: hydradx.on_swap_executed
       - name: OTC.PartiallyFilled
-        callback: hydradx.on_swap_executed
-
-      - name: Broadcast.Swapped
-        callback: hydradx.on_swap_executed
-      - name: Broadcast.Swapped2
-        callback: hydradx.on_swap_executed
-      - name: Broadcast.Swapped3
         callback: hydradx.on_swap_executed
 
 custom:

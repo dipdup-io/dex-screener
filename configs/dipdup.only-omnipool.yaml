@@ -19,10 +19,16 @@ indexes:
       - name: AssetRegistry.LocationSet
         callback: hydradx.asset.on_location_set
 
-      # Isolated Pool (XYK)
-      - name: XYK.PoolCreated
-        callback: hydradx.isolated_pool.on_pool_created
-      - name: XYK.LiquidityAdded
-        callback: hydradx.isolated_pool.on_liquidity_added
-      - name: XYK.LiquidityRemoved
-        callback: hydradx.isolated_pool.on_liquidity_removed
+      # Omnipool
+      - name: Omnipool.TokenAdded
+        callback: hydradx.omnipool.on_token_added
+      - name: Omnipool.BuyExecuted
+        callback: hydradx.on_swap_executed
+      - name: Omnipool.SellExecuted
+        callback: hydradx.on_swap_executed
+      - name: Omnipool.PositionCreated
+        callback: hydradx.omnipool.on_position_created
+      - name: Omnipool.PositionDestroyed
+        callback: hydradx.omnipool.on_position_destroyed
+      - name: Omnipool.PositionUpdated
+        callback: hydradx.omnipool.on_position_updated
