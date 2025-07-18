@@ -1,4 +1,3 @@
-
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
@@ -34,21 +33,8 @@ async def on_liquidity_added(
     )
 
     await wait_for_reserves(event.data.level)
-    reserves_0 = await get_balance_by_account(
-        account=pair.pool.account,
-        asset_id=asset_0,
-        level=event.data.level,
-    )
-    reserves_1 = await get_balance_by_account(
-        account=pair.pool.account,
-        asset_id=asset_1,
-        level=event.data.level,
-    )
-
-    amount_0 = str(pair.asset_0.from_minor(amount_0))
-    amount_1 = str(pair.asset_1.from_minor(amount_1))
-    asset_0_reserve = str(pair.asset_0.from_minor(reserves_0))
-    asset_1_reserve = str(pair.asset_1.from_minor(reserves_1))
+    reserves_0 = await get_balance_by_account(pair.pool.account, asset_0, event.data.level)
+    reserves_1 = await get_balance_by_account(pair.pool.account, asset_1, event.data.level)
 
     # NOTE: Create DexEvent
     await DexEvent.create(
@@ -56,10 +42,10 @@ async def on_liquidity_added(
         name=event.data.name,
         maker=event.payload['who'],
         pair_id=pair.id,
-        amount_0=amount_0,
-        amount_1=amount_1,
-        asset_0_reserve=asset_0_reserve,
-        asset_1_reserve=asset_1_reserve,
+        amount_0=str(pair.asset_0.from_minor(amount_0)),
+        amount_1=str(pair.asset_1.from_minor(amount_1)),
+        asset_0_reserve=str(pair.asset_0.from_minor(reserves_0)),
+        asset_1_reserve=str(pair.asset_1.from_minor(reserves_1)),
         event_index=event.data.index,
         tx_index=event.data.extrinsic_index if event.data.extrinsic_index is not None else 0,
         block_id=event.data.level,

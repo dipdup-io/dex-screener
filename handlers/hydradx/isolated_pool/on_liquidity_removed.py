@@ -1,4 +1,3 @@
-
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
@@ -44,33 +43,28 @@ async def on_liquidity_removed(
     reserves_1 = await get_balance_by_account(pair.pool.account, asset_1, event.data.level)
     pool_shares = await get_asset_supply(pair.pool.lp_token_id, event.data.level)
 
+    # NOTE: Pool was destroyed after the last liquidity removal, using last known reserves
+    # FIXME: Fetch correct amounts from block transfers
     if pool_shares == 0:
-        ctx.logger.warning('FIXME: Pool was destroyed after the last liquidity removal, using last known reserves')
         reserves_0 = await get_balance_by_account(pair.pool.account, asset_0, event.data.level - 1)
         reserves_1 = await get_balance_by_account(pair.pool.account, asset_1, event.data.level - 1)
         pool_shares = await get_asset_supply(pair.pool.lp_token_id, event.data.level - 1)
 
-    # NOTE: XYK: Calculate amounts from burned shares
+    # NOTE: Calculate amounts from burned shares
     burned_shares = int(event.payload['shares'])
     amount_0 = burned_shares * reserves_0 // pool_shares
     amount_1 = burned_shares * reserves_1 // pool_shares
 
-    # NOTE: Convert amounts to major units
-    amount_0 = str(pair.asset_0.from_minor(amount_0))
-    amount_1 = str(pair.asset_1.from_minor(amount_1))
-    reserves_0 = str(pair.asset_0.from_minor(reserves_0))
-    reserves_1 = str(pair.asset_1.from_minor(reserves_1))
-
-    # NOTE: Create DexEvent
     await DexEvent(
         event_type=DexScreenerEventType.Exit,
         name=event.data.name,
         maker=event.payload['who'],
         pair=pair,
-        amount_0=amount_0,
-        amount_1=amount_1,
-        asset_0_reserve=reserves_0,
-        asset_1_reserve=reserves_1,
+        # NOTE: Convert amounts to major units
+        amount_0=str(pair.asset_0.from_minor(amount_0)),
+        amount_1=str(pair.asset_1.from_minor(amount_1)),
+        asset_0_reserve=str(pair.asset_0.from_minor(reserves_0)),
+        asset_1_reserve=str(pair.asset_1.from_minor(reserves_1)),
         event_index=event.data.index,
         tx_index=event.data.extrinsic_index if event.data.extrinsic_index is not None else 0,
         block_id=event.data.level,

@@ -137,7 +137,6 @@ async def transform_events(
     return json_dumps(processed_data, None)
 
 
-
 async def forward_request(
     request: Request,
     config: ProxyConfig,

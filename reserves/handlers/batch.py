@@ -40,7 +40,7 @@ async def batch(
             RuntimeFlag.realtime = True
 
 
-async def refresh_history(ctx: HandlerContext):
+async def refresh_history(ctx: DipDupContext):
     """
     Flushes buffer and refreshes history tables.
     """

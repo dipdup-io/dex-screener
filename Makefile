@@ -49,10 +49,19 @@ up:             ## Start Compose stack
 	docker-compose -f ${COMPOSE} up -d --build
 	docker-compose -f ${COMPOSE} logs -f
 
-up_db:          ## Start Compose stack with db and hasura only
+up_db:          ## Start Compose stack: DB and Hasura only
 	docker-compose -f ${COMPOSE} up -d --build db hasura
 
 down:           ## Stop Compose stack
 	docker-compose -f ${COMPOSE} down
+
+run_main:	    ## Run main indexer
+	dipdup -C compose -C only-xyk -e local.env run
+
+run_reserves:   ## Run reserves indexer
+	cd reserves; dipdup -C compose -e local.env run
+
+run_proxy: 	    ## Run Hasura proxy
+	python -m dex_screener -C compose -e local.env proxy
 
 ##
