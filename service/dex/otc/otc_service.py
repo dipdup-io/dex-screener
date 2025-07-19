@@ -46,7 +46,6 @@ class OTCService:
             account=cls.get_order_account(order_id, asset_in_id, asset_out_id),
             dex_key=DexKey.OTC,
             dex_pool_id=order_id,
-            shares='0',
         )
         cls.logger.info('Order registered: %r.', order)
 
@@ -64,6 +63,5 @@ class OTCService:
         cls.logger.info('Pair registered in pool %r: %r.', order, pair)
 
         await pair.fetch_related('asset_0', 'asset_1')
-        await order.assets.add(pair.asset_0, pair.asset_1)  # type: ignore[attr-defined]
 
         return order
