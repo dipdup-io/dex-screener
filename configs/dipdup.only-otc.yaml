@@ -1,0 +1,26 @@
+indexes:
+  hydradx_events:
+    kind: substrate.events
+    runtime: hydradx
+    datasources:
+      - subsquid
+      - subscan
+      - node
+    handlers:
+      # Asset Registry (common)
+      - name: AssetRegistry.Registered
+        callback: hydradx.asset.on_asset_registered
+      - name: AssetRegistry.Updated
+        callback: hydradx.asset.on_asset_updated
+      - name: AssetRegistry.MetadataSet
+        callback: hydradx.asset.on_metadata_set
+      - name: AssetRegistry.LocationSet
+        callback: hydradx.asset.on_location_set
+
+      # OTC
+      - name: OTC.Placed
+        callback: hydradx.otc.on_order_placed
+      - name: OTC.Filled
+        callback: hydradx.on_swap_executed
+      - name: OTC.PartiallyFilled
+        callback: hydradx.on_swap_executed

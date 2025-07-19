@@ -97,6 +97,14 @@ indexes:
       - name: XYK.SellExecuted
         callback: hydradx.on_swap_executed
 
+      # OTC
+      - name: OTC.Placed
+        callback: hydradx.otc.on_order_placed
+      - name: OTC.Filled
+        callback: hydradx.on_swap_executed
+      - name: OTC.PartiallyFilled
+        callback: hydradx.on_swap_executed
+
       # LBP (not in spec)
       # - name: LBP.PoolCreated
       #   callback: hydradx.lbp.on_pool_created
@@ -111,13 +119,6 @@ indexes:
       # - name: LBP.SellExecuted
       #   callback: hydradx.on_swap_executed
 
-      # OTC
-      - name: OTC.Placed
-        callback: hydradx.otc.on_order_placed
-      - name: OTC.Filled
-        callback: hydradx.on_swap_executed
-      - name: OTC.PartiallyFilled
-        callback: hydradx.on_swap_executed
 
 custom:
   # NOTE: See `hooks/`

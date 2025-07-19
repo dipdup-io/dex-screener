@@ -77,6 +77,9 @@ only_xyk:       ##
 only_omnipool:  ##
 	dipdup -C compose -C only-omnipool -e local.env run
 
+only_otc:       ##
+	dipdup -C compose -C only-otc -e local.env run
+
 ##
 
 psql:
