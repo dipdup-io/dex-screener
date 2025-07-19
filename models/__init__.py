@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 from dipdup import fields
 from dipdup.fields import ForeignKeyField
-from dipdup.fields import ManyToManyField
 from dipdup.fields import OneToOneField
 from dipdup.models import Model
 
@@ -15,7 +14,6 @@ from dex_screener.service.event.const import DexScreenerEventType
 
 if TYPE_CHECKING:
     from tortoise.fields.relational import ForeignKeyFieldInstance
-    from tortoise.fields.relational import ManyToManyFieldInstance
     from tortoise.fields.relational import OneToOneFieldInstance
 
     from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypeAmount

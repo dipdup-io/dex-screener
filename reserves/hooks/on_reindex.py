@@ -1,6 +1,7 @@
 from dipdup.context import HookContext
-from reserves.models import BalanceUpdateEvent
 from scalecodec import ss58_decode  # type: ignore[import-untyped]
+
+from reserves.models import BalanceUpdateEvent
 
 
 async def on_reindex(

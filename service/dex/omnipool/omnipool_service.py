@@ -55,23 +55,23 @@ class OmnipoolService:
     @classmethod
     async def register_pair(cls, pool: Pool, event: SubstrateEvent[OmnipoolTokenAddedPayload]):
         new_asset = await Asset.get(id=event.payload['asset_id'])
-        
+
         # Get all existing assets in the pool to create pairs with the new asset
         existing_pairs = await Pair.filter(pool=pool).prefetch_related('asset_0', 'asset_1')
         existing_asset_ids = set()
-        
+
         for pair in existing_pairs:
             existing_asset_ids.add(pair.asset_0.id)
             existing_asset_ids.add(pair.asset_1.id)
-        
+
         # Add the hub asset if not already present
         existing_asset_ids.add(OMNIPOOL_HUB_ASSET_ID)
-        
+
         # Create pairs between the new asset and all existing assets
         for existing_asset_id in existing_asset_ids:
             if existing_asset_id == new_asset.id:
                 continue  # Skip pairing with itself
-                
+
             pair_id = cls.get_pair_id(new_asset.id, existing_asset_id)
 
             if await Pair.exists(id=pair_id):
