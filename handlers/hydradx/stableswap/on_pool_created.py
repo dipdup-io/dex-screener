@@ -22,7 +22,7 @@ async def on_pool_created(
     pool = await Pool.create(
         account=account,
         dex_key=DexKey.StableSwap,
-        dex_pool_id=account,
+        dex_pool_id=lp_token_id,
         lp_token_id=lp_token_id,
         # NOTE: Set later in the same block
         shares='0',
