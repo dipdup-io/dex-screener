@@ -74,6 +74,9 @@ only_stableswap:##
 only_xyk:       ##
 	dipdup -C compose -C only-xyk -e local.env run
 
+only_omnipool:  ##
+	dipdup -C compose -C only-omnipool -e local.env run
+
 ##
 
 psql:

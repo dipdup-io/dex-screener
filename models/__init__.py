@@ -87,13 +87,6 @@ class Pool(Model):
     account = AccountField(primary_key=True)
     dex_key = fields.EnumField(enum_type=DexKey, db_index=True)
     dex_pool_id = fields.TextField(db_index=True)
-    assets: ManyToManyFieldInstance[Asset] = ManyToManyField(
-        model_name=Asset.Meta.model,
-        through='dex_asset_pool_reserve',
-        forward_key='asset_id',
-        backward_key='pool_id',
-        related_name='pools',
-    )
     lp_token: OneToOneFieldInstance[Asset] = OneToOneField(  # type: ignore[assignment]
         model_name=Asset.Meta.model,
         related_name='liquidity_pool',
@@ -105,28 +98,6 @@ class Pool(Model):
 
     # def __repr__(self) -> str:
     #     return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'
-
-
-class AssetPoolReserve(Model):
-    class Meta:
-        table = 'dex_asset_pool_reserve'
-        model = 'models.AssetPoolReserve'
-        unique_together = ('pool', 'asset')
-
-    id = fields.IntField(primary_key=True)
-    asset: ForeignKeyFieldInstance[Asset] = ForeignKeyField(
-        model_name=Asset.Meta.model,
-        source_field='asset_id',
-        to_field='id',
-        related_name='reserve',
-    )
-    pool: ForeignKeyFieldInstance[Pool] = ForeignKeyField(
-        model_name=Pool.Meta.model,
-        source_field='pool_id',
-        to_field='account',
-        related_name='reserves',
-    )
-    reserve = AssetAmountField(default='0')
 
 
 class Pair(Model):

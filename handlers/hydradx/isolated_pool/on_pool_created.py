@@ -25,7 +25,6 @@ async def on_pool_created(
             'dex_key': DexKey.IsolatedPool,
             'dex_pool_id': event.payload['pool'],
             'lp_token_id': event.payload['share_token'],
-            'shares': event.payload['initial_shares_amount'],
         },
     )
 
@@ -48,6 +47,3 @@ async def on_pool_created(
             fee_bps=XYK_GET_EXCHANGE_FEE_BPS,
         )
         ctx.logger.info('Pair registered in pool %r: %r.', pool, pair)
-
-        await pool.assets.add(asset_a, asset_b)  # type: ignore[attr-defined]
-        ctx.logger.info('Pair Assets added to pool %r: %s, %s.', pool, asset_a, asset_b)
