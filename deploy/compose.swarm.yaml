@@ -30,8 +30,7 @@ services:
   dipdup_reserves:
     image: ${IMAGE:-ghcr.io/dipdup-io/dipdup}:${TAG:-8}
     depends_on:
-      - db_reserves
-      - hasura_reserves
+      - db
     command: ["-C", "swarm", "run"]
     env_file: .env
     networks:

@@ -1,5 +1,3 @@
-hasura: null
-
 indexes:
   hydradx_events:
     kind: substrate.events
