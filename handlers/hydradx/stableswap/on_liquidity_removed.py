@@ -6,7 +6,6 @@ from dex_screener.models import DexScreenerEventType
 from dex_screener.models import Pair
 from dex_screener.models import Pool
 from dex_screener.service.dex.stableswap.stableswap_service import get_pair_id
-from dex_screener.service.dex.stableswap.stableswap_service import get_pool_account
 from dex_screener.types.hydradx.substrate_events.stableswap_liquidity_removed import StableswapLiquidityRemovedPayload
 from utils import get_balance_by_account
 from utils import wait_for_reserves
@@ -22,7 +21,7 @@ async def on_liquidity_removed(
 
     # NOTE: The amounts field contains asset_id -> amount mappings
     for amount_data in event.payload['amounts']:
-        asset_id, amount = int(amount_data['assetId']), int(amount_data['amount'])
+        asset_id, amount = int(amount_data['assetId']), int(amount_data['amount'])  # type: ignore[index]
 
         pair_id = get_pair_id(pool, asset_id, pool.lp_token_id)
 

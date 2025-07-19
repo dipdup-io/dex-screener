@@ -8,7 +8,7 @@ from dex_screener.utils import get_transfers_by_level
 if TYPE_CHECKING:
     from dex_screener.models import Pool
 
-_pool_accounts = {}
+_pool_accounts: dict[int, str] = {}
 
 
 def get_pair_id(pool: Pool, asset_a_id: int, asset_b_id: int) -> str:

@@ -7,7 +7,6 @@ from dex_screener.models import Pair
 from dex_screener.models import Pool
 from dex_screener.service.dex.stableswap.stableswap_service import get_pair_id
 from dex_screener.types.hydradx.substrate_events.stableswap_liquidity_added import StableswapLiquidityAddedPayload
-from service.dex.stableswap.stableswap_service import get_pool_account
 from utils import get_balance_by_account
 
 
@@ -18,7 +17,7 @@ async def on_liquidity_added(
     pool = await Pool.get(lp_token_id=event.payload['pool_id'])
 
     for asset in event.payload['assets']:
-        asset_id, amount = int(asset['assetId']), int(asset['amount'])
+        asset_id, amount = int(asset['assetId']), int(asset['amount'])  # type: ignore[index]
 
         pair_id = get_pair_id(pool, asset_id, pool.lp_token_id)
         pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')

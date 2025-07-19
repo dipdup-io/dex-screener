@@ -168,25 +168,6 @@ class Pair(Model):
     # def __repr__(self) -> str:
     #     return f'<Pair[{self.dex_key}]({self.asset_0}/{self.asset_1})>'
 
-    async def get_reserves(self) -> tuple[str, str]:
-        await self.fetch_related('asset_0', 'asset_1', 'pool')
-        asset_0_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_0).values_list(
-            'reserve', flat=True
-        )
-        asset_1_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_1).values_list(
-            'reserve', flat=True
-        )
-        if asset_0_minor_reserve is None:
-            asset_0_reserve = None
-        else:
-            asset_0_reserve = self.asset_0.from_minor(asset_0_minor_reserve)  # type: ignore[arg-type]
-
-        if asset_1_minor_reserve is None:
-            asset_1_reserve = None
-        else:
-            asset_1_reserve = self.asset_1.from_minor(asset_1_minor_reserve)  # type: ignore[arg-type]
-        return str(asset_0_reserve), str(asset_1_reserve)
-
 
 class DexEvent(Model):
     class Meta:

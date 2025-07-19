@@ -7,6 +7,7 @@ from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
 from dex_screener.service.event.entity.swap.resolve_helper import ClassicPoolSwapEventMarketDataHelper
 from dex_screener.service.event.entity.swap.swap_event_entity import SwapEventEntity
+from dex_screener.utils import get_balance_by_account
 
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
@@ -27,11 +28,12 @@ class IsolatedPoolSwapEventEntity(SwapEventEntity):
 
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
         pair = await Pair.get(id=str(self._event.payload['pool']))
-        asset_0_reserve, asset_1_reserve = await pair.get_reserves()
+        reserves_0 = await get_balance_by_account(pair.pool.account, pair.asset_0.id, self._event.data.level)
+        reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, self._event.data.level)
         return SwapEventPoolDataDTO(
             pair_id=pair.id,
-            asset_0_reserve=asset_0_reserve,
-            asset_1_reserve=asset_1_reserve,
+            asset_0_reserve=reserves_0,
+            asset_1_reserve=reserves_1,
         )
 
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:
