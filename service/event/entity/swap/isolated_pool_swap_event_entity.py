@@ -27,7 +27,7 @@ class IsolatedPoolSwapEventEntity(SwapEventEntity):
         return await super().resolve_event_data()
 
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
-        pair = await Pair.get(id=str(self._event.payload['pool']))
+        pair = await Pair.get(id=str(self._event.payload['pool'])).prefetch_related('asset_0', 'asset_1', 'pool')
         reserves_0 = await get_balance_by_account(pair.pool.account, pair.asset_0.id, self._event.data.level)
         reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, self._event.data.level)
         return SwapEventPoolDataDTO(

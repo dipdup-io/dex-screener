@@ -3,7 +3,6 @@ from itertools import combinations
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
-from dex_screener.models import Asset
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import Pool
