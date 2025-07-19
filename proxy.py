@@ -118,13 +118,12 @@ def process_hasura_response(data: dict[str, Any]) -> dict[str, Any]:
         if item.get('priceNative') is None:
             item.pop('priceNative', None)
 
-        # NOTE: `reserves` is an optioinal nested field
-        reserves = item.get('asset0Reserve'), item.get('asset1Reserve')
-        if reserves != (None, None):
-            item['reserves'] = {
-                'asset_0': reserves[0],
-                'asset_1': reserves[1],
-            }
+        if item.get('reserves', {}).get('asset0') is None:
+            item.get('reserves', {}).pop('asset0', None)
+        if item.get('reserves', {}).get('asset1') is None:
+            item.get('reserves', {}).pop('asset1', None)
+        if not item.get('reserves'):
+            item.pop('reserves', None)
     return data
 
 

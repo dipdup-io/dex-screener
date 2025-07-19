@@ -11,6 +11,7 @@ from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
 from dex_screener.types.hydradx.substrate_events.omnipool_position_destroyed import OmnipoolPositionDestroyedPayload
+from dex_screener.utils import get_balance_by_account
 
 
 async def on_position_destroyed(
@@ -34,8 +35,16 @@ async def on_position_destroyed(
     )
 
     pair_id = OmnipoolService.get_pair_id(position.asset_id, OMNIPOOL_HUB_ASSET_ID)
+    pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')
+
+    reserves_0 = await get_balance_by_account(pair.pool.account, pair.asset_0.id, event.data.level)
+    reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, event.data.level)
+
+
     pool_data = JoinExitEventPoolDataDTO(
         pair_id=pair_id,
+        asset_0_reserve=pair.asset_0_amount(reserves_0),
+        asset_1_reserve=pair.asset_1_amount(reserves_1),
     )
 
     pair: Pair = await Pair.get(id=pool_data.pair_id).prefetch_related('asset_0', 'asset_1')

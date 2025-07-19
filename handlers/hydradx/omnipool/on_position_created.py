@@ -11,6 +11,7 @@ from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
 from dex_screener.types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
+from dex_screener.utils import get_balance_by_account
 
 
 async def on_position_created(
@@ -37,13 +38,18 @@ async def on_position_created(
     )
 
     pair_id = OmnipoolService.get_pair_id(position.asset_id, OMNIPOOL_HUB_ASSET_ID)
-    pool_data = JoinExitEventPoolDataDTO(
-        pair_id=pair_id,
-    )
-
-    pair = await Pair.get_or_none(id=pair_id).prefetch_related('asset_0', 'asset_1')
+    pair = await Pair.get_or_none(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')
     if not pair:
         pair = await OmnipoolService.register_pair_from_positions(event)
+
+    reserves_0 = await get_balance_by_account(pair.pool.account, pair.asset_0.id, event.data.level)
+    reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, event.data.level)
+
+    pool_data = JoinExitEventPoolDataDTO(
+        pair_id=pair_id,
+        asset_0_reserve=pair.asset_0_amount(reserves_0),
+        asset_1_reserve=pair.asset_1_amount(reserves_1),
+    )
 
     if pair.asset_0.id == position.asset_id:
         amount_0, amount_1 = int(position.amount), int(position.shares)
