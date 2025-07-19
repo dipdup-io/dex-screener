@@ -6,7 +6,7 @@ from dex_screener.models import DexEvent
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import Pool
-from dex_screener.service.dex.stableswap.stableswap_service import StableSwapService
+from dex_screener.service.dex.stableswap.stableswap_service import get_pair_id
 from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
 from dex_screener.service.event.entity.swap.resolve_helper import MultiAssetPoolSwapEventMarketDataHelper
@@ -31,10 +31,10 @@ class StableSwapPoolSwapEventEntity(SwapEventEntity):
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
         pool = await Pool.get(
             dex_key=DexKey.StableSwap,
-            dex_pool_id=str(self._event.payload['pool_id']),
+            lp_token_id=int(self._event.payload['pool_id']),
         )
 
-        pair_id = StableSwapService.get_pair_id(
+        pair_id = get_pair_id(
             pool=pool,
             asset_a_id=self._event.payload['asset_in'],
             asset_b_id=self._event.payload['asset_out'],

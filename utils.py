@@ -16,6 +16,24 @@ class NotFound(Exception):
     pass
 
 
+def level_from_event_id(event_id: int) -> int:
+    """
+    Extracts the level from an event ID.
+    The event ID is structured as (level << 17) + index.
+    """
+    return event_id >> 17
+
+
+def event_ids_from_level(level: int) -> tuple[int, int]:
+    """
+    Returns the first and last event IDs for a given level.
+    The first ID is (level << 17) + 1, and the last ID is (level + 1) << 17.
+    """
+    first_id = (level << 17) + 1
+    last_id = (level + 1) << 17
+    return first_id, last_id
+
+
 async def get_pool_by_pair(
     pair_id: str,
 ) -> tuple[int, int, str, int]:
@@ -139,3 +157,22 @@ async def wait_for_reserves(level: int) -> None:
 
         _logger.info('Reserves indexer is behind, waiting for update...')
         await asyncio.sleep(5)
+
+
+async def get_transfers_by_level(
+    level: int,
+) -> list[dict]:
+    """
+    Returns transfers at the specified level.
+    """
+    conn = get_connection()
+    sql = """
+        SELECT * FROM reserves.balance_update_event
+        WHERE id >= $1 AND id < $2
+        ORDER BY id
+    """
+    first_id = (level << 17) + 1
+    last_id = (level + 1) << 17
+    args = (first_id, last_id)
+    res = await conn.execute_query(sql, args)
+    return res[1] if res else []

@@ -76,6 +76,9 @@ only_xyk:       ##
 
 ##
 
+psql:
+	docker exec -it dex_screener-db-1 psql -U dipdup dipdup
+
 wipe_main:      ## Wipe public schema
 	dipdup -C compose -e local.env schema wipe --force
 
