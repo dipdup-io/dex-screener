@@ -45,16 +45,15 @@ async def on_position_created(
     if not pair:
         pair = await OmnipoolService.register_pair_from_positions(event)
 
-    amount_0, amount_1 = (
-        (position.amount, position.shares)
-        if pair.asset_0.id == position.asset_id
-        else (position.shares, position.amount)
-    )
+    if pair.asset_0.id == position.asset_id:
+        amount_0, amount_1 = int(position.amount), int(position.shares)
+    else:
+        amount_0, amount_1 = int(position.shares), int(position.amount)
 
     market_data = JoinExitEventMarketDataDTO(
         maker=position.owner,
-        amount_0=str(pair.asset_0.from_minor(amount_0)),
-        amount_1=str(pair.asset_1.from_minor(amount_1)),
+        amount_0=pair.asset_0_amount(amount_0),
+        amount_1=pair.asset_1_amount(amount_1),
     )
 
     fields = {

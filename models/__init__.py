@@ -164,6 +164,14 @@ class Pair(Model):
     fee_bps = fields.IntField(null=True)
 
     pool_id: str
+    asset_0_id: int
+    asset_1_id: int
+
+    def asset_0_amount(self, amount: int) -> str:
+        return str(self.asset_0.from_minor(amount))
+
+    def asset_1_amount(self, amount: int) -> str:
+        return str(self.asset_1.from_minor(amount))
 
     # def __repr__(self) -> str:
     #     return f'<Pair[{self.dex_key}]({self.asset_0}/{self.asset_1})>'

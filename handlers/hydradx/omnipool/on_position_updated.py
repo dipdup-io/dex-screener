@@ -54,8 +54,8 @@ async def on_position_updated(
 
     market_data = JoinExitEventMarketDataDTO(
         maker=position.owner,
-        amount_0=str(pair.asset_0.from_minor(amount_0)),
-        amount_1=str(pair.asset_1.from_minor(amount_1)),
+        amount_0=pair.asset_0_amount(amount_0),
+        amount_1=pair.asset_1_amount(amount_1),
     )
 
     fields = {

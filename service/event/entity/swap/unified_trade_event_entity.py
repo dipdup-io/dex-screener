@@ -40,14 +40,14 @@ class UnifiedTradeEventEntity(SwapEventEntity):
                 pair = await Pair.get(
                     pool__dex_key=DexKey.IsolatedPool,
                     pool__lp_token_id=lp_token_id,
-                )
+                ).prefetch_related('asset_0', 'asset_1', 'pool')
             case {
                 'filler_type': {'OTC': int(otc_order_id)},
             }:
                 pair = await Pair.get(
                     pool__dex_key=DexKey.OTC,
                     pool__dex_pool_id=otc_order_id,
-                )
+                ).prefetch_related('asset_0', 'asset_1', 'pool')
             case {
                 'filler_type': {'Stableswap': int(stableswap_pool_id)},
                 'inputs': ({'asset': int(asset_a_id)},),
@@ -58,7 +58,7 @@ class UnifiedTradeEventEntity(SwapEventEntity):
                     pool__dex_pool_id=stableswap_pool_id,
                     asset_0_id=min(asset_a_id, asset_b_id),
                     asset_1_id=max(asset_a_id, asset_b_id),
-                )
+                ).prefetch_related('asset_0', 'asset_1', 'pool')
             case {
                 'filler_type': 'Omnipool',
                 'inputs': ({'asset': int(asset_a_id)},),
@@ -68,7 +68,7 @@ class UnifiedTradeEventEntity(SwapEventEntity):
                     pool__dex_key=DexKey.Omnipool,
                     asset_0_id=min(asset_a_id, asset_b_id),
                     asset_1_id=max(asset_a_id, asset_b_id),
-                )
+                ).prefetch_related('asset_0', 'asset_1', 'pool')
             case {
                 'filler_type': {'Stableswap': int()},
                 'inputs': ({'asset': int()}, {'asset': int()}),
@@ -90,8 +90,8 @@ class UnifiedTradeEventEntity(SwapEventEntity):
 
         return SwapEventPoolDataDTO(
             pair_id=pair.id,
-            asset_0_reserve=reserves_0,
-            asset_1_reserve=reserves_1,
+            asset_0_reserve=pair.asset_0_amount(reserves_0),
+            asset_1_reserve=pair.asset_1_amount(reserves_1),
         )
 
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:

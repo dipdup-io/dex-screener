@@ -39,7 +39,7 @@ class OTCSwapEventEntity(SwapEventEntity):
                 self._pair = await Pair.get(
                     pool=order,
                     dex_key=DexKey.OTC,
-                )
+                ).prefetch_related('asset_0', 'asset_1', 'pool')
 
             case _:
                 raise RuntimeError(self._event.payload)

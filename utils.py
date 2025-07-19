@@ -69,7 +69,7 @@ async def get_balance_by_account(
     conn = get_connection()
     res = await conn.execute_query(sql, args)
     try:
-        return res[1][0]['balance']
+        return int(res[1][0]['balance'])
     except IndexError as e:
         msg = f'No balance found for account {account} at level {level}'
         raise NotFound(msg) from e

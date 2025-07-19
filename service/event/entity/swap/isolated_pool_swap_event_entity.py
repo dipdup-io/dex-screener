@@ -32,8 +32,8 @@ class IsolatedPoolSwapEventEntity(SwapEventEntity):
         reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, self._event.data.level)
         return SwapEventPoolDataDTO(
             pair_id=pair.id,
-            asset_0_reserve=reserves_0,
-            asset_1_reserve=reserves_1,
+            asset_0_reserve=str(reserves_0),
+            asset_1_reserve=str(reserves_1),
         )
 
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:
