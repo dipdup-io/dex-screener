@@ -40,14 +40,12 @@ async def on_position_destroyed(
     reserves_0 = await get_balance_by_account(pair.pool.account, pair.asset_0.id, event.data.level)
     reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, event.data.level)
 
-
     pool_data = JoinExitEventPoolDataDTO(
         pair_id=pair_id,
         asset_0_reserve=pair.asset_0_amount(reserves_0),
         asset_1_reserve=pair.asset_1_amount(reserves_1),
     )
 
-    pair: Pair = await Pair.get(id=pool_data.pair_id).prefetch_related('asset_0', 'asset_1')
     if pair.asset_0.id == position.asset_id:
         amount_0, amount_1 = int(position.amount), int(position.shares)
     else:

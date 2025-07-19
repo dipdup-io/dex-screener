@@ -53,7 +53,6 @@ async def on_position_updated(
         asset_1_reserve=pair.asset_1_amount(reserves_1),
     )
 
-
     amount_0, amount_1 = (
         (delta_position_amount, delta_position_shares)
         if pair.asset_0.id == position.asset_id
