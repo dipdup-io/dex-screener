@@ -2,6 +2,7 @@ from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
 from dex_screener.models import DexEvent
+from dex_screener.models import DexKey
 from dex_screener.models import DexScreenerEventType
 from dex_screener.models import Pair
 from dex_screener.models import Pool
@@ -15,7 +16,7 @@ async def on_liquidity_removed(
     ctx: HandlerContext,
     event: SubstrateEvent[StableswapLiquidityRemovedPayload],
 ) -> None:
-    pool = await Pool.get(lp_token_id=event.payload['pool_id'])
+    pool = await Pool.get(lp_token_id=event.payload['pool_id'], dex_key=DexKey.StableSwap)
 
     await wait_for_reserves(event.data.level)
 

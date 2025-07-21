@@ -10,6 +10,7 @@ from dex_screener.models.dto import DexScreenerEventInfoDTO
 from dex_screener.service.dex.stableswap.stableswap_service import get_pair_id
 from dex_screener.service.dex.stableswap.stableswap_service import get_pool_account
 from dex_screener.types.hydradx.substrate_events.stableswap_pool_created import StableswapPoolCreatedPayload
+from service.dex.stableswap.stableswap_service import get_pool_pk
 
 
 async def on_pool_created(
@@ -20,7 +21,7 @@ async def on_pool_created(
     account = await get_pool_account(event.payload['pool_id'], event.data.level)
 
     pool = await Pool.create(
-        account=account,
+        account=get_pool_pk(account, lp_token_id),
         dex_key=DexKey.StableSwap,
         dex_pool_id=lp_token_id,
         lp_token_id=lp_token_id,

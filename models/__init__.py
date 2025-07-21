@@ -82,7 +82,8 @@ class Pool(Model):
         model = 'models.Pool'
         unique_together = ('dex_key', 'dex_pool_id')
 
-    account = AccountField(primary_key=True)
+    # TODO: separate pk, filter on proxy
+    account = fields.TextField(primary_key=True)
     dex_key = fields.EnumField(enum_type=DexKey, db_index=True)
     dex_pool_id = fields.TextField(db_index=True)
     lp_token: OneToOneFieldInstance[Asset] = OneToOneField(  # type: ignore[assignment]

@@ -124,6 +124,12 @@ def process_hasura_response(data: dict[str, Any]) -> dict[str, Any]:
             item.get('reserves', {}).pop('asset1', None)
         if not item.get('reserves'):
             item.pop('reserves', None)
+
+        # FIXME: stableswap hack
+        if ':' in item.get('pool', {}).get('account', ''):
+            account, pool_id = item['pool']['account'].split(':', 1)
+            item['pool']['account'] = account
+            item['pool']['id'] = pool_id
     return data
 
 

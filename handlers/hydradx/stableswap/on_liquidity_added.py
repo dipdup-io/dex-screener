@@ -2,6 +2,7 @@ from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
 from dex_screener.models import DexEvent
+from dex_screener.models import DexKey
 from dex_screener.models import DexScreenerEventType
 from dex_screener.models import Pair
 from dex_screener.models import Pool
@@ -14,7 +15,7 @@ async def on_liquidity_added(
     ctx: HandlerContext,
     event: SubstrateEvent[StableswapLiquidityAddedPayload],
 ) -> None:
-    pool = await Pool.get(lp_token_id=event.payload['pool_id'])
+    pool = await Pool.get(lp_token_id=event.payload['pool_id'], dex_key=DexKey.StableSwap).prefetch_related('lp_token')
 
     for asset in event.payload['assets']:
         asset_id, amount = int(asset['assetId']), int(asset['amount'])  # type: ignore[index]
