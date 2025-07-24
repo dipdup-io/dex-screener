@@ -9,7 +9,7 @@ import logging
 
 from dipdup.database import get_connection
 
-from dex_screener.models import Pair
+from dex_screener.models import DexKey, Pair
 
 _logger = logging.getLogger(__name__)
 
@@ -83,8 +83,13 @@ async def get_reserves_by_pair(
 ) -> tuple[int, int]:
     await wait_for_reserves(level)
 
-    reserves_0 = await get_balance_by_account(pair.pool.account, pair.asset_0.id, level)
-    reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, level)
+    account = pair.pool.account
+    # NOTE: StableSwap pools have composite PK
+    if pair.pool.dex_key == DexKey.StableSwap:
+        account = pair.pool.account.rsplit(':', 1)[0]
+
+    reserves_0 = await get_balance_by_account(account, pair.asset_0.id, level)
+    reserves_1 = await get_balance_by_account(account, pair.asset_1.id, level)
 
     if reserves_0 < 0 or reserves_1 < 0:
         msg = f'Negative reserves for {pair.id=} at {level=}: {reserves_0=}, {reserves_1=}'
