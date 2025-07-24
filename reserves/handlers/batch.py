@@ -94,15 +94,16 @@ async def batch(
             recurring_events_indexes.add(index + pair_index)
 
     if len(recurring_events_indexes) > 0:
-        handlers = (handler for index, handler in enumerate(handlers) if index not in recurring_events_indexes)  # type: ignore[assignment]
+        handlers = tuple(handler for index, handler in enumerate(handlers) if index not in recurring_events_indexes)  # type: ignore[assignment]
 
     for handler in handlers:
         await ctx.fire_matched_handler(handler)
 
-    # return
-
+    # NOTE: We need to flush buffer before stopping the indexer to avoid missing events
+    is_last_level = handlers[-1].args[0].data.level == ctx.handler_config.parent.last_level
+    
     if not RuntimeFlag.realtime:
-        if EventBuffer.filled():
+        if EventBuffer.filled() or is_last_level:
             await EventBuffer.flush(ctx)
 
         if not RuntimeFlag.synchronized and RuntimeFlag.history_refresh_condition():
