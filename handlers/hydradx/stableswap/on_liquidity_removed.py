@@ -8,8 +8,7 @@ from dex_screener.models import Pair
 from dex_screener.models import Pool
 from dex_screener.service.dex.stableswap.stableswap_service import get_pair_id
 from dex_screener.types.hydradx.substrate_events.stableswap_liquidity_removed import StableswapLiquidityRemovedPayload
-from utils import get_balance_by_account
-from utils import wait_for_reserves
+from dex_screener.utils import get_reserves_by_pair
 
 
 async def on_liquidity_removed(
@@ -17,8 +16,6 @@ async def on_liquidity_removed(
     event: SubstrateEvent[StableswapLiquidityRemovedPayload],
 ) -> None:
     pool = await Pool.get(lp_token_id=event.payload['pool_id'], dex_key=DexKey.StableSwap)
-
-    await wait_for_reserves(event.data.level)
 
     # NOTE: The amounts field contains asset_id -> amount mappings
     for amount_data in event.payload['amounts']:
@@ -29,8 +26,7 @@ async def on_liquidity_removed(
         pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')
 
         # NOTE: Get current reserves after the event
-        reserves_0 = await get_balance_by_account(pair.pool.account, pair.asset_0.id, event.data.level)
-        reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, event.data.level)
+        reserves_0, reserves_1 = await get_reserves_by_pair(pair, event.data.level)
 
         # NOTE: Determine which asset was removed and calculate amounts
         if asset_id == pair.asset_0.id:

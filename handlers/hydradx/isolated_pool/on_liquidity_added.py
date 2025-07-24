@@ -6,8 +6,7 @@ from dex_screener.models import DexKey
 from dex_screener.models import DexScreenerEventType
 from dex_screener.models import Pair
 from dex_screener.types.hydradx.substrate_events.xyk_liquidity_added import XYKLiquidityAddedPayload
-from utils import get_balance_by_account
-from utils import wait_for_reserves
+from dex_screener.utils import get_reserves_by_pair
 
 
 async def on_liquidity_added(
@@ -32,9 +31,7 @@ async def on_liquidity_added(
         .get()
     )
 
-    await wait_for_reserves(event.data.level)
-    reserves_0 = await get_balance_by_account(pair.pool.account, asset_0, event.data.level)
-    reserves_1 = await get_balance_by_account(pair.pool.account, asset_1, event.data.level)
+    reserves_0, reserves_1 = await get_reserves_by_pair(pair, event.data.level)
 
     # NOTE: Create DexEvent
     await DexEvent.create(

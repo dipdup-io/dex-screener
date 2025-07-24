@@ -7,9 +7,8 @@ from dex_screener.models import DexKey
 from dex_screener.models import DexScreenerEventType
 from dex_screener.models import Pair
 from dex_screener.types.hydradx.substrate_events.xyk_liquidity_removed import XYKLiquidityRemovedPayload
-from utils import get_asset_supply
-from utils import get_balance_by_account
-from utils import wait_for_reserves
+from dex_screener.utils import get_asset_supply
+from dex_screener.utils import get_reserves_by_pair
 
 
 async def on_liquidity_removed(
@@ -38,16 +37,13 @@ async def on_liquidity_removed(
         .get()
     )
 
-    await wait_for_reserves(event.data.level)
-    reserves_0 = await get_balance_by_account(pair.pool.account, asset_0, event.data.level)
-    reserves_1 = await get_balance_by_account(pair.pool.account, asset_1, event.data.level)
+    reserves_0, reserves_1 = await get_reserves_by_pair(pair, event.data.level)
     pool_shares = await get_asset_supply(pair.pool.lp_token_id, event.data.level)
 
     # NOTE: Pool was destroyed after the last liquidity removal, using last known reserves
     # FIXME: Fetch correct amounts from block transfers
     if pool_shares == 0:
-        reserves_0 = await get_balance_by_account(pair.pool.account, asset_0, event.data.level - 1)
-        reserves_1 = await get_balance_by_account(pair.pool.account, asset_1, event.data.level - 1)
+        reserves_0, reserves_1 = await get_reserves_by_pair(pair, event.data.level - 1)
         pool_shares = await get_asset_supply(pair.pool.lp_token_id, event.data.level - 1)
 
     # NOTE: Calculate amounts from burned shares

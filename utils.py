@@ -9,6 +9,8 @@ import logging
 
 from dipdup.database import get_connection
 
+from dex_screener.models import Pair
+
 _logger = logging.getLogger(__name__)
 
 
@@ -48,7 +50,7 @@ async def get_pool_by_pair(
     try:
         return res[1][0]
     except IndexError as e:
-        msg = f'No pool found for pair {pair_id}'
+        msg = f'No pool found for {pair_id=}'
         raise NotFound(msg) from e
 
 
@@ -71,8 +73,24 @@ async def get_balance_by_account(
     try:
         return int(res[1][0]['balance'])
     except IndexError as e:
-        msg = f'No balance found for account {account} at level {level}'
+        msg = f'No balance found for {asset_account=} at {level=}'
         raise NotFound(msg) from e
+
+
+async def get_reserves_by_pair(
+    pair: Pair,
+    level: int,
+) -> tuple[int, int]:
+    await wait_for_reserves(level)
+
+    reserves_0 = await get_balance_by_account(pair.pool.account, pair.asset_0.id, level)
+    reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, level)
+
+    if reserves_0 < 0 or reserves_1 < 0:
+        msg = f'Negative reserves for {pair.id=} at {level=}: {reserves_0=}, {reserves_1=}'
+        _logger.warning(msg)
+
+    return reserves_0, reserves_1
 
 
 async def get_asset_supply(
@@ -93,7 +111,7 @@ async def get_asset_supply(
     try:
         return res[1][0]['supply']
     except IndexError as e:
-        msg = f'No supply found for asset {asset_id} at level {level}'
+        msg = f'No supply found for {asset_id=} at {level=}'
         raise NotFound(msg) from e
 
 
@@ -107,7 +125,7 @@ async def get_decimals_by_asset_id(asset_id: int) -> int:
     try:
         return res[1][0]['decimals']
     except IndexError as e:
-        msg = f'No decimals found for asset {asset_id}'
+        msg = f'No decimals found for {asset_id=}'
         raise NotFound(msg) from e
 
 

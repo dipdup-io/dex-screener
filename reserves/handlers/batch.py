@@ -8,6 +8,7 @@ from dipdup.context import DipDupContext
 from dipdup.context import HandlerContext
 from dipdup.index import MatchedHandler
 from dipdup.models.substrate import SubstrateEvent
+
 from reserves.models import BalanceUpdateEvent
 
 
@@ -100,8 +101,8 @@ async def batch(
         await ctx.fire_matched_handler(handler)
 
     # NOTE: We need to flush buffer before stopping the indexer to avoid missing events
-    is_last_level = handlers[-1].args[0].data.level == ctx.handler_config.parent.last_level
-    
+    is_last_level = handlers[-1].args[0].data.level == ctx.handler_config.parent.last_level  # type: ignore[index,attr-defined]
+
     if not RuntimeFlag.realtime:
         if EventBuffer.filled() or is_last_level:
             await EventBuffer.flush(ctx)

@@ -8,7 +8,7 @@ from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
 from dex_screener.service.event.entity.swap.resolve_helper import MultiAssetPoolSwapEventMarketDataHelper
 from dex_screener.service.event.entity.swap.swap_event_entity import SwapEventEntity
-from dex_screener.utils import get_balance_by_account
+from dex_screener.utils import get_reserves_by_pair
 
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
@@ -30,8 +30,7 @@ class OmnipoolSwapEventEntity(SwapEventEntity):
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
         pair_id = OmnipoolService.get_pair_id(self._event.payload['asset_in'], self._event.payload['asset_out'])
         pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')
-        reserves_0 = await get_balance_by_account(pair.pool.account, pair.asset_0.id, self._event.data.level)
-        reserves_1 = await get_balance_by_account(pair.pool.account, pair.asset_1.id, self._event.data.level)
+        reserves_0, reserves_1 = await get_reserves_by_pair(pair, self._event.data.level)
         return SwapEventPoolDataDTO(
             pair_id=pair_id,
             asset_0_reserve=str(reserves_0),
