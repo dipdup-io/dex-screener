@@ -1,32 +1,27 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
-from scalecodec import ss58_decode  # type: ignore[import-untyped]
 
 from reserves.handlers.batch import RuntimeFlag
 from reserves.models import BalanceHistory
 from reserves.models import BalanceUpdateEvent
 from reserves.types.hydradx.substrate_events.currencies_transferred import CurrenciesTransferredPayload
+from reserves.types.hydradx.substrate_events.tokens_transfer import TokensTransferPayload
 
 
-async def on_currencies_transferred(
+async def on_balance_transfer(
     ctx: HandlerContext,
-    event: SubstrateEvent[CurrenciesTransferredPayload],
+    event: SubstrateEvent[CurrenciesTransferredPayload | TokensTransferPayload],
 ) -> None:
-    asset_id = event.payload['currency_id']
-    amount = event.payload['amount']
-    from_account = event.payload['from']
-    to_account = event.payload['to']
-    if not from_account.startswith('0x'):
-        from_account = f'0x{ss58_decode(from_account)}'
-    if not to_account.startswith('0x'):
-        to_account = f'0x{ss58_decode(to_account)}'
+    ctx.logger.debug('%s event: %s-%s.', event.name, event.data.level, event.data.index)
 
-    if amount == 0:
+    asset_id = event.payload['currency_id']
+
+    if event.payload['amount'] == 0:
         return
 
     for account, balance_update in [
-        (from_account, -amount),  # type: ignore[literal-required]
-        (to_account, amount),  # type: ignore[literal-required]
+        (event.payload['from'], -event.payload['amount']),
+        (event.payload['to'], event.payload['amount']),
     ]:
         await BalanceUpdateEvent.insert(event, account, asset_id, balance_update)
 

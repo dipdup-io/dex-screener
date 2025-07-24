@@ -32,34 +32,33 @@ indexes:
 
     handlers:
       - name: Currencies.BalanceUpdated
-        callback: hydradx.currencies.on_currencies_balance_updated
+        callback: hydradx.currencies.on_balance_updated
       - name: Currencies.Deposited
-        callback: hydradx.currencies.on_currencies_deposited
+        callback: hydradx.currencies.on_balance_updated
       - name: Currencies.Transferred
-        callback: hydradx.currencies.on_currencies_transferred
+        callback: hydradx.currencies.on_balance_transfer
       - name: Currencies.Withdrawn
-        callback: hydradx.currencies.on_currencies_withdrawn
+        callback: hydradx.currencies.on_balance_updated
 
-      # NOTE: Initially, we tracked these two pallets, but they don't contain ERC transfers
-      # - name: Tokens.Deposited
-      #   callback: hydradx.tokens.on_tokens_updated
-      # - name: Tokens.Transfer
-      #   callback: hydradx.tokens.on_tokens_transfer
-      # - name: Tokens.Withdrawn
-      #   callback: hydradx.tokens.on_tokens_updated
+      - name: Tokens.Deposited
+        callback: hydradx.currencies.on_balance_updated
+      - name: Tokens.Transfer
+        callback: hydradx.currencies.on_balance_transfer
+      - name: Tokens.Withdrawn
+        callback: hydradx.currencies.on_balance_updated
 
-      # - name: Balances.BalanceSet
-      #   callback: hydradx.balances.on_balance_set
-      # - name: Balances.Burned
-      #   callback: hydradx.balances.on_balance_updated
-      # - name: Balances.Deposit
-      #   callback: hydradx.balances.on_balance_updated
-      # - name: Balances.Minted
-      #   callback: hydradx.balances.on_balance_updated
-      # - name: Balances.Transfer
-      #   callback: hydradx.balances.on_balance_transfer
-      # - name: Balances.Withdraw
-      #   callback: hydradx.balances.on_balance_updated
+      - name: Balances.BalanceSet
+        callback: hydradx.balances.on_balance_set
+      - name: Balances.Burned
+        callback: hydradx.balances.on_balance_updated
+      - name: Balances.Deposit
+        callback: hydradx.balances.on_balance_updated
+      - name: Balances.Minted
+        callback: hydradx.balances.on_balance_updated
+      - name: Balances.Transfer
+        callback: hydradx.balances.on_balance_transfer
+      - name: Balances.Withdraw
+        callback: hydradx.balances.on_balance_updated
 
 custom:
   history_refresh_period:
