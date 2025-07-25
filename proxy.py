@@ -125,7 +125,7 @@ def process_hasura_response(data: dict[str, Any]) -> dict[str, Any]:
         if not item.get('reserves'):
             item.pop('reserves', None)
 
-        # FIXME: stableswap hack
+        # NOTE: StableSwap pools have composite PKs in our database
         if ':' in item.get('pool', {}).get('account', ''):
             account, pool_id = item['pool']['account'].split(':', 1)
             item['pool']['account'] = account

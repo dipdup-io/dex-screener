@@ -9,7 +9,7 @@ from dex_screener.models.dex_fields import Account
 from dex_screener.models.dto import DexScreenerEventInfoDTO
 from dex_screener.types.hydradx.substrate_events.xyk_pool_created import XYKPoolCreatedPayload
 
-# FIXME: Why?
+# NOTE: Why?
 XYK_GET_EXCHANGE_FEE_BPS = 30
 
 
@@ -17,7 +17,7 @@ async def on_pool_created(
     ctx: HandlerContext,
     event: SubstrateEvent[XYKPoolCreatedPayload],
 ) -> None:
-    # NOTE: Pool can be destroyed and recreated later. We don't need to process this event because shares=0.
+    # NOTE: Pool can be destroyed and recreated later. We don't need to process `PoolDestroyed` events because shares=0 already.
     account = Account(event.payload['pool'])
     pool, _ = await Pool.update_or_create(
         account=account,

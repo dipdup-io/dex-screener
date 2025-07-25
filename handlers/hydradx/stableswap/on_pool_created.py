@@ -49,7 +49,3 @@ async def on_pool_created(
             fee_bps=event.payload['fee'],
         )
         ctx.logger.info('Pair registered in pool %r: %r.', pool, pair)
-
-    # pool_assets: list[Asset] = await Asset.filter(id__in=pool_assets_id)
-    # await pool.assets.add(*pool_assets)  # type: ignore[attr-defined]
-    # ctx.logger.info('Assets added to pool %r: %s.', pool, pool_assets)

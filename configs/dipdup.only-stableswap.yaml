@@ -17,14 +17,14 @@ indexes:
       - name: AssetRegistry.LocationSet
         callback: hydradx.asset.on_location_set
 
-      # Omnipool
+      # Stableswap
       - name: Stableswap.PoolCreated
         callback: hydradx.stableswap.on_pool_created
-      # - name: Stableswap.BuyExecuted
-      #   callback: hydradx.on_swap_executed
-      # - name: Stableswap.SellExecuted
-      #   callback: hydradx.on_swap_executed
+      - name: Stableswap.BuyExecuted
+        callback: hydradx.on_swap_executed
+      - name: Stableswap.SellExecuted
+        callback: hydradx.on_swap_executed
       - name: Stableswap.LiquidityAdded
         callback: hydradx.stableswap.on_liquidity_added
-      # - name: Stableswap.LiquidityRemoved
-      #   callback: hydradx.stableswap.on_liquidity_removed
+      - name: Stableswap.LiquidityRemoved
+        callback: hydradx.stableswap.on_liquidity_removed

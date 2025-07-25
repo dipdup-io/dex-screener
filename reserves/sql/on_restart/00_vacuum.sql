@@ -1,4 +1,4 @@
--- NOTE: This was commented out as fails on full DB.
+-- NOTE: This was commented out because it fails on full DB.
 -- VACUUM ANALYSE balance_update_event, balance_history, supply_history;
 
 -- NOTE: Updating internal table level to lower value because EventBuffer could be lost on restart. Should be safe.

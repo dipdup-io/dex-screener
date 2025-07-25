@@ -105,7 +105,7 @@ indexes:
       - name: OTC.PartiallyFilled
         callback: hydradx.on_swap_executed
 
-      # LBP (not in spec)
+      # LBP (deprecated, not used)
       # - name: LBP.PoolCreated
       #   callback: hydradx.lbp.on_pool_created
       # - name: LBP.PoolUpdated

@@ -82,7 +82,6 @@ class Pool(Model):
         model = 'models.Pool'
         unique_together = ('dex_key', 'dex_pool_id')
 
-    # TODO: separate pk, filter on proxy
     account = fields.TextField(primary_key=True)
     dex_key = fields.EnumField(enum_type=DexKey, db_index=True)
     dex_pool_id = fields.TextField(db_index=True)
@@ -199,6 +198,5 @@ class DexOmnipoolPosition(Model):
     owner = AccountField()
     asset_id = fields.IntField()
     amount = AssetAmountField()
-    # FIXME: Remove from handlers
     shares = AssetAmountField()
     created = fields.BooleanField(db_index=True, default=False)

@@ -27,7 +27,7 @@ PRE_RESOLVED_TOKENS_METADATA = {
     15: {'name': 'Bifrost Voucher DOT', 'symbol': 'vDOT', 'decimals': 10},
     16: {'name': 'Glimmer', 'symbol': 'GLMR', 'decimals': 18},
     17: {'name': 'Interlay', 'symbol': 'INTR', 'decimals': 10},
-    # FIXME:
+    # NOTE: Why?
     1000010: {'symbol': 'HDXb', 'decimals': 10},
     1000013: {'symbol': 'HDXb', 'decimals': 10},
     1000050: {'symbol': 'HDXb', 'decimals': 10},
