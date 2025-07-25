@@ -9,7 +9,8 @@ import logging
 
 from dipdup.database import get_connection
 
-from dex_screener.models import DexKey, Pair
+from dex_screener.models import DexKey
+from dex_screener.models import Pair
 
 _logger = logging.getLogger(__name__)
 

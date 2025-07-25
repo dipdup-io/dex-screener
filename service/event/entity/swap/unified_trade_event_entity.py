@@ -85,12 +85,18 @@ class UnifiedTradeEventEntity(SwapEventEntity):
             case _:
                 raise InvalidSwapEventMarketDataError(f'Unhandled Swap Event Payload: {self._event.payload}.')
 
-        reserves_0, reserves_1 = await get_reserves_by_pair(pair, self._event.data.level)
+        # NOTE: OTC orders don't have a pool with reserves (MOCK_OTC_ORDER_ACCOUNT is a placeholder)
+        if pair.pool.dex_key == DexKey.OTC:
+            asset_0_reserve, asset_1_reserve = None, None
+        else:
+            reserves_0, reserves_1 = await get_reserves_by_pair(pair, self._event.data.level)
+            asset_0_reserve = pair.asset_0_amount(reserves_0)
+            asset_1_reserve = pair.asset_1_amount(reserves_1)
 
         return SwapEventPoolDataDTO(
             pair_id=pair.id,
-            asset_0_reserve=pair.asset_0_amount(reserves_0),
-            asset_1_reserve=pair.asset_1_amount(reserves_1),
+            asset_0_reserve=asset_0_reserve,
+            asset_1_reserve=asset_1_reserve,
         )
 
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:
