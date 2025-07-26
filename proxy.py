@@ -7,45 +7,14 @@ from typing import Any
 
 import httpx
 import orjson
-from asyncache import cached  # type: ignore[import-untyped]
-from cachetools import TTLCache
 from dipdup.utils import json_dumps
 from fastapi import APIRouter
 from fastapi import FastAPI
 from fastapi import Request
 from fastapi.responses import Response
 
-from dex_screener import utils
-
 _logger = logging.getLogger(__name__)
 _client: httpx.AsyncClient | None = None
-
-
-# TODO: Tune values
-BALANCES_CACHE_SIZE = 10000
-POOL_CACHE_SIZE = 10000
-SUPPLY_CACHE_SIZE = 10000
-DECIMALS_CACHE_SIZE = 10000
-
-CACHE_TTL = 60 * 60
-
-
-# NOTE: Cached versions of utility functions.
-get_pool_by_pair = cached(
-    cache=TTLCache(maxsize=POOL_CACHE_SIZE, ttl=CACHE_TTL),
-)(utils.get_pool_by_pair)
-
-get_balance_by_account = cached(
-    cache=TTLCache(maxsize=BALANCES_CACHE_SIZE, ttl=CACHE_TTL),
-)(utils.get_balance_by_account)
-
-get_asset_supply = cached(
-    cache=TTLCache(maxsize=SUPPLY_CACHE_SIZE, ttl=CACHE_TTL),
-)(utils.get_asset_supply)
-
-get_decimals_by_asset_id = cached(
-    cache=TTLCache(maxsize=DECIMALS_CACHE_SIZE, ttl=CACHE_TTL),
-)(utils.get_decimals_by_asset_id)
 
 
 @dataclass

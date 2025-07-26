@@ -11,6 +11,7 @@ from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
 from dex_screener.types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
+from dex_screener.utils import NotFound
 from dex_screener.utils import get_reserves_by_pair
 
 
@@ -42,7 +43,10 @@ async def on_position_created(
     if not pair:
         pair = await OmnipoolService.register_pair_from_positions(event)
 
-    reserves_0, reserves_1 = await get_reserves_by_pair(pair, event.data.level)
+    try:
+        reserves_0, reserves_1 = await get_reserves_by_pair(pair, event.data.level)
+    except NotFound:
+        reserves_0, reserves_1 = 0, 0
 
     pool_data = JoinExitEventPoolDataDTO(
         pair_id=pair_id,

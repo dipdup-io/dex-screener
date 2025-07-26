@@ -13,6 +13,7 @@ from dex_screener.models import DexKey
 from dex_screener.models import Pair
 
 _logger = logging.getLogger(__name__)
+_reserves_level = 0
 
 
 class NotFound(Exception):
@@ -171,12 +172,17 @@ async def wait_for_reserves(level: int) -> None:
     """
     Waits for reserves to be updated to the specified level.
     """
+    global _reserves_level
+
+    if _reserves_level >= level:
+        return
+
     while True:
-        reserves_head = min(
+        _reserves_level = min(
             await get_balance_history_head(),
             await get_supply_history_head(),
         )
-        if reserves_head >= level:
+        if _reserves_level >= level:
             return
 
         _logger.info('Reserves indexer is behind, waiting for update...')
