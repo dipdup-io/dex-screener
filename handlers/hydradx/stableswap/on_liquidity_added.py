@@ -18,7 +18,12 @@ async def on_liquidity_added(
     pool = await Pool.get(lp_token_id=event.payload['pool_id'], dex_key=DexKey.StableSwap).prefetch_related('lp_token')
 
     for asset in event.payload['assets']:
-        asset_id, amount = int(asset['assetId']), int(asset['amount'])  # type: ignore[index]
+        amount = int(asset['amount'])
+        # FIXME: Inconsistent casing between sqd/node. We don't fix sqd casing in nested structures.
+        try:
+            asset_id = int(asset['assetId'])
+        except KeyError:
+            asset_id = int(asset['asset_id'])
 
         pair_id = get_pair_id(pool, asset_id, pool.lp_token_id)
         pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')

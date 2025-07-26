@@ -13,4 +13,6 @@ class V183(TypedDict):
     pool_id: int
     who: str
     shares: int
-    assets: list[str]
+    # FIXME: JSONschema codegen issue
+    # assets: list[str]
+    assets: list[dict[str, str | int]]

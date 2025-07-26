@@ -18,11 +18,15 @@ async def on_liquidity_removed(
     pool = await Pool.get(lp_token_id=event.payload['pool_id'], dex_key=DexKey.StableSwap)
 
     # NOTE: The amounts field contains asset_id -> amount mappings
-    for amount_data in event.payload['amounts']:
-        asset_id, amount = int(amount_data['assetId']), int(amount_data['amount'])  # type: ignore[index]
+    for asset in event.payload['amounts']:
+        amount = int(asset['amount'])
+        # FIXME: Inconsistent casing between sqd/node. We don't fix sqd casing in nested structures.
+        try:
+            asset_id = int(asset['assetId'])
+        except KeyError:
+            asset_id = int(asset['asset_id'])
 
         pair_id = get_pair_id(pool, asset_id, pool.lp_token_id)
-
         pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')
 
         # NOTE: Get current reserves after the event
