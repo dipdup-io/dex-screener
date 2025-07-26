@@ -186,7 +186,7 @@ async def wait_for_reserves(level: int) -> None:
             return
 
         _logger.info('Reserves indexer is behind, waiting for update...')
-        await asyncio.sleep(5)
+        await asyncio.sleep(1)
 
 
 async def get_transfers_by_level(

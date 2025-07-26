@@ -155,6 +155,7 @@ class RuntimeFlag:
     """Controls scheduling and conditions for block timestamp refreshes."""
 
     blocks_refresh_at: datetime = datetime.now(UTC)
+    # NOTE: Default, overriden in `on_restart` and `on_synchronized` hooks
     blocks_refresh_period: timedelta = timedelta(seconds=60)
 
     @classmethod
