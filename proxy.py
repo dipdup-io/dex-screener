@@ -87,10 +87,11 @@ def process_hasura_response(data: dict[str, Any]) -> dict[str, Any]:
         if item.get('priceNative') is None:
             item.pop('priceNative', None)
 
-        if item.get('reserves', {}).get('asset0') is None:
-            item.get('reserves', {}).pop('asset0', None)
-        if item.get('reserves', {}).get('asset1') is None:
-            item.get('reserves', {}).pop('asset1', None)
+        if reserves := item.get('reserves', {}):
+            if reserves.get('asset0') in (None, '0') or reserves.get('asset0', '').startswith('-'):
+                reserves.pop('asset0', None)
+            if reserves.get('asset1') in (None, '0') or reserves.get('asset1', '').startswith('-'):
+                reserves.pop('asset1', None)
         if not item.get('reserves'):
             item.pop('reserves', None)
 
