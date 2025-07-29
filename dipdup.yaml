@@ -125,7 +125,7 @@ custom:
   syncing_blocks_refresh_period:
     minutes: 1
   realtime_blocks_refresh_period:
-    seconds: 10
+    seconds: 1
 
   # NOTE See `proxy.py`
   proxy:
