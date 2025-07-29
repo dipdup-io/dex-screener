@@ -16,6 +16,20 @@ from fastapi.responses import Response
 _logger = logging.getLogger(__name__)
 _client: httpx.AsyncClient | None = None
 
+# NOTE: Erc20 tokens we don't have correct reserves for
+IGNORED_ASSETS: set[str] = {
+    '69',
+    '420',
+    '1001',
+    '1002',
+    '1003',
+    '1004',
+    '1005',
+    '1006',
+    '1007',
+    '1008',
+}
+
 
 @dataclass
 class ProxyConfig:
@@ -66,12 +80,22 @@ def create_api(config: ProxyConfig) -> FastAPI:
     return app
 
 
-def process_hasura_response(data: dict[str, Any]) -> dict[str, Any]:
+def process_hasura_response(
+    data: dict[str, Any],
+) -> dict[str, Any]:
     events = data.get('events', [])
     if not events:
         return data
 
-    for item in events:
+    data['events'] = [i for i in events if not set(i['pairId'].split('-')).intersection(IGNORED_ASSETS)]
+    if len(data['events']) != len(events):
+        _logger.info(
+            'Filtered out %d from %d events with ignored assets',
+            len(events) - len(data['events']),
+            len(events),
+        )
+
+    for item in data['events']:
         # NOTE: dex_screener specification requires nulls to be removed from the response
         if item.get('eventType') == 'swap':
             item.pop('amount0', None)
@@ -88,9 +112,9 @@ def process_hasura_response(data: dict[str, Any]) -> dict[str, Any]:
             item.pop('priceNative', None)
 
         if reserves := item.get('reserves', {}):
-            if reserves.get('asset0') in (None, '0') or reserves.get('asset0', '').startswith('-'):
+            if reserves.get('asset0') is None:
                 reserves.pop('asset0', None)
-            if reserves.get('asset1') in (None, '0') or reserves.get('asset1', '').startswith('-'):
+            if reserves.get('asset1') is None:
                 reserves.pop('asset1', None)
         if not item.get('reserves'):
             item.pop('reserves', None)
@@ -100,6 +124,7 @@ def process_hasura_response(data: dict[str, Any]) -> dict[str, Any]:
             account, pool_id = item['pool']['account'].split(':', 1)
             item['pool']['account'] = account
             item['pool']['id'] = pool_id
+
     return data
 
 
