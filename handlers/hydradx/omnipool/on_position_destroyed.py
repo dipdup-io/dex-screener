@@ -1,5 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
+from tortoise.exceptions import DoesNotExist
 
 from dex_screener.models import DexEvent
 from dex_screener.models import DexOmnipoolPosition
@@ -21,9 +22,14 @@ async def on_position_destroyed(
     # set omnipool position created=False
     # create exit event (and fetch data for event)
 
-    position: DexOmnipoolPosition = await DexOmnipoolPosition.get(
-        position_id=event.payload['position_id'],
-    )
+    # FIXME: 56441, 57048
+    try:
+        position: DexOmnipoolPosition = await DexOmnipoolPosition.get(
+            position_id=event.payload['position_id'],
+        )
+    except DoesNotExist as e:
+        ctx.logger.warning('Omnipool position %s not found', event.payload['position_id'], exc_info=e)
+        return
     position.created = False
     await position.save()
 
