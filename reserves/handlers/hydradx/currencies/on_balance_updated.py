@@ -2,13 +2,13 @@ from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
 from reserves.handlers.batch import RuntimeFlag
-from reserves.handlers.hydradx.balances.on_balance_set import Sum
 from reserves.models import BalanceHistory
 from reserves.models import BalanceUpdateEvent
 from reserves.models import SupplyHistory
 from reserves.types.hydradx.substrate_events.currencies_balance_updated import CurrenciesBalanceUpdatedPayload
 from reserves.types.hydradx.substrate_events.currencies_deposited import CurrenciesDepositedPayload
 from reserves.types.hydradx.substrate_events.currencies_withdrawn import CurrenciesWithdrawnPayload
+from reserves.utils import balance_update_from_balance
 
 CurrenciesUpdatePayload = CurrenciesDepositedPayload | CurrenciesWithdrawnPayload | CurrenciesBalanceUpdatedPayload
 
@@ -30,22 +30,7 @@ async def on_balance_updated(
         case 'Currencies.BalanceUpdated':
             account = event.payload['who']
             balance = event.payload['amount']
-            latest_balance: int = (
-                await BalanceUpdateEvent.filter(  # type: ignore[assignment]
-                    asset_id=asset_id,
-                    account=account,
-                )
-                .group_by(
-                    'account',
-                    'asset_id',
-                )
-                .annotate(latest_balance=Sum('balance_update'))
-                .first()
-                .values_list('latest_balance', flat=True)
-            )
-            if latest_balance is None:
-                latest_balance = 0
-            balance_update = latest_balance - balance
+            balance_update = await balance_update_from_balance(account, asset_id, balance)
         case _:
             raise ValueError(event)
 
