@@ -51,7 +51,10 @@ def create_api(config: ProxyConfig) -> FastAPI:
     async def lifespan(app: FastAPI):
         global _client
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(
+            # NOTE: Hasura limit is set to 10k but dex-screener won't request that much data
+            timeout=httpx.Timeout(timeout=15),
+        ) as client:
             app.state.client = client
             _client = client
             yield
