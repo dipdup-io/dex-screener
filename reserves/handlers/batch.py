@@ -107,10 +107,6 @@ async def batch(
         if EventBuffer.filled() or is_last_level:
             await EventBuffer.flush(ctx)
 
-        if not RuntimeFlag.synchronized and RuntimeFlag.history_refresh_condition():
-            ctx.logger.info('Processing refresh of `balance_history` and `supply_history`...')
-            await refresh_history(ctx)
-            RuntimeFlag.history_set_next_refresh(ctx)
         if RuntimeFlag.synchronized:
             ctx.logger.info(
                 'Processing final refresh of `balance_history` and `supply_history` before switch to realtime updates...'
@@ -124,10 +120,8 @@ async def refresh_history(ctx: DipDupContext):
     Flushes buffer and refreshes history tables.
     """
     await EventBuffer.flush(ctx)
-    refresh_start = datetime.now()
-    await ctx.execute_sql_script('on_refresh_history')
-    refresh_duration = datetime.now() - refresh_start
-    ctx.logger.info('Tables `balance_history` and `supply_history` are successfully updated in %s', refresh_duration)
+    # NOTE: This hook is atomic and will be executed after the current transaction
+    await ctx.fire_hook('on_refresh_history', wait=False)
 
 
 class RuntimeFlag:

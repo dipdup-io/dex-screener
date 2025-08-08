@@ -4,7 +4,6 @@ package: reserves
 runtimes:
   hydradx:
     kind: substrate
-    type_registry: statemint
 
 datasources:
   subsquid:
@@ -59,6 +58,19 @@ indexes:
         callback: hydradx.balances.on_balance_transfer
       - name: Balances.Withdraw
         callback: hydradx.balances.on_balance_updated
+
+hooks:
+  on_refresh_history:
+    callback: on_refresh_history
+    atomic: true
+
+jobs:
+  refresh_history:
+    hook: on_refresh_history
+    interval: 1
+
+logging:
+  apscheduler.scheduler: error
 
 custom:
   history_refresh_period:
