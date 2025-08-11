@@ -9,6 +9,9 @@ async def on_reindex(
 ) -> None:
     await ctx.execute_sql_script('on_reindex')
 
+    # FIXME: Reserves are correct without balances created on reindex
+    return
+
     client = ctx.get_substrate_datasource('node')._interface  # type: ignore[union-attr]
 
     block_hash = await client.get_block_hash(0)
