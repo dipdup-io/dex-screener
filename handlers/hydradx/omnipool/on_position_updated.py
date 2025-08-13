@@ -11,6 +11,7 @@ from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
 from dex_screener.types.hydradx.substrate_events.omnipool_position_updated import OmnipoolPositionUpdatedPayload
+from dex_screener.utils import get_reserves_by_pair
 
 
 async def on_position_updated(
@@ -41,20 +42,26 @@ async def on_position_updated(
     )
 
     pair_id = OmnipoolService.get_pair_id(position.asset_id, OMNIPOOL_HUB_ASSET_ID)
+    pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')
+
+    reserves_0, reserves_1 = await get_reserves_by_pair(pair, event.data.level)
+
     pool_data = JoinExitEventPoolDataDTO(
         pair_id=pair_id,
+        asset_0_reserve=pair.asset_0_amount(reserves_0),
+        asset_1_reserve=pair.asset_1_amount(reserves_1),
     )
 
-    pair = await Pair.get(id=pool_data.pair_id).prefetch_related('asset_0', 'asset_1')
-    amount_0 = pair.asset_0.from_minor(delta_position_amount)
-    amount_1 = pair.asset_1.from_minor(delta_position_shares)
-    if pair.asset_0.id != position.asset_id:
-        amount_0, amount_1 = amount_1, amount_0
+    amount_0, amount_1 = (
+        (delta_position_amount, delta_position_shares)
+        if pair.asset_0.id == position.asset_id
+        else (delta_position_shares, delta_position_amount)
+    )
 
     market_data = JoinExitEventMarketDataDTO(
         maker=position.owner,
-        amount_0=str(amount_0),
-        amount_1=str(amount_1),
+        amount_0=pair.asset_0_amount(amount_0),
+        amount_1=pair.asset_1_amount(amount_1),
     )
 
     fields = {

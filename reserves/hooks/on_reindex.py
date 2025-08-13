@@ -1,12 +1,16 @@
 from dipdup.context import HookContext
-from reserves.models import BalanceUpdateEvent
 from scalecodec import ss58_decode  # type: ignore[import-untyped]
+
+from reserves.models import BalanceUpdateEvent
 
 
 async def on_reindex(
     ctx: HookContext,
 ) -> None:
     await ctx.execute_sql_script('on_reindex')
+
+    # FIXME: Reserves are correct without balances created on reindex
+    return
 
     client = ctx.get_substrate_datasource('node')._interface  # type: ignore[union-attr]
 

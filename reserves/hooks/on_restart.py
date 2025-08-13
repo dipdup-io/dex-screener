@@ -1,8 +1,10 @@
 from datetime import timedelta
 
 from dipdup.context import HookContext
+
 from reserves.handlers.batch import EventBuffer
 from reserves.handlers.batch import RuntimeFlag
+from reserves.handlers.batch import refresh_history
 
 
 async def on_restart(
@@ -17,3 +19,6 @@ async def on_restart(
     RuntimeFlag.history_set_next_refresh(ctx)
 
     await ctx.execute_sql_script('on_restart')
+
+    # NOTE: Call once after restart
+    await refresh_history(ctx)

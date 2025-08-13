@@ -8,6 +8,7 @@ from reserves.models import SupplyHistory
 from reserves.types.hydradx.substrate_events.currencies_balance_updated import CurrenciesBalanceUpdatedPayload
 from reserves.types.hydradx.substrate_events.currencies_deposited import CurrenciesDepositedPayload
 from reserves.types.hydradx.substrate_events.currencies_withdrawn import CurrenciesWithdrawnPayload
+from reserves.utils import balance_update_from_balance
 
 CurrenciesUpdatePayload = CurrenciesDepositedPayload | CurrenciesWithdrawnPayload | CurrenciesBalanceUpdatedPayload
 
@@ -27,7 +28,9 @@ async def on_balance_updated(
             account = event.payload['who']
             balance_update = -event.payload['amount']
         case 'Currencies.BalanceUpdated':
-            pass
+            account = event.payload['who']
+            balance = event.payload['amount']
+            balance_update = await balance_update_from_balance(account, asset_id, balance)
         case _:
             raise ValueError(event)
 

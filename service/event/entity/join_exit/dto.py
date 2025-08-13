@@ -6,14 +6,14 @@ from pydantic import model_validator
 
 class JoinExitEventPoolDataDTO(BaseModel):
     pair_id: str
-    asset_0_reserve: str | None = None
-    asset_1_reserve: str | None = None
+    asset_0_reserve: str | None
+    asset_1_reserve: str | None
 
 
 class JoinExitEventMarketDataDTO(BaseModel):
     maker: str
-    amount_0: str | None = None
-    amount_1: str | None = None
+    amount_0: str | None
+    amount_1: str | None
 
 
 class MarketDataArgsDTO(BaseModel):

@@ -86,6 +86,7 @@ class BalanceUpdateEvent(Model):
         if (len(account) == 48 and account[0] == '7') or not account.startswith('0x'):
             account = f'0x{ss58_decode(account)}'
 
+        # NOTE: level MUST be less than (2**46) - 1, index MUST be less than (2**16) - 1 because MAX_INT = (2**63) - 1
         event_id = (((event.data.level << 16) + event.data.index) << 1) + int(balance_update > 0)
 
         if RuntimeFlag.realtime:

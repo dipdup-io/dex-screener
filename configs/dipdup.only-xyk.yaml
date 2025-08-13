@@ -1,0 +1,26 @@
+indexes:
+  hydradx_events:
+    kind: substrate.events
+    runtime: hydradx
+    datasources:
+      - subsquid
+      - subscan
+      - node
+    handlers:
+      # Asset Registry (common)
+      - name: AssetRegistry.Registered
+        callback: hydradx.asset.on_asset_registered
+      - name: AssetRegistry.Updated
+        callback: hydradx.asset.on_asset_updated
+      - name: AssetRegistry.MetadataSet
+        callback: hydradx.asset.on_metadata_set
+      - name: AssetRegistry.LocationSet
+        callback: hydradx.asset.on_location_set
+
+      # Isolated Pool (XYK)
+      - name: XYK.PoolCreated
+        callback: hydradx.isolated_pool.on_pool_created
+      - name: XYK.LiquidityAdded
+        callback: hydradx.isolated_pool.on_liquidity_added
+      - name: XYK.LiquidityRemoved
+        callback: hydradx.isolated_pool.on_liquidity_removed

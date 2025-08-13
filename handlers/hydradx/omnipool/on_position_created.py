@@ -1,17 +1,18 @@
-from types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
-
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
 
-from models import DexEvent
-from models import DexOmnipoolPosition
-from models import Pair
-from service.dex.omnipool.const import OMNIPOOL_HUB_ASSET_ID
-from service.dex.omnipool.omnipool_service import OmnipoolService
-from service.event.const import DexScreenerEventType
-from service.event.entity.dto import DexScreenerEventDataDTO
-from service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
-from service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
+from dex_screener.models import DexEvent
+from dex_screener.models import DexOmnipoolPosition
+from dex_screener.models import Pair
+from dex_screener.service.dex.omnipool.const import OMNIPOOL_HUB_ASSET_ID
+from dex_screener.service.dex.omnipool.omnipool_service import OmnipoolService
+from dex_screener.service.event.const import DexScreenerEventType
+from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
+from dex_screener.service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
+from dex_screener.service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
+from dex_screener.types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
+from dex_screener.utils import NotFound
+from dex_screener.utils import get_reserves_by_pair
 
 
 async def on_position_created(
@@ -38,19 +39,30 @@ async def on_position_created(
     )
 
     pair_id = OmnipoolService.get_pair_id(position.asset_id, OMNIPOOL_HUB_ASSET_ID)
+    pair = await Pair.get_or_none(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')
+    if not pair:
+        pair = await OmnipoolService.register_pair_from_positions(event)
+
+    try:
+        reserves_0, reserves_1 = await get_reserves_by_pair(pair, event.data.level)
+    except NotFound:
+        reserves_0, reserves_1 = 0, 0
+
     pool_data = JoinExitEventPoolDataDTO(
         pair_id=pair_id,
+        asset_0_reserve=pair.asset_0_amount(reserves_0),
+        asset_1_reserve=pair.asset_1_amount(reserves_1),
     )
 
-    pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1')
-    amount_0 = pair.asset_0.from_minor(position.amount)
-    amount_1 = pair.asset_1.from_minor(position.shares)
-    if pair.asset_0.id != position.asset_id:
-        amount_0, amount_1 = amount_1, amount_0
+    if pair.asset_0.id == position.asset_id:
+        amount_0, amount_1 = int(position.amount), int(position.shares)
+    else:
+        amount_0, amount_1 = int(position.shares), int(position.amount)
+
     market_data = JoinExitEventMarketDataDTO(
         maker=position.owner,
-        amount_0=str(amount_0),
-        amount_1=str(amount_1),
+        amount_0=pair.asset_0_amount(amount_0),
+        amount_1=pair.asset_1_amount(amount_1),
     )
 
     fields = {

@@ -50,18 +50,6 @@
                                         }
                                     },
                                     {
-                                        "name": "dex_asset_pool_reserves",
-                                        "using": {
-                                            "foreign_key_constraint_on": {
-                                                "column": "asset_id",
-                                                "table": {
-                                                    "name": "dex_asset_pool_reserve",
-                                                    "schema": "public"
-                                                }
-                                            }
-                                        }
-                                    },
-                                    {
                                         "name": "dex_pairs",
                                         "using": {
                                             "foreign_key_constraint_on": {
@@ -71,26 +59,6 @@
                                                     "schema": "public"
                                                 }
                                             }
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "table": {
-                                    "name": "dex_asset_pool_reserve",
-                                    "schema": "public"
-                                },
-                                "object_relationships": [
-                                    {
-                                        "name": "dex_asset",
-                                        "using": {
-                                            "foreign_key_constraint_on": "asset_id"
-                                        }
-                                    },
-                                    {
-                                        "name": "dex_pool",
-                                        "using": {
-                                            "foreign_key_constraint_on": "pool_id"
                                         }
                                     }
                                 ]
@@ -225,18 +193,6 @@
                                     }
                                 ],
                                 "array_relationships": [
-                                    {
-                                        "name": "dex_asset_pool_reserves",
-                                        "using": {
-                                            "foreign_key_constraint_on": {
-                                                "column": "pool_id",
-                                                "table": {
-                                                    "name": "dex_asset_pool_reserve",
-                                                    "schema": "public"
-                                                }
-                                            }
-                                        }
-                                    },
                                     {
                                         "name": "dex_pairs",
                                         "using": {

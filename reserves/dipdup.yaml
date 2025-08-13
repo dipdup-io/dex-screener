@@ -1,25 +1,9 @@
 spec_version: 3.0
 package: reserves
 
-database:
-  kind: postgres
-  host: ${POSTGRES_HOST:-db}
-  port: ${POSTGRES_PORT:-5432}
-  user: ${POSTGRES_USER:-dipdup}
-  password: ${POSTGRES_PASSWORD:-changeme}
-  database: ${POSTGRES_DB:-dipdup}
-
-hasura:
-  url: ${HASURA_URL:-http://hasura:8080}
-  admin_secret: ${HASURA_SECRET:-changeme}
-  select_limit: ${SELECT_LIMIT:-1000}
-  allow_aggregations: ${ALLOW_AGGREGATIONS:-true}
-  rest: false
-
 runtimes:
   hydradx:
     kind: substrate
-    type_registry: statemint
 
 datasources:
   subsquid:
@@ -31,11 +15,10 @@ datasources:
   node:
     kind: substrate.node
     url: ${NODE_URL:-https://hydration-rpc.n.dwellir.com}
-    # ws_url: ${NODE_WS_URL:-wss://hydration-rpc.n.dwellir.com}
+    ws_url: null
   explorer:
     kind: http
     url: https://explorer.hydradx.cloud/
-
 
 indexes:
   hydradx_events:
@@ -47,42 +30,47 @@ indexes:
       - node
 
     handlers:
-      - name: Currencies.Deposited
-        callback: hydradx.currencies.on_balance_updated
-      - name: Currencies.Withdrawn
-        callback: hydradx.currencies.on_balance_updated
       - name: Currencies.BalanceUpdated
+        callback: hydradx.currencies.on_balance_updated
+      - name: Currencies.Deposited
         callback: hydradx.currencies.on_balance_updated
       - name: Currencies.Transferred
         callback: hydradx.currencies.on_balance_transfer
+      - name: Currencies.Withdrawn
+        callback: hydradx.currencies.on_balance_updated
 
       - name: Tokens.Deposited
         callback: hydradx.currencies.on_balance_updated
-      - name: Tokens.Withdrawn
-        callback: hydradx.currencies.on_balance_updated
       - name: Tokens.Transfer
         callback: hydradx.currencies.on_balance_transfer
+      - name: Tokens.Withdrawn
+        callback: hydradx.currencies.on_balance_updated
 
       - name: Balances.BalanceSet
         callback: hydradx.balances.on_balance_set
+      - name: Balances.Burned
+        callback: hydradx.balances.on_balance_updated
       - name: Balances.Deposit
         callback: hydradx.balances.on_balance_updated
       - name: Balances.Minted
         callback: hydradx.balances.on_balance_updated
-      - name: Balances.Withdraw
-        callback: hydradx.balances.on_balance_updated
-      - name: Balances.Burned
-        callback: hydradx.balances.on_balance_updated
       - name: Balances.Transfer
         callback: hydradx.balances.on_balance_transfer
+      - name: Balances.Withdraw
+        callback: hydradx.balances.on_balance_updated
 
-      - name: Sudo.Sudid
-        callback: hydradx.on_sudo_sudid
+hooks:
+  on_refresh_history:
+    callback: on_refresh_history
+    atomic: true
 
-advanced:
-  reindex:
-    config_modified: ignore
-    schema_modified: exception
+jobs:
+  refresh_history:
+    hook: on_refresh_history
+    interval: 1
+
+logging:
+  apscheduler.scheduler: error
 
 custom:
   history_refresh_period:

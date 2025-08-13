@@ -8,6 +8,7 @@ from dipdup.context import DipDupContext
 from dipdup.context import HandlerContext
 from dipdup.index import MatchedHandler
 from dipdup.models.substrate import SubstrateEvent
+
 from reserves.models import BalanceUpdateEvent
 
 
@@ -78,6 +79,10 @@ async def batch(
     ctx: HandlerContext,
     handlers: tuple[MatchedHandler, ...],
 ) -> None:
+    """
+    Fires handlers, flushes buffer, and refreshes history until real-time.
+    """
+
     recurring_events_indexes: set[int] = set()
     for index in range(len(handlers) - 1):
         if index in recurring_events_indexes:
@@ -90,19 +95,18 @@ async def batch(
             recurring_events_indexes.add(index + pair_index)
 
     if len(recurring_events_indexes) > 0:
-        handlers = (handler for index, handler in enumerate(handlers) if index not in recurring_events_indexes)  # type: ignore[assignment]
+        handlers = tuple(handler for index, handler in enumerate(handlers) if index not in recurring_events_indexes)  # type: ignore[assignment]
 
     for handler in handlers:
         await ctx.fire_matched_handler(handler)
 
+    # NOTE: We need to flush buffer before stopping the indexer to avoid missing events
+    is_last_level = handlers[-1].args[0].data.level == ctx.handler_config.parent.last_level  # type: ignore[index,attr-defined]
+
     if not RuntimeFlag.realtime:
-        if EventBuffer.filled():
+        if EventBuffer.filled() or is_last_level:
             await EventBuffer.flush(ctx)
 
-        if not RuntimeFlag.synchronized and RuntimeFlag.history_refresh_condition():
-            ctx.logger.info('Processing refresh of `balance_history` and `supply_history`...')
-            await refresh_history(ctx)
-            RuntimeFlag.history_set_next_refresh(ctx)
         if RuntimeFlag.synchronized:
             ctx.logger.info(
                 'Processing final refresh of `balance_history` and `supply_history` before switch to realtime updates...'
@@ -111,15 +115,20 @@ async def batch(
             RuntimeFlag.realtime = True
 
 
-async def refresh_history(ctx: HandlerContext):
+async def refresh_history(ctx: DipDupContext):
+    """
+    Flushes buffer and refreshes history tables.
+    """
     await EventBuffer.flush(ctx)
-    refresh_start = datetime.now()
-    await ctx.execute_sql_script('on_refresh_history')
-    refresh_duration = datetime.now() - refresh_start
-    ctx.logger.info('Tables `balance_history` and `supply_history` are successfully updated in %s', refresh_duration)
+    # NOTE: This hook is atomic and will be executed after the current transaction
+    await ctx.fire_hook('on_refresh_history', wait=False)
 
 
 class RuntimeFlag:
+    """
+    Controls refresh and real-time state.
+    """
+
     realtime: bool = False
     synchronized: bool = False
     history_refresh_at: datetime = datetime.now(UTC)
@@ -137,7 +146,11 @@ class RuntimeFlag:
 
 
 class EventBuffer:
-    buffer_limit: int = NotImplemented
+    """
+    Buffers and bulk-inserts events.
+    """
+
+    buffer_limit: int = 10000
     queue: Queue[BalanceUpdateEvent] = Queue()
 
     @classmethod

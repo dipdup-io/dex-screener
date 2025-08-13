@@ -1,5 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.substrate import SubstrateEvent
+from tortoise.exceptions import DoesNotExist
 
 from dex_screener.models import DexEvent
 from dex_screener.models import DexOmnipoolPosition
@@ -11,6 +12,7 @@ from dex_screener.service.event.entity.dto import DexScreenerEventDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventMarketDataDTO
 from dex_screener.service.event.entity.join_exit.dto import JoinExitEventPoolDataDTO
 from dex_screener.types.hydradx.substrate_events.omnipool_position_destroyed import OmnipoolPositionDestroyedPayload
+from dex_screener.utils import get_reserves_by_pair
 
 
 async def on_position_destroyed(
@@ -20,9 +22,14 @@ async def on_position_destroyed(
     # set omnipool position created=False
     # create exit event (and fetch data for event)
 
-    position: DexOmnipoolPosition = await DexOmnipoolPosition.get(
-        position_id=event.payload['position_id'],
-    )
+    # FIXME: 56441, 57048
+    try:
+        position: DexOmnipoolPosition = await DexOmnipoolPosition.get(
+            position_id=event.payload['position_id'],
+        )
+    except DoesNotExist as e:
+        ctx.logger.warning('Omnipool position %s not found', event.payload['position_id'], exc_info=e)
+        return
     position.created = False
     await position.save()
 
@@ -34,19 +41,25 @@ async def on_position_destroyed(
     )
 
     pair_id = OmnipoolService.get_pair_id(position.asset_id, OMNIPOOL_HUB_ASSET_ID)
+    pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')
+
+    reserves_0, reserves_1 = await get_reserves_by_pair(pair, event.data.level)
+
     pool_data = JoinExitEventPoolDataDTO(
         pair_id=pair_id,
+        asset_0_reserve=pair.asset_0_amount(reserves_0),
+        asset_1_reserve=pair.asset_1_amount(reserves_1),
     )
 
-    pair: Pair = await Pair.get(id=pool_data.pair_id).prefetch_related('asset_0', 'asset_1')
-    amount_0 = pair.asset_0.from_minor(position.amount)
-    amount_1 = pair.asset_1.from_minor(position.shares)
-    if pair.asset_0.id != position.asset_id:
-        amount_0, amount_1 = amount_1, amount_0
+    if pair.asset_0.id == position.asset_id:
+        amount_0, amount_1 = int(position.amount), int(position.shares)
+    else:
+        amount_0, amount_1 = int(position.shares), int(position.amount)
+
     market_data = JoinExitEventMarketDataDTO(
         maker=position.owner,
-        amount_0=str(amount_0),
-        amount_1=str(amount_1),
+        amount_0=pair.asset_0_amount(amount_0),
+        amount_1=pair.asset_1_amount(amount_1),
     )
 
     fields = {

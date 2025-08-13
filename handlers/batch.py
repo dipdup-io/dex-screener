@@ -5,9 +5,11 @@ from datetime import datetime
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
+from dipdup import env
 from dipdup.config.substrate_events import SubstrateEventsHandlerConfig
 
 from dex_screener.models import Block
+from dex_screener.utils import wait_for_reserves
 
 if TYPE_CHECKING:
     from dipdup.context import HandlerContext
@@ -57,7 +59,15 @@ async def batch(
     ctx: HandlerContext,
     handlers: tuple[MatchedHandler, ...],
 ) -> None:
+    """
+    - Removes deprecated event handlers from config and skips their processing.
+    - Creates Block records for each unique block level.
+    - Refreshes block timestamps from explorer if needed.
+    """
+    # NOTE: Wait for the reserves to be updated before processing the batch
     current_level = handlers[0].level
+    await wait_for_reserves(current_level)
+
     for deprecated in deprecations:
         if current_level <= deprecated.level:
             break
@@ -94,6 +104,10 @@ async def batch(
             batch_levels.add(handler.level)
 
         await ctx.fire_matched_handler(handler)
+
+    if env.NO_HOOKS:
+        ctx.logger.info('Skipping block timestamp refresh due to NO_HOOKS environment variable.')
+        return
 
     if RuntimeFlag.blocks_refresh_condition():
         ctx.logger.info('Processing refresh `dex_block`...')
@@ -138,7 +152,10 @@ async def batch(
 
 
 class RuntimeFlag:
+    """Controls scheduling and conditions for block timestamp refreshes."""
+
     blocks_refresh_at: datetime = datetime.now(UTC)
+    # NOTE: Default, overriden in `on_restart` and `on_synchronized` hooks
     blocks_refresh_period: timedelta = timedelta(seconds=60)
 
     @classmethod

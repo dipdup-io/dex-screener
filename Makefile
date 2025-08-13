@@ -32,7 +32,7 @@ lint:           ## Lint code with ruff and mypy
 	mypy .
 	cd reserves; make lint
 
-test: 		 ## Run tests
+test:           ## Run tests
 	pytest tests
 
 ##
@@ -45,14 +45,50 @@ init:
 	dipdup init --no-base
 	cd reserves && dipdup init --no-base
 
-up:             ## Start Compose stack
+up:             ## Start Compose stack: DB, Hasura, and indexer
 	docker-compose -f ${COMPOSE} up -d --build
 	docker-compose -f ${COMPOSE} logs -f
 
-up_db:
-	docker-compose -f ${COMPOSE} up -d --build db db_reserves hasura hasura_reserves
-
 down:           ## Stop Compose stack
 	docker-compose -f ${COMPOSE} down
+
+##
+## Local development
+##
+
+up_db:          ## Start Compose stack: DB and Hasura only
+	docker-compose -f ${COMPOSE} up -d --build db hasura
+
+run_main:       ## Run main indexer
+	dipdup -C compose -e local.env run
+
+run_reserves:   ## Run reserves indexer
+	cd reserves; dipdup -C compose -e local.env run
+
+run_proxy:      ## Run Hasura proxy
+	python -m dex_screener -C compose -e local.env proxy
+
+only_stableswap:##
+	dipdup -C compose -C only-stableswap -e local.env run
+
+only_xyk:       ##
+	dipdup -C compose -C only-xyk -e local.env run
+
+only_omnipool:  ##
+	dipdup -C compose -C only-omnipool -e local.env run
+
+only_otc:       ##
+	dipdup -C compose -C only-otc -e local.env run
+
+##
+
+psql:
+	docker exec -it dex_screener-db-1 psql -U dipdup dipdup
+
+wipe_main:      ## Wipe public schema
+	dipdup -C compose -e local.env schema wipe --force
+
+wipe_reserves:  ## Wipe reserves schema
+	cd reserves; dipdup -C compose -e local.env schema wipe --force
 
 ##

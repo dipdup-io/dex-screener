@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 from dipdup import fields
 from dipdup.fields import ForeignKeyField
-from dipdup.fields import ManyToManyField
 from dipdup.fields import OneToOneField
 from dipdup.models import Model
 
@@ -15,7 +14,6 @@ from dex_screener.service.event.const import DexScreenerEventType
 
 if TYPE_CHECKING:
     from tortoise.fields.relational import ForeignKeyFieldInstance
-    from tortoise.fields.relational import ManyToManyFieldInstance
     from tortoise.fields.relational import OneToOneFieldInstance
 
     from dex_screener.handlers.hydradx.asset.asset_count.types import AnyTypeAmount
@@ -84,16 +82,9 @@ class Pool(Model):
         model = 'models.Pool'
         unique_together = ('dex_key', 'dex_pool_id')
 
-    account = AccountField(primary_key=True)
+    account = fields.TextField(primary_key=True)
     dex_key = fields.EnumField(enum_type=DexKey, db_index=True)
     dex_pool_id = fields.TextField(db_index=True)
-    assets: ManyToManyFieldInstance[Asset] = ManyToManyField(
-        model_name=Asset.Meta.model,
-        through='dex_asset_pool_reserve',
-        forward_key='asset_id',
-        backward_key='pool_id',
-        related_name='pools',
-    )
     lp_token: OneToOneFieldInstance[Asset] = OneToOneField(  # type: ignore[assignment]
         model_name=Asset.Meta.model,
         related_name='liquidity_pool',
@@ -103,30 +94,8 @@ class Pool(Model):
     )
     lp_token_id: int
 
-    def __repr__(self) -> str:
-        return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'
-
-
-class AssetPoolReserve(Model):
-    class Meta:
-        table = 'dex_asset_pool_reserve'
-        model = 'models.AssetPoolReserve'
-        unique_together = ('pool', 'asset')
-
-    id = fields.IntField(primary_key=True)
-    asset: ForeignKeyFieldInstance[Asset] = ForeignKeyField(
-        model_name=Asset.Meta.model,
-        source_field='asset_id',
-        to_field='id',
-        related_name='reserve',
-    )
-    pool: ForeignKeyFieldInstance[Pool] = ForeignKeyField(
-        model_name=Pool.Meta.model,
-        source_field='pool_id',
-        to_field='account',
-        related_name='reserves',
-    )
-    reserve = fields.CharField(max_length=40, null=True)
+    # def __repr__(self) -> str:
+    #     return f'<Pool[{self.dex_key}](id={self.dex_pool_id}, account={self.account})>'
 
 
 class Pair(Model):
@@ -163,27 +132,18 @@ class Pair(Model):
     created_at_tx_id = fields.IntField()
     fee_bps = fields.IntField(null=True)
 
-    def __repr__(self) -> str:
-        return f'<Pair[{self.dex_key}]({self.asset_0}/{self.asset_1})>'
+    pool_id: str
+    asset_0_id: int
+    asset_1_id: int
 
-    async def get_reserves(self) -> tuple[str, str]:
-        await self.fetch_related('asset_0', 'asset_1', 'pool')
-        asset_0_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_0).values_list(
-            'reserve', flat=True
-        )
-        asset_1_minor_reserve = await AssetPoolReserve.get(pool=self.pool, asset=self.asset_1).values_list(
-            'reserve', flat=True
-        )
-        if asset_0_minor_reserve is None:
-            asset_0_reserve = None
-        else:
-            asset_0_reserve = self.asset_0.from_minor(asset_0_minor_reserve)  # type: ignore[arg-type]
+    def asset_0_amount(self, amount: int) -> str:
+        return str(self.asset_0.from_minor(amount))
 
-        if asset_1_minor_reserve is None:
-            asset_1_reserve = None
-        else:
-            asset_1_reserve = self.asset_1.from_minor(asset_1_minor_reserve)  # type: ignore[arg-type]
-        return str(asset_0_reserve), str(asset_1_reserve)
+    def asset_1_amount(self, amount: int) -> str:
+        return str(self.asset_1.from_minor(amount))
+
+    # def __repr__(self) -> str:
+    #     return f'<Pair[{self.dex_key}]({self.asset_0}/{self.asset_1})>'
 
 
 class DexEvent(Model):
@@ -223,6 +183,7 @@ class DexEvent(Model):
     metadata = fields.JSONField(null=True)
 
     block_id: int
+    pair_id: str
 
     def __repr__(self) -> str:
         return f'<{self.event_type!s}Event[{self.name}]({self.block_id}-{self.event_index})>'

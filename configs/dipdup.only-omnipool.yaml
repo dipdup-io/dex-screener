@@ -1,0 +1,32 @@
+indexes:
+  hydradx_events:
+    kind: substrate.events
+    runtime: hydradx
+    datasources:
+      - subsquid
+      - subscan
+      - node
+    handlers:
+      # Asset Registry (common)
+      - name: AssetRegistry.Registered
+        callback: hydradx.asset.on_asset_registered
+      - name: AssetRegistry.Updated
+        callback: hydradx.asset.on_asset_updated
+      - name: AssetRegistry.MetadataSet
+        callback: hydradx.asset.on_metadata_set
+      - name: AssetRegistry.LocationSet
+        callback: hydradx.asset.on_location_set
+
+      # Omnipool
+      - name: Omnipool.TokenAdded
+        callback: hydradx.omnipool.on_token_added
+      - name: Omnipool.BuyExecuted
+        callback: hydradx.on_swap_executed
+      - name: Omnipool.SellExecuted
+        callback: hydradx.on_swap_executed
+      - name: Omnipool.PositionCreated
+        callback: hydradx.omnipool.on_position_created
+      - name: Omnipool.PositionDestroyed
+        callback: hydradx.omnipool.on_position_destroyed
+      - name: Omnipool.PositionUpdated
+        callback: hydradx.omnipool.on_position_updated

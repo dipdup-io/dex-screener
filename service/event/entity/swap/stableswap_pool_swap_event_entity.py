@@ -6,11 +6,12 @@ from dex_screener.models import DexEvent
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import Pool
-from dex_screener.service.dex.stableswap.stableswap_service import StableSwapService
+from dex_screener.service.dex.stableswap.stableswap_service import get_pair_id
 from dex_screener.service.event.entity.swap.dto import SwapEventMarketDataDTO
 from dex_screener.service.event.entity.swap.dto import SwapEventPoolDataDTO
 from dex_screener.service.event.entity.swap.resolve_helper import MultiAssetPoolSwapEventMarketDataHelper
 from dex_screener.service.event.entity.swap.swap_event_entity import SwapEventEntity
+from dex_screener.utils import get_reserves_by_pair
 
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
@@ -31,21 +32,21 @@ class StableSwapPoolSwapEventEntity(SwapEventEntity):
     async def resolve_pool_data(self) -> SwapEventPoolDataDTO:
         pool = await Pool.get(
             dex_key=DexKey.StableSwap,
-            dex_pool_id=str(self._event.payload['pool_id']),
+            lp_token_id=int(self._event.payload['pool_id']),
         )
 
-        pair_id = StableSwapService.get_pair_id(
+        pair_id = get_pair_id(
             pool=pool,
             asset_a_id=self._event.payload['asset_in'],
             asset_b_id=self._event.payload['asset_out'],
         )
 
-        pair = await Pair.get(id=pair_id)
-        asset_0_reserve, asset_1_reserve = await pair.get_reserves()
+        pair = await Pair.get(id=pair_id).prefetch_related('asset_0', 'asset_1', 'pool')
+        reserves_0, reserves_1 = await get_reserves_by_pair(pair, self._event.data.level)
         return SwapEventPoolDataDTO(
             pair_id=pair_id,
-            asset_0_reserve=asset_0_reserve,
-            asset_1_reserve=asset_1_reserve,
+            asset_0_reserve=pair.asset_0_amount(reserves_0),
+            asset_1_reserve=pair.asset_1_amount(reserves_1),
         )
 
     async def resolve_market_data(self) -> SwapEventMarketDataDTO:

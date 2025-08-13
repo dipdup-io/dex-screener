@@ -15,7 +15,7 @@ async def on_swap_executed(
 ) -> None:
     try:
         swap_event_record = await DexScreenerEventService.register_swap(event)
-        ctx.logger.info('Swap Event registered: %r.', swap_event_record)
+        ctx.logger.debug('Swap Event registered: %r.', swap_event_record)
     except UnsuitableEventMatchedError as exception:
         ctx.logger.info('Swap Event ignored: %s.', exception)
     except RegisterDexScreenerEventError as exception:

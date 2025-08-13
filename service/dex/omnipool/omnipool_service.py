@@ -4,7 +4,6 @@ import logging
 from typing import TYPE_CHECKING
 
 from dex_screener.models import Asset
-from dex_screener.models import AssetPoolReserve
 from dex_screener.models import DexKey
 from dex_screener.models import Pair
 from dex_screener.models import Pool
@@ -15,6 +14,7 @@ from dex_screener.service.dex.omnipool.const import OMNIPOOL_SYSTEM_ACCOUNT
 if TYPE_CHECKING:
     from dipdup.models.substrate import SubstrateEvent
 
+    from dex_screener.types.hydradx.substrate_events.omnipool_position_created import OmnipoolPositionCreatedPayload
     from dex_screener.types.hydradx.substrate_events.omnipool_token_added import OmnipoolTokenAddedPayload
 
 
@@ -48,7 +48,6 @@ class OmnipoolService:
         cls.logger.info('Omnipool registered: %r.', pool)
 
         base_asset = await Asset.get(id=OMNIPOOL_HUB_ASSET_ID)
-        await pool.assets.add(base_asset)
         cls.logger.info('Omnipool Base Asset added to pool %r: %s.', pool, base_asset)
 
         return pool
@@ -56,10 +55,24 @@ class OmnipoolService:
     @classmethod
     async def register_pair(cls, pool: Pool, event: SubstrateEvent[OmnipoolTokenAddedPayload]):
         new_asset = await Asset.get(id=event.payload['asset_id'])
-        async for pool_asset in pool.assets:  # type: ignore[attr-defined]
-            if pool_asset.id == new_asset.id:
-                continue
-            pair_id = cls.get_pair_id(new_asset.id, pool_asset.id)
+
+        # Get all existing assets in the pool to create pairs with the new asset
+        existing_pairs = await Pair.filter(pool=pool).prefetch_related('asset_0', 'asset_1')
+        existing_asset_ids = set()
+
+        for pair in existing_pairs:
+            existing_asset_ids.add(pair.asset_0.id)
+            existing_asset_ids.add(pair.asset_1.id)
+
+        # Add the hub asset if not already present
+        existing_asset_ids.add(OMNIPOOL_HUB_ASSET_ID)
+
+        # Create pairs between the new asset and all existing assets
+        for existing_asset_id in existing_asset_ids:
+            if existing_asset_id == new_asset.id:
+                continue  # Skip pairing with itself
+
+            pair_id = cls.get_pair_id(new_asset.id, existing_asset_id)
 
             if await Pair.exists(id=pair_id):
                 cls.logger.warning('Pair already exists: %s.', pair_id)
@@ -70,8 +83,8 @@ class OmnipoolService:
             pair = await Pair.create(
                 id=pair_id,
                 dex_key=DexKey.Omnipool,
-                asset_0_id=min(pool_asset.id, new_asset.id),
-                asset_1_id=max(pool_asset.id, new_asset.id),
+                asset_0_id=min(existing_asset_id, new_asset.id),
+                asset_1_id=max(existing_asset_id, new_asset.id),
                 pool=pool,
                 created_at_block_id=event_info.block_id,
                 created_at_tx_id=event_info.tx_index,
@@ -79,8 +92,29 @@ class OmnipoolService:
             )
             cls.logger.info('Pair registered in pool %r: %r.', pool, pair)
 
-        await pool.assets.add(new_asset)  # type: ignore[attr-defined]
-        await AssetPoolReserve.update_or_create(
-            pool=pool, asset=new_asset, defaults={'reserve': event.payload['initial_amount']}
+    @classmethod
+    async def register_pair_from_positions(cls, event: SubstrateEvent[OmnipoolPositionCreatedPayload]) -> Pair:
+        pool = await cls.get_pool()
+        asset_0, asset_1 = (
+            min(event.payload['asset'], OMNIPOOL_HUB_ASSET_ID),
+            max(event.payload['asset'], OMNIPOOL_HUB_ASSET_ID),
         )
-        cls.logger.info('Pair Asset added to pool %r: %s.', pool, new_asset)
+
+        pair_id = cls.get_pair_id(asset_0, asset_1)
+
+        event_info = DexScreenerEventInfoDTO.from_event(event)
+
+        pair = await Pair.create(
+            id=pair_id,
+            dex_key=DexKey.Omnipool,
+            asset_0_id=asset_0,
+            asset_1_id=asset_1,
+            pool=pool,
+            created_at_block_id=event_info.block_id,
+            created_at_tx_id=event_info.tx_index,
+            # fee_bps=None,
+        )
+        await pair.fetch_related('asset_0', 'asset_1')
+
+        cls.logger.info('Pair registered in pool %r: %r.', pool, pair)
+        return pair
